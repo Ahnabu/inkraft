@@ -16,6 +16,9 @@ import {
     Settings
 } from "lucide-react";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 async function getDashboardData(userId: string) {
     await dbConnect();
 

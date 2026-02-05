@@ -32,9 +32,6 @@ const UserActivitySchema: Schema<IUserActivity> = new Schema(
     { timestamps: true }
 );
 
-// Index for efficient queries
-UserActivitySchema.index({ user: 1 });
-
 const UserActivity: Model<IUserActivity> =
     mongoose.models.UserActivity ||
     mongoose.model<IUserActivity>("UserActivity", UserActivitySchema);
