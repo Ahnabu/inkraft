@@ -1,157 +1,173 @@
 import Link from "next/link";
-import dbConnect from "@/lib/mongodb";
-import Post, { IPost } from "@/models/Post";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { Button } from "@/components/ui/Button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArticleCard } from "@/components/ArticleCard";
+import { PostFeed } from "@/components/PostFeed";
+import { TrendingUp, Clock, Award, ArrowRight } from "lucide-react";
 
-async function getPosts() {
-  await dbConnect();
-  // Fetch published posts, sort by latest
-  const posts = await Post.find({ published: true })
-    .sort({ createdAt: -1 })
-    .limit(10)
-    .populate("author", "name image")
-    .lean();
-
-  // Serialize for client component use if needed, though this is RSC
-  return JSON.parse(JSON.stringify(posts));
+async function getFeaturedPost() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/api/posts/top?limit=1`, {
+      next: { revalidate: 900 }, // 15 minutes
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.posts[0] || null;
+  } catch (error) {
+    console.error("Failed to fetch featured post:", error);
+    return null;
+  }
 }
 
-export default async function Home() {
-  const posts = await getPosts();
-  const featuredPost = posts[0];
-  const recentPosts = posts.slice(1);
+async function getTrendingPosts() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/api/posts/trending?limit=3`, {
+      next: { revalidate: 1800 }, // 30 minutes
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.posts;
+  } catch (error) {
+    console.error("Failed to fetch trending posts:", error);
+    return [];
+  }
+}
+
+async function getLatestPosts() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/api/posts/latest?limit=6`, {
+      next: { revalidate: 300 }, // 5 minutes
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.posts;
+  } catch (error) {
+    console.error("Failed to fetch latest posts:", error);
+    return [];
+  }
+}
+
+async function getTopPosts() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/api/posts/top?limit=5`, {
+      next: { revalidate: 900 }, // 15 minutes
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.posts;
+  } catch (error) {
+    console.error("Failed to fetch top posts:", error);
+    return [];
+  }
+}
+
+export default async function HomePage() {
+  const [featuredPost, trendingPosts, latestPosts, topPosts] = await Promise.all([
+    getFeaturedPost(),
+    getTrendingPosts(),
+    getLatestPosts(),
+    getTopPosts(),
+  ]);
 
   return (
-    <div className="space-y-16">
-      {/* Hero Section */}
-      <section className="relative py-12 md:py-20 text-center space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-sm font-medium animate-fade-in-up">
-          <Sparkles size={14} />
-          <span>Welcome to ModernBlog</span>
-        </div>
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          Discover a new way <br /> to read and write.
-        </h1>
-        <p className="max-w-2xl mx-auto text-xl text-muted-foreground">
-          A premium space for specific thoughts, stories, and ideas.
-          Built with modern web technologies for the best reading experience.
-        </p>
-        <div className="flex justify-center gap-4 pt-4">
-          <Link href="/explore">
-            <Button size="lg" className="rounded-full px-8 shadow-xl shadow-primary/20">
-              Start Reading
-            </Button>
-          </Link>
-          <Link href="/new">
-            <Button variant="outline" size="lg" className="rounded-full px-8 backdrop-blur-sm">
-              Write a Story
-            </Button>
-          </Link>
-        </div>
-      </section>
-
-      {/* Featured Post */}
+    <div className="min-h-screen">
+      {/* Hero Section - Featured Post */}
       {featuredPost && (
-        <section>
-          <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-2xl font-bold tracking-tight">Featured</h2>
+        <section className="container mx-auto px-4 py-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Award size={24} className="text-primary" />
+            <h2 className="text-2xl font-bold">Featured</h2>
           </div>
-          <Link href={`/blog/${featuredPost.slug}`}>
-            <GlassCard className="group relative overflow-hidden min-h-[400px] flex flex-col justify-end p-8 md:p-12 hover:shadow-2xl transition-all duration-500">
-              {/* Background Image Abstract */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10" />
-              <div className="absolute inset-0 bg-zinc-900 group-hover:scale-105 transition-transform duration-700 z-0">
-                {/* Placeholder for cover image if available */}
-                {featuredPost.coverImage && (
-                  <img src={featuredPost.coverImage} alt={featuredPost.title} className="w-full h-full object-cover opacity-60" />
-                )}
-              </div>
-
-              <div className="relative z-20 max-w-2xl space-y-4">
-                <div className="flex items-center gap-2 text-white/80 text-sm">
-                  <span>{new Date(featuredPost.createdAt).toLocaleDateString()}</span>
-                  <span>•</span>
-                  <span>{featuredPost.author?.name || "Unknown Author"}</span>
-                </div>
-                <h3 className="text-3xl md:text-5xl font-bold text-white group-hover:text-cta transition-colors">
-                  {featuredPost.title}
-                </h3>
-                <p className="text-lg text-gray-300 line-clamp-2">
-                  {featuredPost.excerpt || "No excerpt available."}
-                </p>
-              </div>
-            </GlassCard>
-          </Link>
+          <ArticleCard post={featuredPost} variant="featured" />
         </section>
       )}
 
-      {/* Recent Posts - Bento Grid style */}
-      <section>
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-tight">Recent Stories</h2>
-          <Link href="/explore" className="text-primary hover:underline flex items-center gap-1">
-            View all <ArrowRight size={16} />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recentPosts.length > 0 ? (
-            recentPosts.map((post: any, i: number) => (
-              <Link key={post._id} href={`/blog/${post.slug}`} className={`group ${i === 3 || i === 6 ? "md:col-span-2" : ""}`}>
-                <GlassCard className="h-full flex flex-col justify-between hover:border-primary/50 transition-colors">
-                  <div className="space-y-4">
-                    <div className="w-full aspect-[2/1] bg-muted rounded-lg overflow-hidden relative">
-                      {/* Image placeholder */}
-                      {post.coverImage ? (
-                        <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900" />
-                      )}
-                    </div>
-                    <div>
-                      <h4 className="text-xl font-bold group-hover:text-primary transition-colors line-clamp-2">
-                        {post.title}
-                      </h4>
-                      <p className="text-muted-foreground mt-2 line-clamp-3 text-sm">
-                        {post.excerpt || stripHtml(post.content).slice(0, 100) + "..."}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                    <span>{post.author?.name}</span>
-                  </div>
-                </GlassCard>
-              </Link>
-            ))
-          ) : (
-            <div className="col-span-full py-12 text-center text-muted-foreground">
-              No recent stories found. Be the first to write one!
+      {/* Trending Section */}
+      {trendingPosts.length > 0 && (
+        <section className="container mx-auto px-4 py-12">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <TrendingUp size={24} className="text-primary" />
+              <h2 className="text-2xl font-bold">Trending Now</h2>
             </div>
-          )}
+            <Link
+              href="/trending"
+              className="text-primary hover:underline flex items-center gap-1"
+            >
+              View all
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+          <PostFeed posts={trendingPosts} columns={3} variant="standard" />
+        </section>
+      )}
+
+      {/* Main Content Grid */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Latest Posts - 2/3 width */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <Clock size={24} className="text-primary" />
+                <h2 className="text-2xl font-bold">Latest Posts</h2>
+              </div>
+              <Link
+                href="/latest"
+                className="text-primary hover:underline flex items-center gap-1"
+              >
+                View all
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+            {latestPosts.length > 0 ? (
+              <PostFeed posts={latestPosts} columns={2} variant="standard" />
+            ) : (
+              <p className="text-muted-foreground">No posts yet</p>
+            )}
+          </div>
+
+          {/* Top Posts Sidebar - 1/3 width */}
+          <div>
+            <div className="flex items-center gap-2 mb-6">
+              <Award size={24} className="text-primary" />
+              <h2 className="text-2xl font-bold">Top Posts</h2>
+            </div>
+            {topPosts.length > 0 ? (
+              <PostFeed posts={topPosts} layout="list" variant="compact" />
+            ) : (
+              <p className="text-muted-foreground text-sm">No top posts yet</p>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section className="relative overflow-hidden rounded-3xl bg-primary text-primary-foreground p-8 md:p-16 text-center">
-        <div className="relative z-10 max-w-xl mx-auto space-y-6">
-          <h2 className="text-3xl font-bold">Stay curious.</h2>
-          <p className="text-primary-foreground/80">
-            Discover stories, thinking, and expertise from writers on any topic.
-            Subscribe to our newsletter.
+      {/* CTA Section */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-2xl p-12 text-center border border-primary/20">
+          <h2 className="text-3xl font-bold mb-4">Start Your Writing Journey</h2>
+          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            Join Inkraft and share your stories with a global audience. Build your
+            reputation through quality content and community engagement.
           </p>
-          <div className="flex gap-2 max-w-sm mx-auto">
-            <input type="email" placeholder="email@example.com" className="bg-white/10 border-white/20 text-white placeholder:text-white/60 flex-1 rounded-full px-4 py-2 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50" />
-            <Button variant="secondary" className="rounded-full">Subscribe</Button>
+          <div className="flex items-center justify-center gap-4">
+            <Link
+              href="/new"
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Write a Post
+            </Link>
+            <Link
+              href="/auth/signin"
+              className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-muted transition-colors"
+            >
+              Sign In
+            </Link>
           </div>
         </div>
       </section>
     </div>
   );
-}
-
-function stripHtml(html: string) {
-  return html.replace(/<[^>]*>?/gm, '');
 }
