@@ -3,6 +3,8 @@ import type { NextAuthConfig } from "next-auth";
 
 export default {
     providers: [Google],
+    trustHost: true,
+    secret: process.env.AUTH_SECRET,
     callbacks: {
         async session({ session, token }) {
             if (token && session.user) {
