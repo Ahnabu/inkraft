@@ -3,4 +3,21 @@ import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
+    return twMerge(clsx(inputs));
+}
+
+export function getBaseUrl() {
+    if (typeof window !== "undefined") return ""; // Browser should use relative url
+
+    if (process.env.NEXT_PUBLIC_BASE_URL) {
+        return process.env.NEXT_PUBLIC_BASE_URL.startsWith("http")
+            ? process.env.NEXT_PUBLIC_BASE_URL
+            : `https://${process.env.NEXT_PUBLIC_BASE_URL}`;
+    }
+
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+    }
+
+    return "http://localhost:3000";
 }

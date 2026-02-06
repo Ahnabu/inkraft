@@ -16,6 +16,7 @@ import UserModel from "@/models/User"; // Renamed to avoid conflict with lucide-
 import { SaveButton } from "@/components/SaveButton";
 import DOMPurify from "isomorphic-dompurify";
 import { TableOfContents } from "@/components/TableOfContents";
+import { getBaseUrl } from "@/lib/utils";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -94,7 +95,7 @@ export default async function BlogPostPage({ params }: PageProps) {
     }
 
     const relatedPosts = await getRelatedPosts(post.category, slug);
-    const articleUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/blog/${slug}`;
+    const articleUrl = `${getBaseUrl()}/blog/${slug}`;
 
     return (
         <>

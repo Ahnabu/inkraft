@@ -3,10 +3,11 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { PostFeed } from "@/components/PostFeed";
 import { TrendingUp, Clock, Award, ArrowRight } from "lucide-react";
 import { auth } from "@/auth";
+import { getBaseUrl } from "@/lib/utils";
 
 async function getFeaturedPost() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = getBaseUrl();
     const res = await fetch(`${baseUrl}/api/posts/top?limit=1`, {
       next: { revalidate: 900 }, // 15 minutes
     });
@@ -21,7 +22,7 @@ async function getFeaturedPost() {
 
 async function getTrendingPosts() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = getBaseUrl();
     const res = await fetch(`${baseUrl}/api/posts/trending?limit=3`, {
       next: { revalidate: 1800 }, // 30 minutes
     });
@@ -36,7 +37,7 @@ async function getTrendingPosts() {
 
 async function getLatestPosts() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = getBaseUrl();
     const res = await fetch(`${baseUrl}/api/posts/latest?limit=6`, {
       next: { revalidate: 300 }, // 5 minutes
     });
@@ -51,7 +52,7 @@ async function getLatestPosts() {
 
 async function getTopPosts() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = getBaseUrl();
     const res = await fetch(`${baseUrl}/api/posts/top?limit=5`, {
       next: { revalidate: 900 }, // 15 minutes
     });
