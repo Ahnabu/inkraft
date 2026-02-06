@@ -102,11 +102,65 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
             },
             // Preserve formatting when pasting from external sources like Google Docs
             transformPastedHTML(html) {
-                // Keep all HTML formatting including inline styles for font sizes, colors, etc.
-                return html;
+                // Ensure list structures are preserved
+                // Convert common list patterns to proper HTML lists
+                let processedHtml = html;
+
+                // Preserve existing ul/ol tags
+                if (html.includes('<ul') || html.includes('<ol')) {
+                    return html;
+                }
+
+                // Convert bullet points (•, -, *) to proper lists
+                const lines = html.split(/\n|<br\s*\/?>/);
+                const listItems: string[] = [];
+                let inList = false;
+
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    // Check for bullet point patterns
+                    if (trimmed.match(/^[•\-\*]\s+/) || trimmed.match(/^\d+\.\s+/)) {
+                        const content = trimmed.replace(/^[•\-\*]\s+/, '').replace(/^\d+\.\s+/, '');
+                        listItems.push(`<li>${content}</li>`);
+                        inList = true;
+                    } else if (inList && trimmed) {
+                        // End of list
+                        processedHtml = processedHtml.replace(
+                            listItems.join(''),
+                            `<ul>${listItems.join('')}</ul>`
+                        );
+                        listItems.length = 0;
+                        inList = false;
+                    }
+                });
+
+                // Handle remaining list items
+                if (listItems.length > 0) {
+                    processedHtml = `<ul>${listItems.join('')}</ul>`;
+                }
+
+                return processedHtml || html;
             },
             transformPastedText(text) {
-                // Keep text as-is for plain text paste
+                // Convert plain text bullet points to HTML lists
+                const lines = text.split('\n');
+                const listItems: string[] = [];
+
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed.match(/^[•\-\*]\s+/)) {
+                        const content = trimmed.replace(/^[•\-\*]\s+/, '');
+                        listItems.push(`<li>${content}</li>`);
+                    } else if (trimmed.match(/^\d+\.\s+/)) {
+                        const content = trimmed.replace(/^\d+\.\s+/, '');
+                        listItems.push(`<li>${content}</li>`);
+                    }
+                });
+
+                if (listItems.length > 0) {
+                    return `<ul>${listItems.join('')}</ul>`;
+                }
+
                 return text;
             },
         },

@@ -102,8 +102,25 @@ body {
   }
 
   p {
-    @apply text-sm sm:text-base;
+    @apply text-sm sm:text-base md:text-lg leading-relaxed;
   }
+}
+
+/* Ensure form elements have proper text color */
+input,
+textarea,
+select {
+  color: hsl(var(--foreground));
+}
+
+select option {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+}
+
+.dark select option {
+  background-color: #18181B;
+  color: #FAFAFA;
 }
 
 .glass-card {

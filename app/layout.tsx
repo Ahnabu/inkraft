@@ -5,6 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
 import { Providers } from "@/components/Providers";
+import { Toaster } from "sonner";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -84,6 +85,7 @@ export default function RootLayout({
         className={`${dmSans.variable} antialiased bg-background text-text font-body min-h-screen flex flex-col`}
       >
         <Providers>
+          <Toaster position="top-right" richColors />
           <div className="flex-1 flex flex-col relative z-0">
             <Navbar />
             <main className="flex-1 pt-24 pb-12 px-4 container mx-auto relative z-10">

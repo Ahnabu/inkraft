@@ -172,7 +172,7 @@ export default function NewPostPage() {
                             <select
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             >
                                 <option value="">Select a category</option>
                                 {DEFAULT_CATEGORIES.map((cat) => (
@@ -193,7 +193,7 @@ export default function NewPostPage() {
                                 value={tags}
                                 onChange={(e) => setTags(e.target.value)}
                                 placeholder="nextjs, typescript, tutorial"
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             />
                         </div>
 
@@ -205,7 +205,7 @@ export default function NewPostPage() {
                             <select
                                 value={difficultyLevel}
                                 onChange={(e) => setDifficultyLevel(e.target.value as any)}
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             >
                                 <option value="">Not specified</option>
                                 <option value="Beginner">Beginner</option>
@@ -225,7 +225,7 @@ export default function NewPostPage() {
                                     value={coverImage}
                                     onChange={(e) => setCoverImage(e.target.value)}
                                     placeholder="https://... or upload below"
-                                    className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
+                                    className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                                 />
                                 <div className="flex items-center gap-2">
                                     <div className="flex-1 border-t border-border"></div>

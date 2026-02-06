@@ -85,7 +85,7 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                                 {(post.upvotes || 0) > 0 && (
                                     <div className="flex items-center gap-1">
                                         <ArrowUp size={16} />
-                                        <span>{post.upvotes}</span>
+                                        <span>{Math.round(post.upvotes || 0)}</span>
                                     </div>
                                 )}
                                 {(post.commentCount || 0) > 0 && (
@@ -139,7 +139,7 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                                 <span>•</span>
                                 <div className="flex items-center gap-1">
                                     <ArrowUp size={12} />
-                                    <span>{post.upvotes}</span>
+                                    <span>{Math.round(post.upvotes || 0)}</span>
                                 </div>
                             </>
                         )}
@@ -207,7 +207,7 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                         {(post.upvotes || 0) > 0 && (
                             <div className="flex items-center gap-1">
                                 <ArrowUp size={14} />
-                                <span>{post.upvotes}</span>
+                                <span>{Math.round(post.upvotes || 0)}</span>
                             </div>
                         )}
                         {(post.commentCount || 0) > 0 && (

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Twitter, Linkedin } from "lucide-react";
+import { Github, Twitter, Linkedin, Facebook, Instagram } from "lucide-react";
 
 export function Footer() {
     return (
@@ -18,7 +18,7 @@ export function Footer() {
                     </div>
 
                     {/* Links Section - Grid layout on desktop, stack on mobile */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-12">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
                         {/* Platform Links */}
                         <div className="flex flex-col">
                             <h3 className="font-semibold mb-3 text-sm md:text-base text-foreground">Platform</h3>
@@ -42,27 +42,62 @@ export function Footer() {
                         {/* Connect */}
                         <div className="flex flex-col">
                             <h3 className="font-semibold mb-3 text-sm md:text-base text-foreground">Connect</h3>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 flex-wrap">
                                 <a
-                                    href="#"
+                                    href="https://facebook.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="p-2 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
-                                    aria-label="GitHub"
+                                    aria-label="Facebook"
                                 >
-                                    <Github size={20} />
+                                    <Facebook size={20} />
                                 </a>
                                 <a
-                                    href="#"
+                                    href="https://instagram.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-2 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
+                                    aria-label="Instagram"
+                                >
+                                    <Instagram size={20} />
+                                </a>
+                                <a
+                                    href="https://threads.net"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-2 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
+                                    aria-label="Threads"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12.186 3.094c-2.167 0-3.97.857-5.348 2.548l1.483 1.03c1.03-1.266 2.336-1.896 3.865-1.896 1.483 0 2.67.63 3.52 1.87.85 1.24 1.275 2.91 1.275 5.01 0 2.1-.425 3.77-1.275 5.01-.85 1.24-2.037 1.87-3.52 1.87-1.483 0-2.67-.63-3.52-1.87-.85-1.24-1.275-2.91-1.275-5.01 0-.425.03-.85.09-1.275l-1.8-.18c-.09.485-.135.97-.135 1.455 0 2.55.605 4.59 1.815 6.12 1.21 1.53 2.835 2.295 4.875 2.295 2.04 0 3.665-.765 4.875-2.295 1.21-1.53 1.815-3.57 1.815-6.12 0-2.55-.605-4.59-1.815-6.12-1.21-1.53-2.835-2.295-4.875-2.295z" />
+                                    </svg>
+                                </a>
+                                <a
+                                    href="https://twitter.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="p-2 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
                                     aria-label="Twitter"
                                 >
                                     <Twitter size={20} />
                                 </a>
                                 <a
-                                    href="#"
+                                    href="https://linkedin.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="p-2 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
                                     aria-label="LinkedIn"
                                 >
                                     <Linkedin size={20} />
+                                </a>
+                                <a
+                                    href="https://github.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-2 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
+                                    aria-label="GitHub"
+                                >
+                                    <Github size={20} />
                                 </a>
                             </div>
                         </div>

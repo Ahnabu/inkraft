@@ -119,7 +119,7 @@ export function VoteButton({
         }
     };
 
-    const netVotes = upvotes - downvotes;
+    const netVotes = Math.round(upvotes - downvotes);
 
     if (variant === "inline") {
         return (
@@ -128,8 +128,8 @@ export function VoteButton({
                     onClick={() => handleVote("upvote")}
                     disabled={loading || status === "loading"}
                     className={`flex items-center gap-1 px-3 py-1.5 rounded-full transition-all ${userVote === "upvote"
-                            ? "bg-primary text-white"
-                            : "bg-muted hover:bg-muted/80 text-foreground"
+                        ? "bg-primary text-white"
+                        : "bg-muted hover:bg-muted/80 text-foreground"
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                     title="Upvote"
                 >
@@ -138,15 +138,15 @@ export function VoteButton({
                     ) : (
                         <ArrowUp size={16} />
                     )}
-                    <span className="text-sm font-medium">{upvotes}</span>
+                    <span className="text-sm font-medium">{Math.round(upvotes)}</span>
                 </button>
 
                 <button
                     onClick={() => handleVote("downvote")}
                     disabled={loading || status === "loading"}
                     className={`flex items-center gap-1 px-3 py-1.5 rounded-full transition-all ${userVote === "downvote"
-                            ? "bg-red-500 text-white"
-                            : "bg-muted hover:bg-muted/80 text-foreground"
+                        ? "bg-red-500 text-white"
+                        : "bg-muted hover:bg-muted/80 text-foreground"
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                     title="Downvote"
                 >
@@ -155,7 +155,7 @@ export function VoteButton({
                     ) : (
                         <ArrowDown size={16} />
                     )}
-                    <span className="text-sm font-medium">{downvotes}</span>
+                    <span className="text-sm font-medium">{Math.round(downvotes)}</span>
                 </button>
             </div>
         );
@@ -168,8 +168,8 @@ export function VoteButton({
                 onClick={() => handleVote("upvote")}
                 disabled={loading || status === "loading"}
                 className={`p-2 rounded-lg transition-all ${userVote === "upvote"
-                        ? "bg-primary text-white"
-                        : "hover:bg-muted text-muted-foreground"
+                    ? "bg-primary text-white"
+                    : "hover:bg-muted text-muted-foreground"
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                 title="Upvote"
                 aria-label="Upvote"
@@ -189,8 +189,8 @@ export function VoteButton({
                 onClick={() => handleVote("downvote")}
                 disabled={loading || status === "loading"}
                 className={`p-2 rounded-lg transition-all ${userVote === "downvote"
-                        ? "bg-red-500 text-white"
-                        : "hover:bg-muted text-muted-foreground"
+                    ? "bg-red-500 text-white"
+                    : "hover:bg-muted text-muted-foreground"
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                 title="Downvote"
                 aria-label="Downvote"

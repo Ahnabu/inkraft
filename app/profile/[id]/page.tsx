@@ -144,7 +144,7 @@ export default async function UserProfilePage({
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <ArrowUp size={16} className="text-muted-foreground" />
-                                    <span className="font-semibold">{totalUpvotes}</span>
+                                    <span className="font-semibold">{Math.round(totalUpvotes)}</span>
                                     <span className="text-muted-foreground">Upvotes</span>
                                 </div>
                                 <div className="flex items-center gap-2">
