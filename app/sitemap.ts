@@ -2,8 +2,10 @@ import { MetadataRoute } from "next";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 
+import { getBaseUrl } from "@/lib/utils";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = "http://localhost:3000";
+    const baseUrl = getBaseUrl();
 
     // Static pages
     const routes = ["", "/about", "/explore", "/new"].map((route) => ({
