@@ -5,15 +5,14 @@ import { TrendingUp, Clock, Award, ArrowRight } from "lucide-react";
 import { auth } from "@/auth";
 import { getBaseUrl } from "@/lib/utils";
 
+import { fetchLatestPosts, fetchTopPosts, fetchTrendingPosts } from "@/lib/data/posts";
+
+export const revalidate = 900; // Revalidate page every 15 minutes
+
 async function getFeaturedPost() {
   try {
-    const baseUrl = getBaseUrl();
-    const res = await fetch(`${baseUrl}/api/posts/top?limit=1`, {
-      next: { revalidate: 900 }, // 15 minutes
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.posts[0] || null;
+    const posts = await fetchTopPosts(1);
+    return posts[0] || null;
   } catch (error) {
     console.error("Failed to fetch featured post:", error);
     return null;
@@ -22,13 +21,7 @@ async function getFeaturedPost() {
 
 async function getTrendingPosts() {
   try {
-    const baseUrl = getBaseUrl();
-    const res = await fetch(`${baseUrl}/api/posts/trending?limit=3`, {
-      next: { revalidate: 1800 }, // 30 minutes
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.posts;
+    return await fetchTrendingPosts(3);
   } catch (error) {
     console.error("Failed to fetch trending posts:", error);
     return [];
@@ -37,13 +30,7 @@ async function getTrendingPosts() {
 
 async function getLatestPosts() {
   try {
-    const baseUrl = getBaseUrl();
-    const res = await fetch(`${baseUrl}/api/posts/latest?limit=6`, {
-      next: { revalidate: 300 }, // 5 minutes
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.posts;
+    return await fetchLatestPosts(6);
   } catch (error) {
     console.error("Failed to fetch latest posts:", error);
     return [];
@@ -52,13 +39,9 @@ async function getLatestPosts() {
 
 async function getTopPosts() {
   try {
-    const baseUrl = getBaseUrl();
-    const res = await fetch(`${baseUrl}/api/posts/top?limit=5`, {
-      next: { revalidate: 900 }, // 15 minutes
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.posts;
+    // Fetch top 5, but we might overlap with featured, so maybe fetch more?
+    // Using simple logic for now matching previous API
+    return await fetchTopPosts(5);
   } catch (error) {
     console.error("Failed to fetch top posts:", error);
     return [];

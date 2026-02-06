@@ -9,19 +9,14 @@ export const metadata: Metadata = {
     description: "Read the latest articles from our community.",
 };
 
+import { fetchLatestPosts } from "@/lib/data/posts";
+
+export const revalidate = 60; // Revalidate every 60 seconds
+
 async function getLatestPosts() {
     try {
-        const baseUrl = getBaseUrl();
-        const res = await fetch(`${baseUrl}/api/posts/latest?limit=50`, {
-            next: { revalidate: 60 },
-        });
-
-        if (!res.ok) {
-            throw new Error("Failed to fetch posts");
-        }
-
-        const data = await res.json();
-        return data.posts;
+        const posts = await fetchLatestPosts(50);
+        return posts;
     } catch (error) {
         console.error("Error fetching latest posts:", error);
         return [];
