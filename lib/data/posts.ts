@@ -21,7 +21,11 @@ export async function fetchLatestPosts(limit = 20, page = 1, category?: string) 
     return posts.map((post) => ({
         ...post,
         _id: post._id.toString(),
-        author: { ...post.author, _id: post.author._id.toString() },
+        author: {
+            _id: post.author._id.toString(),
+            name: post.author.name,
+            image: post.author.image,
+        },
         excerpt: post.excerpt || "",
         publishedAt: post.publishedAt?.toISOString(),
         createdAt: post.createdAt.toISOString(),
@@ -56,7 +60,11 @@ export async function fetchTopPosts(limit = 10, page = 1, category?: string) {
         return {
             ...post,
             _id: post._id.toString(),
-            author: { ...post.author, _id: post.author._id.toString() },
+            author: {
+                _id: post.author._id.toString(),
+                name: post.author.name,
+                image: post.author.image,
+            },
             excerpt: post.excerpt || "",
             engagementScore: Math.round(engagementScore),
             publishedAt: post.publishedAt?.toISOString(),
@@ -114,7 +122,11 @@ export async function fetchTrendingPosts(limit = 10, page = 1) {
             return {
                 ...post,
                 _id: post._id.toString(),
-                author: { ...post.author, _id: post.author._id.toString() },
+                author: {
+                    _id: post.author._id.toString(),
+                    name: post.author.name,
+                    image: post.author.image,
+                },
                 excerpt: post.excerpt || "",
                 trendScore: Math.round(trendScore * 100) / 100,
                 recentVotes,
