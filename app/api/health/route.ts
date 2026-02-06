@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
+import clientPromise from "@/lib/mongodb-adapter";
 import mongoose from "mongoose";
 
 export const dynamic = 'force-dynamic';
@@ -7,10 +8,20 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
     try {
         const start = Date.now();
+
+        // Test Mongoose
         await dbConnect();
+        const mongooseState = mongoose.connection.readyState;
+
+        // Test Native Client (Adapter)
+        // This is crucial because auth() uses this connection
+        const client = await clientPromise;
+        const adminDb = client.db().admin();
+        await adminDb.ping();
+        const adapterStatus = "connected";
+
         const duration = Date.now() - start;
 
-        const state = mongoose.connection.readyState;
         const states = {
             0: "disconnected",
             1: "connected",
@@ -20,14 +31,16 @@ export async function GET() {
 
         return NextResponse.json({
             status: "ok",
-            database: states[state as keyof typeof states] || "unknown",
+            mongoose: states[mongooseState as keyof typeof states] || "unknown",
+            adapter: adapterStatus,
             latency: `${duration}ms`,
             env: {
-                // Do not expose values, just existence
                 MONGODB_URI: !!process.env.MONGODB_URI,
                 AUTH_SECRET: !!process.env.AUTH_SECRET,
+                // Check if the value is non-empty (avoid logging the actual secret)
+                AUTH_SECRET_SET: (process.env.AUTH_SECRET?.length || 0) > 0,
                 NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-                VERCEL_URL: process.env.VERCEL_URL,
+                VERCEL: !!process.env.VERCEL,
             },
             timestamp: new Date().toISOString(),
         });
