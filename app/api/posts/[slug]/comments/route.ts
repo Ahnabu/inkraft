@@ -13,7 +13,7 @@ export async function GET(
 ) {
     try {
         const params = await context.params;
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = new URL(req.url, "http://localhost");
         const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "20");
         const skip = (page - 1) * limit;
@@ -231,7 +231,7 @@ export async function DELETE(
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = new URL(req.url, "http://localhost");
         const commentId = searchParams.get("commentId");
 
         if (!commentId) {

@@ -24,8 +24,7 @@ export function Footer() {
                             <h3 className="font-semibold mb-3 text-sm md:text-base text-foreground">Platform</h3>
                             <ul className="flex flex-col space-y-2 text-sm text-muted-foreground">
                                 <li><Link href="/explore" className="hover:text-primary transition-colors inline-block">Explore</Link></li>
-                                <li><Link href="/pricing" className="hover:text-primary transition-colors inline-block">Pricing</Link></li>
-                                <li><Link href="/features" className="hover:text-primary transition-colors inline-block">Features</Link></li>
+                                <li><Link href="/new" className="hover:text-primary transition-colors inline-block">Write a Post</Link></li>
                             </ul>
                         </div>
 
@@ -34,7 +33,6 @@ export function Footer() {
                             <h3 className="font-semibold mb-3 text-sm md:text-base text-foreground">Company</h3>
                             <ul className="flex flex-col space-y-2 text-sm text-muted-foreground">
                                 <li><Link href="/about" className="hover:text-primary transition-colors inline-block">About Us</Link></li>
-                                <li><Link href="/blog" className="hover:text-primary transition-colors inline-block">Careers</Link></li>
                                 <li><Link href="/contact" className="hover:text-primary transition-colors inline-block">Contact</Link></li>
                             </ul>
                         </div>

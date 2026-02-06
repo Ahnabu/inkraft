@@ -13,7 +13,7 @@ const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
 
 export async function GET(req: Request) {
     try {
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = new URL(req.url, "http://localhost");
         const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "10");
         const category = searchParams.get("category");
