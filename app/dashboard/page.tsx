@@ -34,8 +34,8 @@ async function getDashboardData(userId: string) {
     // Calculate stats
     const publishedPosts = posts.filter((p) => p.published);
     const draftPosts = posts.filter((p) => !p.published);
-    const totalUpvotes = posts.reduce((sum, p) => sum + (p.upvotes || 0), 0);
-    const totalComments = posts.reduce((sum, p) => sum + (p.commentCount || 0), 0);
+    const totalUpvotes = posts.reduce((sum: number, p: any) => sum + (p.upvotes || 0), 0);
+    const totalComments = posts.reduce((sum: number, p: any) => sum + (p.commentCount || 0), 0);
 
     return {
         user: JSON.parse(JSON.stringify(user)),
@@ -66,24 +66,24 @@ export default async function DashboardPage() {
         <div className="min-h-screen bg-muted/30">
             <div className="container mx-auto px-4 py-8">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
                     <div>
                         <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
                         <p className="text-muted-foreground">
                             Welcome back, {user.name}
                         </p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 w-full md:w-auto">
                         <Link
                             href="/new"
-                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
+                            className="flex-1 md:flex-none justify-center px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
                         >
                             <Plus size={16} />
                             New Post
                         </Link>
                         <Link
                             href="/settings"
-                            className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
+                            className="flex-1 md:flex-none justify-center px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
                         >
                             <Settings size={16} />
                             Settings

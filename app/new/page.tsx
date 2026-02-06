@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
 import { calculateReadingTime } from "@/lib/readingTime";
 import { Loader2, Save } from "lucide-react";
+import { ImageUploadButton } from "@/components/ImageUploadButton";
 
 export default function NewPostPage() {
     const router = useRouter();
@@ -101,15 +102,15 @@ export default function NewPostPage() {
     return (
         <div className="max-w-7xl mx-auto space-y-8">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold">Write a New Article</h1>
-                    <p className="text-muted-foreground mt-1">
+                    <h1 className="text-2xl md:text-3xl font-bold">Write a New Article</h1>
+                    <p className="text-muted-foreground mt-1 text-sm md:text-base">
                         Share your knowledge with the Inkraft community
                     </p>
                 </div>
                 {lastSaved && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full self-start md:self-auto">
                         <Save size={14} />
                         <span>Saved {lastSaved.toLocaleTimeString()}</span>
                     </div>
@@ -126,7 +127,7 @@ export default function NewPostPage() {
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Article Title"
-                            className="w-full text-4xl font-bold bg-transparent border-none focus:outline-none placeholder:text-muted-foreground"
+                            className="w-full text-2xl md:text-4xl font-bold bg-transparent border-none focus:outline-none placeholder:text-muted-foreground"
                         />
                         <input
                             type="text"
@@ -171,7 +172,7 @@ export default function NewPostPage() {
                             <select
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
                             >
                                 <option value="">Select a category</option>
                                 {DEFAULT_CATEGORIES.map((cat) => (
@@ -192,7 +193,7 @@ export default function NewPostPage() {
                                 value={tags}
                                 onChange={(e) => setTags(e.target.value)}
                                 placeholder="nextjs, typescript, tutorial"
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                         </div>
 
@@ -204,7 +205,7 @@ export default function NewPostPage() {
                             <select
                                 value={difficultyLevel}
                                 onChange={(e) => setDifficultyLevel(e.target.value as any)}
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
                             >
                                 <option value="">Not specified</option>
                                 <option value="Beginner">Beginner</option>
@@ -216,15 +217,23 @@ export default function NewPostPage() {
                         {/* Cover Image */}
                         <div>
                             <label className="block text-sm font-medium mb-2">
-                                Cover Image URL
+                                Cover Image
                             </label>
-                            <input
-                                type="url"
-                                value={coverImage}
-                                onChange={(e) => setCoverImage(e.target.value)}
-                                placeholder="https://..."
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                            />
+                            <div className="space-y-2">
+                                <input
+                                    type="url"
+                                    value={coverImage}
+                                    onChange={(e) => setCoverImage(e.target.value)}
+                                    placeholder="https://... or upload below"
+                                    className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
+                                />
+                                <div className="flex items-center gap-2">
+                                    <div className="flex-1 border-t border-border"></div>
+                                    <span className="text-xs text-muted-foreground">or</span>
+                                    <div className="flex-1 border-t border-border"></div>
+                                </div>
+                                <ImageUploadButton onUploadComplete={setCoverImage} />
+                            </div>
                             {coverImage && (
                                 <div className="mt-2 rounded-lg overflow-hidden border border-border">
                                     <img src={coverImage} alt="Cover preview" className="w-full h-32 object-cover" />

@@ -1,17 +1,18 @@
 import NextAuth from "next-auth";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb-adapter";
-import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
+import authConfig from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: MongoDBAdapter(clientPromise),
     session: { strategy: "jwt" },
+    ...authConfig,
     providers: [
-        Google,
+        ...authConfig.providers,
         Credentials({
             credentials: {
                 email: { label: "Email", type: "email" },
@@ -57,24 +58,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
         }),
     ],
-    callbacks: {
-        async session({ session, token }) {
-            if (token && session.user) {
-                session.user.id = token.sub as string;
-                // @ts-ignore
-                session.user.role = token.role as string;
-            }
-            return session;
-        },
-        async jwt({ token, user }) {
-            if (user) {
-                // @ts-ignore
-                token.role = user.role;
-            }
-            return token;
-        },
-    },
-    pages: {
-        signIn: "/auth/signin", // Custom sign in page
-    },
 });

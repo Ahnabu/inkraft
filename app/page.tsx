@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArticleCard } from "@/components/ArticleCard";
 import { PostFeed } from "@/components/PostFeed";
 import { TrendingUp, Clock, Award, ArrowRight } from "lucide-react";
+import { auth } from "@/auth";
 
 async function getFeaturedPost() {
   try {
@@ -64,6 +65,7 @@ async function getTopPosts() {
 }
 
 export default async function HomePage() {
+  const session = await auth();
   const [featuredPost, trendingPosts, latestPosts, topPosts] = await Promise.all([
     getFeaturedPost(),
     getTrendingPosts(),
@@ -146,25 +148,33 @@ export default async function HomePage() {
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-16">
-        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-2xl p-12 text-center border border-primary/20">
-          <h2 className="text-3xl font-bold mb-4">Start Your Writing Journey</h2>
-          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-purple-500/10 to-primary/5 rounded-3xl p-8 md:p-12 text-center border border-primary/30 shadow-2xl">
+          {/* Decorative gradient orbs */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -z-10"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl -z-10"></div>
+
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+            Start Your Writing Journey
+          </h2>
+          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-base md:text-lg">
             Join Inkraft and share your stories with a global audience. Build your
             reputation through quality content and community engagement.
           </p>
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/new"
-              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+              className="px-8 py-3.5 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/30 hover:scale-105 active:scale-100"
             >
               Write a Post
             </Link>
-            <Link
-              href="/auth/signin"
-              className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-muted transition-colors"
-            >
-              Sign In
-            </Link>
+            {!session && (
+              <Link
+                href="/auth/signin"
+                className="px-8 py-3.5 bg-background/50 backdrop-blur-sm border border-border rounded-xl font-semibold hover:bg-muted/80 transition-all"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </section>

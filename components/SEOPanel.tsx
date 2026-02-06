@@ -89,7 +89,7 @@ export function SEOPanel({
                         value={localSlug}
                         onChange={(e) => handleSlugChange(e.target.value)}
                         placeholder="article-slug"
-                        className="flex-1 px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="flex-1 px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                 </div>
             </div>
@@ -108,7 +108,7 @@ export function SEOPanel({
                     onChange={(e) => handleMetaTitleChange(e.target.value)}
                     placeholder="SEO-optimized title (50-60 chars)"
                     maxLength={70}
-                    className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
                 />
             </div>
 
@@ -126,7 +126,7 @@ export function SEOPanel({
                     placeholder="SEO-optimized description (150-160 chars)"
                     maxLength={200}
                     rows={3}
-                    className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                 />
             </div>
 

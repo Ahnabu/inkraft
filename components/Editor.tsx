@@ -6,6 +6,8 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import Typography from "@tiptap/extension-typography";
+import { TextStyle } from "@tiptap/extension-text-style";
+import { FontFamily } from "@tiptap/extension-font-family";
 import { Table } from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
@@ -30,10 +32,14 @@ import {
     AlertCircle,
     Info,
     AlertTriangle,
+    Undo,
+    Redo,
+    GripHorizontal,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { countWords, calculateReadingTime } from "@/lib/readingTime";
 import { ImageUpload } from "@/components/ImageUpload";
+import { motion } from "framer-motion";
 
 interface EditorProps {
     content: string;
@@ -66,6 +72,8 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
                 placeholder,
             }),
             Typography,
+            TextStyle,
+            FontFamily,
             Table.configure({
                 resizable: true,
                 HTMLAttributes: {
@@ -92,7 +100,17 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
             attributes: {
                 class: "prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] px-4 py-6",
             },
+            // Preserve formatting when pasting from external sources like Google Docs
+            transformPastedHTML(html) {
+                // Keep all HTML formatting including inline styles for font sizes, colors, etc.
+                return html;
+            },
+            transformPastedText(text) {
+                // Keep text as-is for plain text paste
+                return text;
+            },
         },
+        immediatelyRender: false,
     });
 
     // Auto-save every 30 seconds
@@ -139,32 +157,65 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
 
     return (
         <div className="space-y-4">
-            {/* Toolbar */}
-            <div className="sticky top-20 z-20 p-3 rounded-lg glass-card border border-border/40 flex flex-wrap items-center gap-2">
+            {/* Toolbar - Draggable & Theme Aware */}
+            <motion.div
+                className="sticky top-20 z-20 p-2 rounded-xl glass-card border border-border/50 shadow-lg flex flex-wrap items-center gap-1 backdrop-blur-md bg-white/80 dark:bg-black/80"
+                drag
+                dragMomentum={false}
+                whileDrag={{ scale: 1.02, cursor: "grabbing" }}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+            >
+                {/* Drag Handle */}
+                <div className="mr-1 cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground transition-colors p-1">
+                    <GripHorizontal size={20} />
+                </div>
+
+                <div className="flex items-center gap-1">
+                    <button
+                        onClick={() => editor.chain().focus().undo().run()}
+                        disabled={!editor.can().undo()}
+                        className="p-2 rounded-lg hover:bg-muted transition-colors disabled:opacity-30"
+                        title="Undo (Cmd+Z)"
+                    >
+                        <Undo size={18} />
+                    </button>
+                    <button
+                        onClick={() => editor.chain().focus().redo().run()}
+                        disabled={!editor.can().redo()}
+                        className="p-2 rounded-lg hover:bg-muted transition-colors disabled:opacity-30"
+                        title="Redo (Cmd+Shift+Z)"
+                    >
+                        <Redo size={18} />
+                    </button>
+                </div>
+
+                <div className="w-px h-6 bg-border mx-1" />
+
                 <button
                     onClick={() => editor.chain().focus().toggleBold().run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("bold") ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("bold") ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Bold (Cmd+B)"
                 >
                     <Bold size={18} />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleItalic().run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("italic") ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("italic") ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Italic (Cmd+I)"
                 >
                     <Italic size={18} />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleStrike().run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("strike") ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("strike") ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Strikethrough"
                 >
                     <Strikethrough size={18} />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleCode().run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("code") ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("code") ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Inline Code"
                 >
                     <Code size={18} />
@@ -174,21 +225,21 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
 
                 <button
                     onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("heading", { level: 1 }) ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("heading", { level: 1 }) ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Heading 1"
                 >
                     <Heading1 size={18} />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("heading", { level: 2 }) ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("heading", { level: 2 }) ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Heading 2"
                 >
                     <Heading2 size={18} />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("heading", { level: 3 }) ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("heading", { level: 3 }) ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Heading 3"
                 >
                     <Heading3 size={18} />
@@ -198,21 +249,21 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
 
                 <button
                     onClick={() => editor.chain().focus().toggleBulletList().run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("bulletList") ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("bulletList") ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Bullet List"
                 >
                     <List size={18} />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("orderedList") ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("orderedList") ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Numbered List"
                 >
                     <ListOrdered size={18} />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("blockquote") ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("blockquote") ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Quote"
                 >
                     <Quote size={18} />
@@ -222,38 +273,38 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
 
                 <button
                     onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("codeBlock") ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("codeBlock") ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Code Block"
                 >
                     <Code2 size={18} />
                 </button>
                 <button
                     onClick={addTable}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("table") ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("table") ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Insert Table"
                 >
                     <TableIcon size={18} />
                 </button>
                 <button
                     onClick={addImage}
-                    className="p-2 rounded hover:bg-muted transition-colors"
+                    className="p-2 rounded-lg hover:bg-muted transition-colors"
                     title="Insert Image"
                 >
                     <ImageIcon size={18} />
                 </button>
                 <button
                     onClick={addLink}
-                    className={`p-2 rounded hover:bg-muted transition-colors ${editor.isActive("link") ? "bg-primary text-white" : ""}`}
+                    className={`p-2 rounded-lg hover:bg-muted transition-colors ${editor.isActive("link") ? "bg-primary text-white shadow-sm" : ""}`}
                     title="Add Link (Cmd+K)"
                 >
                     <LinkIcon size={18} />
                 </button>
 
-                <div className="ml-auto flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="ml-auto flex items-center gap-4 text-xs font-medium text-muted-foreground px-2">
                     <span>{wordCount} words</span>
                     <span>{readingTime} min read</span>
                 </div>
-            </div>
+            </motion.div>
 
             {/* Bubble Menu - appears when text is selected */}
             <BubbleMenu editor={editor} className="flex gap-1 p-2 rounded-lg glass-card border border-border/40 shadow-lg">
