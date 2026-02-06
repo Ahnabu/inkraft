@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/Button";
-import { ImageIcon, Upload, Loader2, X } from "lucide-react";
+import { ImageIcon, Upload, Loader2 } from "lucide-react";
 
 interface ImageUploadProps {
     onUpload: (url: string) => void;
@@ -48,8 +48,9 @@ export function ImageUpload({ onUpload, onCancel }: ImageUploadProps) {
             reader.onerror = () => {
                 throw new Error("Failed to read file");
             };
-        } catch (error: any) {
-            alert(`Upload error: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Upload failed";
+            alert(`Upload error: ${message}`);
             setUploading(false);
         }
     };

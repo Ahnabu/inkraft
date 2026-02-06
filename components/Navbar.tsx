@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { PenTool, Menu, X, Sun, Moon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { UserNav } from "@/components/UserNav";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTheme } from "next-themes";
 
 export function Navbar() {

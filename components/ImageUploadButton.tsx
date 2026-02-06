@@ -6,10 +6,9 @@ import { Button } from "@/components/ui/Button";
 
 interface ImageUploadButtonProps {
     onUploadComplete: (url: string) => void;
-    currentImage?: string;
 }
 
-export function ImageUploadButton({ onUploadComplete, currentImage }: ImageUploadButtonProps) {
+export function ImageUploadButton({ onUploadComplete }: ImageUploadButtonProps) {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState("");
 
@@ -47,8 +46,9 @@ export function ImageUploadButton({ onUploadComplete, currentImage }: ImageUploa
 
             const data = await response.json();
             onUploadComplete(data.url);
-        } catch (err: any) {
-            setError(err.message || "Upload failed");
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : "Upload failed";
+            setError(message);
         } finally {
             setUploading(false);
         }

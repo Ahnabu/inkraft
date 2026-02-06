@@ -26,42 +26,47 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 password: { label: "Password", type: "password" },
             },
             authorize: async (credentials) => {
-                if (!credentials?.email || !credentials?.password) {
+                try {
+                    if (!credentials?.email || !credentials?.password) {
+                        return null;
+                    }
+
+                    await dbConnect();
+
+                    const user = await User.findOne({ email: credentials.email }).select(
+                        "+password"
+                    );
+
+                    if (!user) {
+                        throw new Error("Invalid credentials");
+                    }
+
+                    // Check if user has password (might be OAuth-only user)
+                    if (!user.password) {
+                        throw new Error("Please sign in with Google");
+                    }
+
+                    // Verify password
+                    const isMatch = await bcrypt.compare(
+                        credentials.password as string,
+                        user.password
+                    );
+
+                    if (!isMatch) {
+                        throw new Error("Invalid credentials");
+                    }
+
+                    return {
+                        id: user._id.toString(),
+                        name: user.name,
+                        email: user.email,
+                        image: user.image,
+                        role: user.role,
+                    };
+                } catch (error) {
+                    console.error("Auth error:", error);
                     return null;
                 }
-
-                await dbConnect();
-
-                const user = await User.findOne({ email: credentials.email }).select(
-                    "+password"
-                );
-
-                if (!user) {
-                    throw new Error("Invalid credentials");
-                }
-
-                // Check if user has password (might be OAuth-only user)
-                if (!user.password) {
-                    throw new Error("Please sign in with Google");
-                }
-
-                // Verify password
-                const isMatch = await bcrypt.compare(
-                    credentials.password as string,
-                    user.password
-                );
-
-                if (!isMatch) {
-                    throw new Error("Invalid credentials");
-                }
-
-                return {
-                    id: user._id.toString(),
-                    name: user.name,
-                    email: user.email,
-                    image: user.image,
-                    role: user.role,
-                };
             },
         }),
     ],

@@ -3,9 +3,11 @@ import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 import { calculateEngagementScore } from "@/lib/engagement";
 
+export const dynamic = 'force-dynamic';
+
 // Cache for top posts (15 minutes)
 let topPostsCache: {
-    data: any[];
+    data: Array<Record<string, unknown>>;
     timestamp: number;
 } | null = null;
 
@@ -38,7 +40,7 @@ export async function GET(req: Request) {
         }
 
         // Build query
-        const query: any = { published: true };
+        const query: Record<string, unknown> = { published: true };
         if (category) {
             query.category = category;
         }
@@ -100,7 +102,7 @@ export async function GET(req: Request) {
                 totalPages: Math.ceil(sortedPosts.length / limit),
             },
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[GET_TOP_POSTS]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }

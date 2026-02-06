@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { MessageSquare, Reply, Edit2, Trash2, Loader2, ChevronDown } from "lucide-react";
+import { MessageSquare, Reply, Edit2, Trash2, Loader2 } from "lucide-react";
 import { CommentForm } from "./CommentForm";
 import { renderMarkdown } from "@/lib/markdown";
 import Image from "next/image";
@@ -40,11 +40,7 @@ export function CommentSection({
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     const [editingComment, setEditingComment] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchComments();
-    }, [postSlug, page]);
-
-    const fetchComments = async () => {
+    const fetchComments = useCallback(async () => {
         try {
             setLoading(true);
             const response = await fetch(
@@ -61,7 +57,11 @@ export function CommentSection({
         } finally {
             setLoading(false);
         }
-    };
+    }, [postSlug, page]);
+
+    useEffect(() => {
+        fetchComments();
+    }, [fetchComments]);
 
     const handleCommentSuccess = (newComment: Comment) => {
         if (newComment.depth === 0) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { ArrowUp, ArrowDown, Loader2 } from "lucide-react";
 
@@ -26,13 +26,7 @@ export function VoteButton({
     const [loading, setLoading] = useState(false);
 
     // Fetch user's vote on mount if logged in
-    useEffect(() => {
-        if (status === "authenticated") {
-            fetchUserVote();
-        }
-    }, [status, postSlug]);
-
-    const fetchUserVote = async () => {
+    const fetchUserVote = useCallback(async () => {
         try {
             const response = await fetch(`/api/posts/${postSlug}/vote`);
             if (response.ok) {
@@ -44,7 +38,13 @@ export function VoteButton({
         } catch (error) {
             console.error("Failed to fetch vote:", error);
         }
-    };
+    }, [postSlug]);
+
+    useEffect(() => {
+        if (status === "authenticated") {
+            fetchUserVote();
+        }
+    }, [status, fetchUserVote]);
 
     const handleVote = async (voteType: "upvote" | "downvote") => {
         if (!session) {

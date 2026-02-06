@@ -7,6 +7,8 @@ import User from "@/models/User";
 import UserActivity from "@/models/UserActivity";
 import { calculateVoteWeight, getAccountAgeDays, calculateEngagementScore } from "@/lib/engagement";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(
     req: Request,
     context: { params: Promise<{ slug: string }> }
@@ -133,9 +135,10 @@ export async function POST(
             engagementScore: Math.round(post.engagementScore),
             userVote: existingVote?.voteType === voteType ? null : voteType, // null if toggled off
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[VOTE_POST]", error);
-        return new NextResponse(error.message || "Internal Error", { status: 500 });
+        const message = error instanceof Error ? error.message : "Internal Error";
+        return new NextResponse(message, { status: 500 });
     }
 }
 
@@ -168,7 +171,7 @@ export async function GET(
             upvotes: Math.round(post.upvotes),
             downvotes: Math.round(post.downvotes),
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[GET_VOTE]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }

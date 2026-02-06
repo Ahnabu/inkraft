@@ -8,7 +8,7 @@ export async function fetchLatestPosts(limit = 20, page = 1, category?: string) 
     await dbConnect();
     const skip = (page - 1) * limit;
 
-    const query: any = { published: true };
+    const query: Record<string, unknown> = { published: true };
     if (category) query.category = category;
 
     const posts = await Post.find(query)
@@ -18,24 +18,28 @@ export async function fetchLatestPosts(limit = 20, page = 1, category?: string) 
         .populate("author", "name image")
         .lean();
 
-    return posts.map((post) => ({
-        ...post,
-        _id: post._id.toString(),
-        author: {
-            _id: post.author._id.toString(),
-            name: post.author.name,
-            image: post.author.image,
-        },
-        excerpt: post.excerpt || "",
-        publishedAt: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
-        createdAt: post.createdAt.toISOString(),
-        updatedAt: post.updatedAt.toISOString(),
-    }));
+    return posts.map((post) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const postObj = post as any;
+        return {
+            ...post,
+            _id: post._id.toString(),
+            author: {
+                _id: postObj.author._id.toString(),
+                name: postObj.author.name,
+                image: postObj.author.image,
+            },
+            excerpt: post.excerpt || "",
+            publishedAt: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
+            createdAt: post.createdAt.toISOString(),
+            updatedAt: post.updatedAt.toISOString(),
+        };
+    });
 }
 
 export async function fetchTopPosts(limit = 10, page = 1, category?: string) {
     await dbConnect();
-    const query: any = { published: true };
+    const query: Record<string, unknown> = { published: true };
     if (category) query.category = category;
 
     // For performance, we might want to query all and sort in memory if dataset is small,
@@ -57,17 +61,19 @@ export async function fetchTopPosts(limit = 10, page = 1, category?: string) {
             daysSincePublish
         );
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const postObj = post as any;
         return {
             ...post,
             _id: post._id.toString(),
             author: {
-                _id: post.author._id.toString(),
-                name: post.author.name,
-                image: post.author.image,
+                _id: postObj.author._id.toString(),
+                name: postObj.author.name,
+                image: postObj.author.image,
             },
             excerpt: post.excerpt || "",
             engagementScore: Math.round(engagementScore),
-            publishedAt: post.publishedAt?.toISOString(),
+            publishedAt: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
             createdAt: post.createdAt.toISOString(),
             updatedAt: post.updatedAt.toISOString(),
         };
@@ -119,13 +125,15 @@ export async function fetchTrendingPosts(limit = 10, page = 1) {
                 hoursSincePublish
             );
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const postObj = post as any;
             return {
                 ...post,
                 _id: post._id.toString(),
                 author: {
-                    _id: post.author._id.toString(),
-                    name: post.author.name,
-                    image: post.author.image,
+                    _id: postObj.author._id.toString(),
+                    name: postObj.author.name,
+                    image: postObj.author.image,
                 },
                 excerpt: post.excerpt || "",
                 trendScore: Math.round(trendScore * 100) / 100,

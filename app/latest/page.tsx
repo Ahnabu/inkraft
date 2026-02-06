@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { PostFeed } from "@/components/PostFeed";
-import { getBaseUrl } from "@/lib/utils";
 import { Clock } from "lucide-react";
 import { Metadata } from "next";
 

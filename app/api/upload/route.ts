@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import cloudinary from "@/lib/cloudinary";
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
     try {
@@ -72,11 +73,12 @@ export async function POST(req: Request) {
             width: uploadResponse.width,
             height: uploadResponse.height,
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[IMAGE_UPLOAD] Error:", error);
-        console.error("[IMAGE_UPLOAD] Error stack:", error.stack);
+        console.error("[IMAGE_UPLOAD] Error stack:", error instanceof Error ? error.stack : "N/A");
+        const message = error instanceof Error ? error.message : "Upload failed";
         return NextResponse.json(
-            { error: error.message || "Upload failed" },
+            { error: message },
             { status: 500 }
         );
     }

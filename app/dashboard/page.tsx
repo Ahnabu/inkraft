@@ -34,8 +34,8 @@ async function getDashboardData(userId: string) {
     // Calculate stats
     const publishedPosts = posts.filter((p) => p.published);
     const draftPosts = posts.filter((p) => !p.published);
-    const totalUpvotes = Math.round(posts.reduce((sum: number, p: any) => sum + (p.upvotes || 0), 0));
-    const totalComments = posts.reduce((sum: number, p: any) => sum + (p.commentCount || 0), 0);
+    const totalUpvotes = Math.round(posts.reduce((sum: number, p: { upvotes?: number }) => sum + (p.upvotes || 0), 0));
+    const totalComments = posts.reduce((sum: number, p: { commentCount?: number }) => sum + (p.commentCount || 0), 0);
 
     return {
         user: JSON.parse(JSON.stringify(user)),
@@ -58,7 +58,7 @@ export default async function DashboardPage() {
         redirect("/auth/signin");
     }
 
-    const { user, posts, userActivity, stats } = await getDashboardData(
+    const { user, posts, stats } = await getDashboardData(
         session.user.id
     );
 
@@ -159,7 +159,7 @@ export default async function DashboardPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {posts.map((post: any) => (
+                                    {posts.map((post: { _id: string; slug: string; title: string; published: boolean; upvotes: number; commentCount: number; views: number; publishedAt?: string; createdAt: string }) => (
                                         <tr key={post._id} className="border-b border-border last:border-0">
                                             <td className="p-4">
                                                 <Link
@@ -222,7 +222,7 @@ export default async function DashboardPage() {
                         <div className="p-12 text-center">
                             <FileText size={48} className="mx-auto text-muted-foreground mb-3" />
                             <p className="text-muted-foreground mb-4">
-                                You haven't created any posts yet
+                                You haven&apos;t created any posts yet
                             </p>
                             <Link
                                 href="/new"

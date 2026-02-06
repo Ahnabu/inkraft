@@ -9,7 +9,6 @@ interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
 export function GlassCard({
     children,
     className,
-    variant = "default",
     ...props
 }: GlassCardProps) {
     return (

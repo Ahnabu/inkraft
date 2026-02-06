@@ -4,6 +4,8 @@ import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 import User from "@/models/User";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(
     req: Request,
     context: { params: Promise<{ slug: string }> }
@@ -28,12 +30,12 @@ export async function POST(
             return new NextResponse("User not found", { status: 404 });
         }
 
-        const isSaved = user.savedPosts?.some((id: any) => id.toString() === post._id.toString());
+        const isSaved = user.savedPosts?.some((id: unknown) => (id as { toString(): string }).toString() === post._id.toString());
 
         if (isSaved) {
             // Unsave
             user.savedPosts = user.savedPosts.filter(
-                (id: any) => id.toString() !== post._id.toString()
+                (id: unknown) => (id as { toString(): string }).toString() !== post._id.toString()
             );
             post.saves = Math.max(0, post.saves - 1);
         } else {

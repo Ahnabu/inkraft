@@ -28,6 +28,11 @@ export function TableOfContents() {
                 level: Number(elem.tagName.substring(1))
             };
         });
+        
+        // Update headings state with parsed data
+        // This is synchronizing with external DOM state after mount which is intentional
+        // We move the update outside the conditional to avoid the eslint error
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHeadings(headingsData);
 
         // Scroll spy

@@ -59,7 +59,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                 setMetaDescription(post.seo?.description || "");
 
                 setLoading(false);
-            } catch (error) {
+            } catch (_error) {
                 alert("Failed to load post");
                 router.push("/dashboard");
             }
@@ -131,8 +131,9 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
             localStorage.removeItem(`inkraft-edit-${originalSlug}`);
             const post = await response.json();
             router.push(`/blog/${post.slug}`);
-        } catch (error: any) {
-            alert(`Error: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Failed to save post";
+            alert(`Error: ${message}`);
         } finally {
             setSaving(false);
         }
@@ -261,7 +262,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                             </label>
                             <select
                                 value={difficultyLevel}
-                                onChange={(e) => setDifficultyLevel(e.target.value as any)}
+                                onChange={(e) => setDifficultyLevel(e.target.value as "Beginner" | "Intermediate" | "Advanced" | "")}
                                 className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                             >
                                 <option value="">Not specified</option>

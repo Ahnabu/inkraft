@@ -19,7 +19,7 @@ interface Post {
     readingTime: number;
     upvotes?: number;
     commentCount?: number;
-    publishedAt: string;
+    publishedAt?: string;
 }
 
 interface PostFeedProps {

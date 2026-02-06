@@ -3,14 +3,12 @@
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import {
-    User,
     Settings,
     LogOut,
     LayoutDashboard,
     Shield
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { cn } from "@/lib/utils";
 
 export function UserNav() {
     const { data: session } = useSession();
@@ -100,7 +98,7 @@ export function UserNav() {
                         </Link>
 
                         {/* Admin Link - Only visible if has role check logic, simpler for now to just show */}
-                        {/* @ts-ignore - Check for admin role if property exists */}
+                        {/* @ts-expect-error - Check for admin role if property exists */}
                         {user.role === 'admin' && (
                             <Link
                                 href="/admin"

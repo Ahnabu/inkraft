@@ -37,7 +37,6 @@ async function getUserProfile(userId: string, tab: string = "published") {
             })
             .lean();
 
-        // @ts-ignore
         posts = userWithSaved?.savedPosts || [];
     } else {
         // Default: Published posts
@@ -49,7 +48,7 @@ async function getUserProfile(userId: string, tab: string = "published") {
 
     // Calculate total upvotes (always from authored posts)
     const authoredPosts = await Post.find({ author: userId }).select("upvotes");
-    const totalUpvotes = authoredPosts.reduce((sum: number, post: any) => sum + (post.upvotes || 0), 0);
+    const totalUpvotes = authoredPosts.reduce((sum: number, post: { upvotes?: number }) => sum + (post.upvotes || 0), 0);
     const totalPostsCount = await Post.countDocuments({ author: userId, published: true });
 
     return {
@@ -240,7 +239,7 @@ export default async function UserProfilePage({
                             <>
                                 <Bookmark size={48} className="mx-auto text-muted-foreground mb-3" />
                                 <p className="text-muted-foreground text-lg mb-4">
-                                    You haven't saved any posts yet
+                                    You haven&apos;t saved any posts yet
                                 </p>
                                 <Link
                                     href="/explore"

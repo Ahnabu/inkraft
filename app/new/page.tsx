@@ -92,8 +92,9 @@ export default function NewPostPage() {
 
             const post = await response.json();
             router.push(`/blog/${post.slug}`);
-        } catch (error: any) {
-            alert(`Error: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Failed to create post";
+            alert(`Error: ${message}`);
         } finally {
             setLoading(false);
         }
@@ -204,7 +205,7 @@ export default function NewPostPage() {
                             </label>
                             <select
                                 value={difficultyLevel}
-                                onChange={(e) => setDifficultyLevel(e.target.value as any)}
+                                onChange={(e) => setDifficultyLevel(e.target.value as "Beginner" | "Intermediate" | "Advanced" | "")}
                                 className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             >
                                 <option value="">Not specified</option>

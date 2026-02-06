@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
+export const dynamic = 'force-dynamic';
+
 // GET: Fetch user profile
 export async function GET(
     req: Request,
@@ -24,7 +26,7 @@ export async function GET(
             createdAt: user.createdAt.toISOString(),
             updatedAt: user.updatedAt ? user.updatedAt.toISOString() : user.createdAt.toISOString(),
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[GET_USER]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }
@@ -79,8 +81,9 @@ export async function PATCH(
                 socialLinks: user.socialLinks,
             },
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[PATCH_USER]", error);
-        return new NextResponse(error.message || "Internal Error", { status: 500 });
+        const message = error instanceof Error ? error.message : "Internal Error";
+        return new NextResponse(message, { status: 500 });
     }
 }

@@ -108,7 +108,7 @@ export default function TermsPage() {
                     <GlassCard className="p-8">
                         <h2 className="text-2xl font-bold mb-4">Disclaimer</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            Inkraft is provided "as is" without warranties of any kind, either express or implied. We do not
+                        Inkraft is provided &quot;as is&quot; without warranties of any kind, either express or implied. We do not
                             guarantee that the platform will be uninterrupted, secure, or error-free. Your use of the platform
                             is at your own risk.
                         </p>

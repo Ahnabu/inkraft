@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(
     req: Request,
     context: { params: Promise<{ slug: string }> }
@@ -23,7 +25,7 @@ export async function POST(
         }
 
         return NextResponse.json({ views: post.views });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[VIEW_POST]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }

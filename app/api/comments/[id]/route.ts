@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import Comment from "@/models/Comment";
 
+export const dynamic = 'force-dynamic';
+
 // PATCH: Edit comment
 export async function PATCH(
     req: Request,
@@ -71,9 +73,10 @@ export async function PATCH(
             createdAt: updatedComment!.createdAt.toISOString(),
             updatedAt: updatedComment!.updatedAt.toISOString(),
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[PATCH_COMMENT]", error);
-        return new NextResponse(error.message || "Internal Error", { status: 500 });
+        const message = error instanceof Error ? error.message : "Internal Error";
+        return new NextResponse(message, { status: 500 });
     }
 }
 
@@ -108,7 +111,7 @@ export async function DELETE(
         await comment.save();
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[DELETE_COMMENT]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }

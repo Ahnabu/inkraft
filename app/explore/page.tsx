@@ -1,11 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { Search, Filter, TrendingUp, Clock, Star, ArrowUp, ArrowDown, User } from "lucide-react";
 import { cn, getBaseUrl } from "@/lib/utils";
+
+interface PostType {
+    _id: string;
+    slug: string;
+    title: string;
+    excerpt?: string;
+    content?: string;
+    coverImage?: string;
+    author?: {
+        name?: string;
+        image?: string;
+    };
+    category?: string;
+    readingTime?: number;
+    createdAt?: string;
+    publishedAt?: string;
+    upvotes?: number;
+    downvotes?: number;
+}
 
 const categories = [
     { name: "All", slug: "all" },
@@ -29,14 +48,10 @@ export default function ExplorePage() {
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [selectedSort, setSelectedSort] = useState("latest");
     const [searchQuery, setSearchQuery] = useState("");
-    const [posts, setPosts] = useState<any[]>([]);
+    const [posts, setPosts] = useState<PostType[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchPosts();
-    }, [selectedCategory, selectedSort]);
-
-    const fetchPosts = async () => {
+    const fetchPosts = useCallback(async () => {
         setLoading(true);
         try {
             let url = `/api/posts/${selectedSort}`;
@@ -67,7 +82,11 @@ export default function ExplorePage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [selectedCategory, selectedSort]);
+
+    useEffect(() => {
+        fetchPosts();
+    }, [fetchPosts]);
 
     const handleSearch = () => {
         // Search is handled by filteredPosts
@@ -97,10 +116,15 @@ export default function ExplorePage() {
         if (searchQuery === "") return true;
 
         const query = searchQuery.toLowerCase();
-        const matchesTitle = post.title?.toLowerCase().includes(query);
-        const matchesExcerpt = post.excerpt?.toLowerCase().includes(query);
-        const matchesContent = post.content?.toLowerCase().includes(query);
-        const matchesAuthor = post.author?.name?.toLowerCase().includes(query);
+        const title = typeof post.title === 'string' ? post.title : '';
+        const excerpt = typeof post.excerpt === 'string' ? post.excerpt : '';
+        const content = typeof post.content === 'string' ? post.content : '';
+        const authorName = typeof post.author === 'object' && post.author !== null && 'name' in post.author && typeof post.author.name === 'string' ? post.author.name : '';
+        
+        const matchesTitle = title.toLowerCase().includes(query);
+        const matchesExcerpt = excerpt.toLowerCase().includes(query);
+        const matchesContent = content.toLowerCase().includes(query);
+        const matchesAuthor = authorName.toLowerCase().includes(query);
 
         return matchesTitle || matchesExcerpt || matchesContent || matchesAuthor;
     });
@@ -213,8 +237,10 @@ export default function ExplorePage() {
                         </GlassCard>
                     ) : (
                         <div className="grid gap-6">
-                            {filteredPosts.map((post) => (
-                                <GlassCard key={post._id} className="p-6 hover:shadow-lg transition-all group">
+                            {filteredPosts.map((post) => {
+                                const postId = typeof post._id === 'string' ? post._id : String(post._id || Math.random());
+                                return (
+                                <GlassCard key={postId} className="p-6 hover:shadow-lg transition-all group">
                                     <div className="flex gap-6">
                                         {/* Main Content */}
                                         <div className="flex-1">
@@ -252,7 +278,7 @@ export default function ExplorePage() {
                                                     <span className="font-medium">{post.author?.name || "Anonymous"}</span>
                                                 </div>
                                                 <span>•</span>
-                                                <span>{new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span>
+                                                <span>{new Date(post.publishedAt || post.createdAt || Date.now()).toLocaleDateString()}</span>
                                             </div>
                                         </div>
 
@@ -276,7 +302,7 @@ export default function ExplorePage() {
                                         </div>
                                     </div>
                                 </GlassCard>
-                            ))}
+                            )})}
                         </div>
                     )}
                 </div>

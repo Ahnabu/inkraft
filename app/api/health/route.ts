@@ -44,12 +44,14 @@ export async function GET() {
             },
             timestamp: new Date().toISOString(),
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Health check failed";
+        const stack = error instanceof Error ? error.stack : undefined;
         return NextResponse.json(
             {
                 status: "error",
-                message: error.message,
-                stack: error.stack,
+                message,
+                stack,
             },
             { status: 500 }
         );

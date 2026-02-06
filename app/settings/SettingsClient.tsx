@@ -82,8 +82,9 @@ export default function SettingsClient() {
             setTimeout(() => {
                 router.push("/dashboard");
             }, 1500);
-        } catch (err: any) {
-            setError(err.message || "Failed to update profile");
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : "Failed to update profile";
+            setError(message);
         } finally {
             setLoading(false);
         }

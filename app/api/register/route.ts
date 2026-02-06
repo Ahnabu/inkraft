@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
     try {
         const { name, email, password } = await req.json();
@@ -39,10 +41,11 @@ export async function POST(req: Request) {
             { message: "User created successfully", user: { id: user._id, name: user.name, email: user.email } },
             { status: 201 }
         );
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Registration error:", error);
+        const message = error instanceof Error ? error.message : "Internal server error";
         return NextResponse.json(
-            { message: error.message || "Internal server error" },
+            { message },
             { status: 500 }
         );
     }

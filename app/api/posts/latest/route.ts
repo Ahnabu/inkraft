@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 
+export const dynamic = 'force-dynamic';
+
 // Cache for latest posts (5 minutes - shorter for freshness)
 let latestPostsCache: {
-    data: any[];
+    data: Array<Record<string, unknown>>;
     timestamp: number;
     category?: string;
 } | null = null;
@@ -41,7 +43,7 @@ export async function GET(req: Request) {
         }
 
         // Build query
-        const query: any = { published: true };
+        const query: Record<string, unknown> = { published: true };
         if (category) {
             query.category = category;
         }
@@ -83,7 +85,7 @@ export async function GET(req: Request) {
                 totalPages: Math.ceil(formattedPosts.length / limit),
             },
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[GET_LATEST_POSTS]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }

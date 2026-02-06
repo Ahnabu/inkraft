@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 
+export const dynamic = 'force-dynamic';
+
 // GET single post
 export async function GET(
     req: Request,
@@ -21,7 +23,7 @@ export async function GET(
         }
 
         return NextResponse.json(JSON.parse(JSON.stringify(post)));
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[POST_GET]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }
@@ -96,8 +98,9 @@ export async function PATCH(
             .lean();
 
         return NextResponse.json(JSON.parse(JSON.stringify(updatedPost)));
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[POST_PATCH]", error);
-        return new NextResponse(error.message || "Internal Error", { status: 500 });
+        const message = error instanceof Error ? error.message : "Internal Error";
+        return new NextResponse(message, { status: 500 });
     }
 }

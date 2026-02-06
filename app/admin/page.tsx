@@ -9,7 +9,7 @@ import Comment from "@/models/Comment";
 export default async function AdminDashboardPage() {
     const session = await auth();
 
-    // @ts-ignore
+    // @ts-expect-error - role property not in default session type
     if (!session?.user || session.user.role !== "admin") {
         redirect("/");
     }

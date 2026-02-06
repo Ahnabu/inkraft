@@ -40,8 +40,8 @@ export default function ContactPage() {
                 <div className="text-center mb-12">
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">Get in Touch</h1>
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        Have questions, feedback, or suggestions? We'd love to hear from you.
-                        Fill out the form below and we'll get back to you as soon as possible.
+                        Have questions, feedback, or suggestions? We&apos;d love to hear from you.
+                        Fill out the form below and we&apos;ll get back to you as soon as possible.
                     </p>
                 </div>
 
@@ -96,7 +96,7 @@ export default function ContactPage() {
                                         onChange={handleChange}
                                         required
                                         className="w-full px-4 py-2.5 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
-                                        placeholder="What's this about?"
+                                        placeholder="What&apos;s this about?"
                                     />
                                 </div>
 
@@ -118,7 +118,7 @@ export default function ContactPage() {
 
                                 {status === "success" && (
                                     <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg text-green-600">
-                                        ✓ Message sent successfully! We'll get back to you soon.
+                                        ✓ Message sent successfully! We&apos;ll get back to you soon.
                                     </div>
                                 )}
 

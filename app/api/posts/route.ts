@@ -3,6 +3,8 @@ import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
     try {
         const session = await auth();
@@ -54,7 +56,7 @@ export async function POST(req: Request) {
             difficultyLevel,
             readingTime: readingTime || 5,
             published,
-            author: authorId as any,
+            author: authorId as string,
             publishedAt: published ? new Date() : undefined,
             lastUpdatedAt: new Date(),
             seo: seo || {},

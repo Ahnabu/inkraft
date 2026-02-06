@@ -5,7 +5,6 @@ import Post from "@/models/Post";
 import { getCategoryBySlug, DEFAULT_CATEGORIES } from "@/lib/categories";
 import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 interface PageProps {
     params: { slug: string };
@@ -112,7 +111,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
                 {recentPosts.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {recentPosts.map((post: any) => (
+                        {recentPosts.map((post: { _id: string; slug: string; title: string; excerpt: string; coverImage?: string; author: { name: string; image?: string }; readingTime: number; publishedAt: string; category: string; createdAt?: string }) => (
                             <Link key={post._id} href={`/blog/${post.slug}`} className="group">
                                 <GlassCard className="h-full flex flex-col justify-between hover:border-primary/50 transition-colors">
                                     <div className="space-y-3">
@@ -131,7 +130,7 @@ export default async function CategoryPage({ params }: PageProps) {
                                         )}
                                     </div>
                                     <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-                                        <span>{new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span>
+                                        <span>{new Date(post.publishedAt || post.createdAt || Date.now()).toLocaleDateString()}</span>
                                         <span>{post.readingTime || 5} min read</span>
                                     </div>
                                 </GlassCard>

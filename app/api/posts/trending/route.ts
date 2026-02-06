@@ -5,9 +5,11 @@ import Vote from "@/models/Vote";
 import Comment from "@/models/Comment";
 import { calculateTrendingScore } from "@/lib/engagement";
 
+export const dynamic = 'force-dynamic';
+
 // Cache for trending posts (30 minutes)
 let trendingPostsCache: {
-    data: any[];
+    data: Array<Record<string, unknown>>;
     timestamp: number;
 } | null = null;
 
@@ -125,7 +127,7 @@ export async function GET(req: Request) {
                 totalPages: Math.ceil(trendingPosts.length / limit),
             },
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[GET_TRENDING_POSTS]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }

@@ -9,14 +9,14 @@ export default {
         async session({ session, token }) {
             if (token && session.user) {
                 session.user.id = token.sub as string;
-                // @ts-ignore
+                // @ts-expect-error - role property extended in custom type
                 session.user.role = token.role as string;
             }
             return session;
         },
         async jwt({ token, user }) {
             if (user) {
-                // @ts-ignore
+                // @ts-expect-error - role property extended in custom type
                 token.role = user.role;
             }
             return token;

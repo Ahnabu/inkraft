@@ -3,7 +3,6 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { PostFeed } from "@/components/PostFeed";
 import { TrendingUp, Clock, Award, ArrowRight } from "lucide-react";
 import { auth } from "@/auth";
-import { getBaseUrl } from "@/lib/utils";
 
 import { fetchLatestPosts, fetchTopPosts, fetchTrendingPosts } from "@/lib/data/posts";
 

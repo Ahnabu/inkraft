@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { MessageSquare, Send, Loader2, User, Reply, AlertCircle, Trash2, MoreVertical } from "lucide-react";
 import { GlassCard } from "./ui/GlassCard";
@@ -44,11 +44,7 @@ export function Comments({ postSlug }: CommentsProps) {
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editContent, setEditContent] = useState("");
 
-    useEffect(() => {
-        fetchComments();
-    }, [postSlug]);
-
-    const fetchComments = async () => {
+    const fetchComments = useCallback(async () => {
         try {
             const response = await fetch(`/api/posts/${postSlug}/comments`);
             if (response.ok) {
@@ -62,7 +58,11 @@ export function Comments({ postSlug }: CommentsProps) {
         } finally {
             setFetchingComments(false);
         }
-    };
+    }, [postSlug]);
+
+    useEffect(() => {
+        fetchComments();
+    }, [fetchComments]);
 
     const handleSubmit = async (e: React.FormEvent, parentCommentId?: string) => {
         e.preventDefault();
@@ -101,10 +101,11 @@ export function Comments({ postSlug }: CommentsProps) {
                 toast.error(errorText || "Failed to post comment");
                 setError(errorText || "Failed to post comment");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error posting comment:", error);
-            toast.error(error.message || "Error posting comment");
-            setError(error.message || "Error posting comment");
+            const message = error instanceof Error ? error.message : "Error posting comment";
+            toast.error(message);
+            setError(message);
         } finally {
             setLoading(false);
         }
@@ -131,7 +132,7 @@ export function Comments({ postSlug }: CommentsProps) {
             } else {
                 toast.error("Failed to update comment");
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("Error updating comment");
         }
     };
@@ -150,7 +151,7 @@ export function Comments({ postSlug }: CommentsProps) {
             } else {
                 toast.error("Failed to delete comment");
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("Error deleting comment");
         }
     };

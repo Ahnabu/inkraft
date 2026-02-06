@@ -1,14 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Send, X, Eye, EyeOff, Loader2 } from "lucide-react";
 import { renderMarkdown, validateMarkdownContent } from "@/lib/markdown";
 
+interface Comment {
+    _id: string;
+    content: string;
+    author: {
+        _id: string;
+        name: string;
+        image?: string;
+    };
+    parentComment?: string;
+    createdAt: string;
+    updatedAt: string;
+    edited: boolean;
+    depth: number;
+    replies?: Comment[];
+}
+
 interface CommentFormProps {
     postSlug: string;
     parentCommentId?: string;
-    onSuccess?: (comment: any) => void;
+    onSuccess?: (comment: Comment) => void;
     onCancel?: () => void;
     initialContent?: string; // For editing
     isEditing?: boolean;
@@ -91,9 +107,10 @@ export function CommentForm({
                 setContent("");
                 setShowPreview(false);
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Comment submit error:", err);
-            setError(err.message || "Failed to submit comment");
+            const message = err instanceof Error ? err.message : "Failed to submit comment";
+            setError(message);
         } finally {
             setLoading(false);
         }

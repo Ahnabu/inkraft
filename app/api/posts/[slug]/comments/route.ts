@@ -6,6 +6,8 @@ import Post from "@/models/Post";
 import User from "@/models/User";
 import { checkRateLimit, recordComment } from "@/lib/rateLimit";
 
+export const dynamic = 'force-dynamic';
+
 // GET: Fetch comments for a post
 export async function GET(
     req: Request,
@@ -95,7 +97,7 @@ export async function GET(
                 totalPages: Math.ceil(totalComments / limit),
             },
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[GET_COMMENTS]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }
@@ -214,16 +216,17 @@ export async function POST(
             updatedAt: populatedComment!.updatedAt.toISOString(),
             rateLimitRemaining: rateLimitCheck.remaining - 1,
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[POST_COMMENT]", error);
-        return new NextResponse(error.message || "Internal Error", { status: 500 });
+        const message = error instanceof Error ? error.message : "Internal Error";
+        return new NextResponse(message, { status: 500 });
     }
 }
 
 // DELETE: Delete a comment
 export async function DELETE(
     req: Request,
-    context: { params: Promise<{ slug: string }> }
+    _context: { params: Promise<{ slug: string }> }
 ) {
     try {
         const session = await auth();
@@ -268,16 +271,17 @@ export async function DELETE(
         }
 
         return new NextResponse("Comment deleted", { status: 200 });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[DELETE_COMMENT]", error);
-        return new NextResponse(error.message || "Internal Error", { status: 500 });
+        const message = error instanceof Error ? error.message : "Internal Error";
+        return new NextResponse(message, { status: 500 });
     }
 }
 
 // PUT: Update a comment
 export async function PUT(
     req: Request,
-    context: { params: Promise<{ slug: string }> }
+    _context: { params: Promise<{ slug: string }> }
 ) {
     try {
         const session = await auth();
@@ -326,8 +330,9 @@ export async function PUT(
             createdAt: populatedComment!.createdAt.toISOString(),
             updatedAt: populatedComment!.updatedAt.toISOString(),
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[UPDATE_COMMENT]", error);
-        return new NextResponse(error.message || "Internal Error", { status: 500 });
+        const message = error instanceof Error ? error.message : "Internal Error";
+        return new NextResponse(message, { status: 500 });
     }
 }

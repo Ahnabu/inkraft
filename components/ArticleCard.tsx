@@ -21,7 +21,7 @@ interface ArticleCardProps {
         readingTime: number;
         upvotes?: number;
         commentCount?: number;
-        publishedAt: string;
+        publishedAt?: string;
     };
     variant?: "featured" | "standard" | "compact";
 }

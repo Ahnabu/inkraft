@@ -7,7 +7,6 @@ import Link from "next/link";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareButtons } from "@/components/ShareButtons";
 import { VoteButton } from "@/components/VoteButton";
-import { ViewTracker } from "@/components/ViewTracker";
 import { Comments } from "@/components/Comments";
 import { Clock, Calendar, User, Tag, TrendingUp } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -90,7 +89,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         const user = await UserModel.findById(session.user.id).select("savedPosts");
         if (user && user.savedPosts) {
             // Check if post ID is in savedPosts array
-            isSaved = user.savedPosts.some((id: any) => id.toString() === post._id);
+            isSaved = user.savedPosts.some((id: unknown) => (id as { toString(): string }).toString() === post._id);
         }
     }
 
@@ -297,7 +296,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                                     <div className="mt-12">
                                         <h2 className="text-2xl font-bold mb-6">Related Articles</h2>
                                         <div className="grid md:grid-cols-3 gap-4">
-                                            {relatedPosts.map((related: any) => (
+                                            {relatedPosts.map((related: { _id: string; slug: string; title: string; excerpt: string; readingTime: number }) => (
                                                 <Link key={related._id} href={`/blog/${related.slug}`}>
                                                     <GlassCard className="p-4 hover:shadow-lg transition-all h-full">
                                                         <h3 className="font-semibold mb-2 line-clamp-2">
