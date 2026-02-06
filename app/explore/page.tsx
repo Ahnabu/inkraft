@@ -5,7 +5,7 @@ import Link from "next/link";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { Search, Filter, TrendingUp, Clock, Star, ArrowUp, ArrowDown, User } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getBaseUrl } from "@/lib/utils";
 
 const categories = [
     { name: "All", slug: "all" },
@@ -76,8 +76,9 @@ export default function ExplorePage() {
 
     const handleVote = async (postSlug: string, direction: "up" | "down") => {
         try {
+            const baseUrl = getBaseUrl();
             const voteType = direction === "up" ? "upvote" : "downvote";
-            const response = await fetch(`/api/posts/${postSlug}/vote`, {
+            const response = await fetch(`${baseUrl}/api/posts/${postSlug}/vote`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ voteType }),

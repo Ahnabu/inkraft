@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
 
     if (isProtected && !session) {
         // Redirect to sign-in with callback URL
-        const signInUrl = new URL("/api/auth/signin", request.url);
+        const signInUrl = new URL("/api/auth/signin", request.nextUrl.origin);
         signInUrl.searchParams.set("callbackUrl", pathname);
         return NextResponse.redirect(signInUrl);
     }
