@@ -34,7 +34,7 @@ async function getDashboardData(userId: string) {
     // Calculate stats
     const publishedPosts = posts.filter((p) => p.published);
     const draftPosts = posts.filter((p) => !p.published);
-    const totalUpvotes = posts.reduce((sum: number, p: any) => sum + (p.upvotes || 0), 0);
+    const totalUpvotes = Math.round(posts.reduce((sum: number, p: any) => sum + (p.upvotes || 0), 0));
     const totalComments = posts.reduce((sum: number, p: any) => sum + (p.commentCount || 0), 0);
 
     return {
@@ -184,7 +184,7 @@ export default async function DashboardPage() {
                                                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                                                     <div className="flex items-center gap-1">
                                                         <ArrowUp size={14} />
-                                                        <span>{post.upvotes || 0}</span>
+                                                        <span>{Math.round(post.upvotes || 0)}</span>
                                                     </div>
                                                     <div className="flex items-center gap-1">
                                                         <MessageSquare size={14} />
