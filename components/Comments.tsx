@@ -191,9 +191,40 @@ export function Comments({ postSlug }: CommentsProps) {
                             </span>
                         </div>
                         <div className="flex justify-between items-start gap-4">
-                            <p className="text-foreground whitespace-pre-wrap mb-2 flex-1">{comment.content}</p>
+                            {editingCommentId === comment._id ? (
+                                <div className="flex-1 space-y-2">
+                                    <textarea
+                                        value={editContent}
+                                        onChange={(e) => setEditContent(e.target.value)}
+                                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground dark:text-gray-100 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none text-sm"
+                                        rows={2}
+                                        maxLength={1500}
+                                    />
+                                    <div className="flex gap-2">
+                                        <Button
+                                            onClick={() => handleUpdate(comment._id)}
+                                            size="sm"
+                                            disabled={!editContent.trim()}
+                                        >
+                                            Save
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setEditingCommentId(null);
+                                                setEditContent("");
+                                            }}
+                                            variant="outline"
+                                            size="sm"
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="text-foreground dark:text-gray-100 whitespace-pre-wrap mb-2 flex-1">{comment.content}</p>
+                            )}
 
-                            {session?.user?.id === comment.author._id && (
+                            {session?.user?.id === comment.author._id && !editingCommentId && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <button className="text-muted-foreground hover:text-foreground p-1">
@@ -201,6 +232,14 @@ export function Comments({ postSlug }: CommentsProps) {
                                         </button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
+                                        <DropdownMenuItem
+                                            onClick={() => {
+                                                setEditingCommentId(comment._id);
+                                                setEditContent(comment.content);
+                                            }}
+                                        >
+                                            Edit
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem
                                             onClick={() => handleDelete(comment._id)}
                                             className="text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:bg-red-950/20"
