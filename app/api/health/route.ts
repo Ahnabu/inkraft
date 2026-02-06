@@ -20,7 +20,7 @@ export async function GET() {
 
         return NextResponse.json({
             status: "ok",
-            database: states[state] || "unknown",
+            database: states[state as keyof typeof states] || "unknown",
             latency: `${duration}ms`,
             env: {
                 // Do not expose values, just existence
