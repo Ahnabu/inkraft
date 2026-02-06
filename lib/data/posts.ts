@@ -27,7 +27,7 @@ export async function fetchLatestPosts(limit = 20, page = 1, category?: string) 
             image: post.author.image,
         },
         excerpt: post.excerpt || "",
-        publishedAt: post.publishedAt?.toISOString(),
+        publishedAt: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
         createdAt: post.createdAt.toISOString(),
         updatedAt: post.updatedAt.toISOString(),
     }));
