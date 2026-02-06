@@ -13,45 +13,75 @@ import {
     FileText,
     ArrowUp,
     Calendar,
-    Settings
+    Settings,
+    Bookmark
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-async function getUserProfile(userId: string) {
+async function getUserProfile(userId: string, tab: string = "published") {
     await dbConnect();
 
     const user = await User.findById(userId).lean();
     if (!user) return null;
 
-    const posts = await Post.find({ author: userId, published: true })
-        .sort({ publishedAt: -1 })
-        .populate("author", "name image")
-        .lean();
+    let posts = [];
 
-    // Calculate total upvotes across all posts
-    const totalUpvotes = posts.reduce((sum, post) => sum + (post.upvotes || 0), 0);
+    if (tab === "saved") {
+        // Fetch saved posts if requested (and validated in component)
+        // We need to re-fetch user with population to get savedPosts
+        const userWithSaved = await User.findById(userId)
+            .populate({
+                path: "savedPosts",
+                match: { published: true }, // Only show published saved posts
+                populate: { path: "author", select: "name image" }
+            })
+            .lean();
+
+        // @ts-ignore
+        posts = userWithSaved?.savedPosts || [];
+    } else {
+        // Default: Published posts
+        posts = await Post.find({ author: userId, published: true })
+            .sort({ publishedAt: -1 })
+            .populate("author", "name image")
+            .lean();
+    }
+
+    // Calculate total upvotes (always from authored posts)
+    const authoredPosts = await Post.find({ author: userId }).select("upvotes");
+    const totalUpvotes = authoredPosts.reduce((sum: number, post: any) => sum + (post.upvotes || 0), 0);
+    const totalPostsCount = await Post.countDocuments({ author: userId, published: true });
 
     return {
         user: JSON.parse(JSON.stringify(user)),
         posts: JSON.parse(JSON.stringify(posts)),
         totalUpvotes,
+        totalPostsCount
     };
 }
 
 export default async function UserProfilePage({
     params,
+    searchParams,
 }: {
     params: Promise<{ id: string }>;
+    searchParams: Promise<{ tab?: string }>;
 }) {
     const { id } = await params;
+    const { tab } = await searchParams;
     const session = await auth();
-    const profileData = await getUserProfile(id);
+    const isOwnProfile = session?.user?.id === id;
+
+    // Only allow "saved" tab if it is own profile, otherwise default to "published"
+    const currentTab = (tab === "saved" && isOwnProfile) ? "saved" : "published";
+
+    const profileData = await getUserProfile(id, currentTab);
 
     if (!profileData) {
         notFound();
     }
 
-    const { user, posts, totalUpvotes } = profileData;
-    const isOwnProfile = session?.user?.id === id;
+    const { user, posts, totalUpvotes, totalPostsCount } = profileData;
 
     return (
         <div className="min-h-screen">
@@ -137,9 +167,9 @@ export default async function UserProfilePage({
                             <div className="flex items-center gap-6 text-sm">
                                 <div className="flex items-center gap-2">
                                     <FileText size={16} className="text-muted-foreground" />
-                                    <span className="font-semibold">{posts.length}</span>
+                                    <span className="font-semibold">{totalPostsCount}</span>
                                     <span className="text-muted-foreground">
-                                        {posts.length === 1 ? "Post" : "Posts"}
+                                        {totalPostsCount === 1 ? "Post" : "Posts"}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -165,27 +195,77 @@ export default async function UserProfilePage({
 
             {/* Posts Section */}
             <div className="container mx-auto px-4 py-12">
-                <div className="mb-6">
-                    <h2 className="text-2xl font-bold">Published Posts</h2>
-                </div>
+                {/* Tabs */}
+                {isOwnProfile && (
+                    <div className="flex items-center gap-8 border-b border-border mb-8">
+                        <Link
+                            href={`/profile/${id}`}
+                            className={cn(
+                                "flex items-center gap-2 pb-3 mb-[-1px] transition-colors",
+                                currentTab === "published"
+                                    ? "border-b-2 border-primary text-primary font-medium"
+                                    : "text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            <FileText size={18} />
+                            Published
+                        </Link>
+                        <Link
+                            href={`/profile/${id}?tab=saved`}
+                            className={cn(
+                                "flex items-center gap-2 pb-3 mb-[-1px] transition-colors",
+                                currentTab === "saved"
+                                    ? "border-b-2 border-primary text-primary font-medium"
+                                    : "text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            <Bookmark size={18} />
+                            Saved
+                        </Link>
+                    </div>
+                )}
+
+                {/* Section Title (only if not using tabs/viewing other profile) */}
+                {!isOwnProfile && (
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-bold">Published Posts</h2>
+                    </div>
+                )}
 
                 {posts.length > 0 ? (
                     <PostFeed posts={posts} columns={3} variant="standard" />
                 ) : (
                     <div className="text-center py-16 bg-muted/30 rounded-lg border border-border">
-                        <FileText size={48} className="mx-auto text-muted-foreground mb-3" />
-                        <p className="text-muted-foreground text-lg mb-4">
-                            {isOwnProfile
-                                ? "You haven't published any posts yet"
-                                : "This user hasn't published any posts yet"}
-                        </p>
-                        {isOwnProfile && (
-                            <Link
-                                href="/new"
-                                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors inline-block"
-                            >
-                                Write Your First Post
-                            </Link>
+                        {currentTab === "saved" ? (
+                            <>
+                                <Bookmark size={48} className="mx-auto text-muted-foreground mb-3" />
+                                <p className="text-muted-foreground text-lg mb-4">
+                                    You haven't saved any posts yet
+                                </p>
+                                <Link
+                                    href="/explore"
+                                    className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors inline-block"
+                                >
+                                    Explore Articles
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <FileText size={48} className="mx-auto text-muted-foreground mb-3" />
+                                <p className="text-muted-foreground text-lg mb-4">
+                                    {isOwnProfile
+                                        ? "You haven't published any posts yet"
+                                        : "This user hasn't published any posts yet"}
+                                </p>
+                                {isOwnProfile && (
+                                    <Link
+                                        href="/new"
+                                        className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors inline-block"
+                                    >
+                                        Write Your First Post
+                                    </Link>
+                                )}
+                            </>
                         )}
                     </div>
                 )}

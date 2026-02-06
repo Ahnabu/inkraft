@@ -31,5 +31,6 @@ export const config = {
         "/write/:path*",
         "/dashboard/:path*",
         "/new/:path*",
+        "/admin/:path*",
     ],
 };

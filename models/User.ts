@@ -13,6 +13,7 @@ export interface IUser extends Document {
         linkedin?: string;
         website?: string;
     };
+    savedPosts: mongoose.Types.ObjectId[]; // ObjectIds of saved posts
     trustScore: number; // For vote weighting (0.5 - 2.0)
     totalUpvotes: number;
     commentCount: number;
@@ -69,6 +70,10 @@ const UserSchema: Schema<IUser> = new Schema(
             linkedin: String,
             website: String,
         },
+        savedPosts: [{
+            type: Schema.Types.ObjectId,
+            ref: "Post",
+        }],
     },
     { timestamps: true }
 );

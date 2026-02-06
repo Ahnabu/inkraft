@@ -11,6 +11,11 @@ import { ViewTracker } from "@/components/ViewTracker";
 import { Comments } from "@/components/Comments";
 import { Clock, Calendar, User, Tag, TrendingUp } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { auth } from "@/auth";
+import UserModel from "@/models/User"; // Renamed to avoid conflict with lucide-react User
+import { SaveButton } from "@/components/SaveButton";
+import DOMPurify from "isomorphic-dompurify";
+import { TableOfContents } from "@/components/TableOfContents";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -74,6 +79,18 @@ export default async function BlogPostPage({ params }: PageProps) {
 
     if (!post) {
         notFound();
+    }
+
+    // Check if post is saved by current user
+    const session = await auth();
+    let isSaved = false;
+    if (session?.user?.id) {
+        await dbConnect();
+        const user = await UserModel.findById(session.user.id).select("savedPosts");
+        if (user && user.savedPosts) {
+            // Check if post ID is in savedPosts array
+            isSaved = user.savedPosts.some((id: any) => id.toString() === post._id);
+        }
     }
 
     const relatedPosts = await getRelatedPosts(post.category, slug);
@@ -185,9 +202,13 @@ export default async function BlogPostPage({ params }: PageProps) {
                                     </div>
                                 </div>
 
-                                {/* Share Buttons */}
-                                <div className="pt-4">
+                                {/* Share and Save Actions */}
+                                <div className="pt-4 flex items-center justify-between border-t border-border mt-6">
                                     <ShareButtons title={post.title} url={articleUrl} />
+                                    <SaveButton
+                                        postSlug={slug}
+                                        initialSaved={isSaved}
+                                    />
                                 </div>
                             </div>
                         </GlassCard>
@@ -211,7 +232,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                                         prose-hr:border-border
                                         prose-ul:text-foreground/90 prose-ol:text-foreground/90
                                         first-letter:text-6xl first-letter:font-bold first-letter:text-primary first-letter:mr-2 first-letter:float-left first-letter:leading-none"
-                                        dangerouslySetInnerHTML={{ __html: post.content }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(post.content)
+                                        }}
                                     />
 
                                     {/* Tags */}
@@ -302,6 +325,10 @@ export default async function BlogPostPage({ params }: PageProps) {
                                         initialDownvotes={post.downvotes}
                                         variant="stacked"
                                     />
+
+                                    <div className="mt-8 pt-8 border-t border-border">
+                                        <TableOfContents />
+                                    </div>
                                 </div>
                             </aside>
                         </div>

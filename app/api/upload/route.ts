@@ -22,6 +22,18 @@ export async function POST(req: Request) {
             return new NextResponse("Missing file", { status: 400 });
         }
 
+        // Validate file type (Images only)
+        if (!file.type.startsWith("image/")) {
+            console.error("[IMAGE_UPLOAD] Invalid file type:", file.type);
+            return new NextResponse("Invalid file type. Only images are allowed.", { status: 400 });
+        }
+
+        // Validate file type (Images only)
+        if (!file.type.startsWith("image/")) {
+            console.error("[IMAGE_UPLOAD] Invalid file type:", file.type);
+            return new NextResponse("Invalid file type. Only images are allowed.", { status: 400 });
+        }
+
         // Check Cloudinary config
         const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
         const apiKey = process.env.CLOUDINARY_API_KEY;
