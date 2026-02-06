@@ -41,6 +41,8 @@ export function Comments({ postSlug }: CommentsProps) {
     const [loading, setLoading] = useState(false);
     const [fetchingComments, setFetchingComments] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+    const [editContent, setEditContent] = useState("");
 
     useEffect(() => {
         fetchComments();
@@ -105,6 +107,32 @@ export function Comments({ postSlug }: CommentsProps) {
             setError(error.message || "Error posting comment");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleUpdate = async (commentId: string) => {
+        if (!editContent.trim()) return;
+
+        try {
+            const response = await fetch(`/api/posts/${postSlug}/comments`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    commentId,
+                    content: editContent.trim(),
+                }),
+            });
+
+            if (response.ok) {
+                toast.success("Comment updated");
+                setEditingCommentId(null);
+                setEditContent("");
+                fetchComments();
+            } else {
+                toast.error("Failed to update comment");
+            }
+        } catch (error) {
+            toast.error("Error updating comment");
         }
     };
 
@@ -342,7 +370,7 @@ export function Comments({ postSlug }: CommentsProps) {
                     ))}
                 </div>
             ) : comments.length === 0 ? (
-                <GlassCard className="p-12 text-center">
+                <GlassCard className="p-12 text-center bg-card/80 dark:bg-zinc-900/50">
                     <MessageSquare size={48} className="mx-auto mb-4 text-muted-foreground" />
                     <p className="text-muted-foreground">No comments yet. Be the first to share your thoughts!</p>
                 </GlassCard>

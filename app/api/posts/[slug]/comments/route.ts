@@ -219,3 +219,115 @@ export async function POST(
         return new NextResponse(error.message || "Internal Error", { status: 500 });
     }
 }
+
+// DELETE: Delete a comment
+export async function DELETE(
+    req: Request,
+    context: { params: Promise<{ slug: string }> }
+) {
+    try {
+        const session = await auth();
+        if (!session?.user) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+
+        const { searchParams } = new URL(req.url);
+        const commentId = searchParams.get("commentId");
+
+        if (!commentId) {
+            return new NextResponse("Comment ID required", { status: 400 });
+        }
+
+        await dbConnect();
+
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return new NextResponse("Comment not found", { status: 404 });
+        }
+
+        // Check ownership
+        if (comment.author.toString() !== session.user.id) {
+            return new NextResponse("Unauthorized", { status: 403 });
+        }
+
+        // Soft delete
+        comment.deleted = true;
+        await comment.save();
+
+        // Decrement counts
+        const user = await User.findById(session.user.id);
+        if (user) {
+            user.commentCount = Math.max(0, user.commentCount - 1);
+            await user.save();
+        }
+
+        const post = await Post.findById(comment.post);
+        if (post) {
+            post.commentCount = Math.max(0, post.commentCount - 1);
+            await post.save();
+        }
+
+        return new NextResponse("Comment deleted", { status: 200 });
+    } catch (error: any) {
+        console.error("[DELETE_COMMENT]", error);
+        return new NextResponse(error.message || "Internal Error", { status: 500 });
+    }
+}
+
+// PUT: Update a comment
+export async function PUT(
+    req: Request,
+    context: { params: Promise<{ slug: string }> }
+) {
+    try {
+        const session = await auth();
+        if (!session?.user) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+
+        const { commentId, content } = await req.json();
+
+        if (!commentId || !content || !content.trim()) {
+            return new NextResponse("Invalid request", { status: 400 });
+        }
+
+        if (content.length > 5000) {
+            return new NextResponse("Content too long", { status: 400 });
+        }
+
+        await dbConnect();
+
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return new NextResponse("Comment not found", { status: 404 });
+        }
+
+        // Check ownership
+        if (comment.author.toString() !== session.user.id) {
+            return new NextResponse("Unauthorized", { status: 403 });
+        }
+
+        comment.content = content.trim();
+        await comment.save();
+
+        const populatedComment = await Comment.findById(comment._id)
+            .populate("author", "name image")
+            .lean();
+
+        return NextResponse.json({
+            ...populatedComment,
+            _id: populatedComment!._id.toString(),
+            author: {
+                ...populatedComment!.author,
+                _id: populatedComment!.author._id.toString(),
+            },
+            post: populatedComment!.post.toString(),
+            parentComment: populatedComment!.parentComment?.toString(),
+            createdAt: populatedComment!.createdAt.toISOString(),
+            updatedAt: populatedComment!.updatedAt.toISOString(),
+        });
+    } catch (error: any) {
+        console.error("[UPDATE_COMMENT]", error);
+        return new NextResponse(error.message || "Internal Error", { status: 500 });
+    }
+}
