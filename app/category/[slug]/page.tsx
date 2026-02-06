@@ -130,7 +130,7 @@ export default async function CategoryPage({ params }: PageProps) {
                                         )}
                                     </div>
                                     <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-                                        <span>{new Date(post.publishedAt || post.createdAt || Date.now()).toLocaleDateString()}</span>
+                                        <span>{new Date(post.publishedAt || post.createdAt || 0).toLocaleDateString()}</span>
                                         <span>{post.readingTime || 5} min read</span>
                                     </div>
                                 </GlassCard>
