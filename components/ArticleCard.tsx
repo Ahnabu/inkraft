@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, MessageSquare, ArrowUp, User } from "lucide-react";
+import { Clock, MessageSquare, ArrowUp, User, Eye } from "lucide-react";
 
 interface ArticleCardProps {
     post: {
@@ -21,6 +21,7 @@ interface ArticleCardProps {
         readingTime: number;
         upvotes?: number;
         commentCount?: number;
+        views?: number;
         publishedAt?: string;
     };
     variant?: "featured" | "standard" | "compact";
@@ -82,6 +83,12 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                                     <Clock size={16} />
                                     <span>{post.readingTime} min read</span>
                                 </div>
+                                {(post.views || 0) > 0 && (
+                                    <div className="flex items-center gap-1">
+                                        <Eye size={16} />
+                                        <span>{post.views}</span>
+                                    </div>
+                                )}
                                 {(post.upvotes || 0) > 0 && (
                                     <div className="flex items-center gap-1">
                                         <ArrowUp size={16} />
@@ -134,6 +141,15 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                         <span>{post.author.name}</span>
                         <span>•</span>
                         <span>{post.readingTime} min</span>
+                        {(post.views || 0) > 0 && (
+                            <>
+                                <span>•</span>
+                                <div className="flex items-center gap-1">
+                                    <Eye size={12} />
+                                    <span>{post.views}</span>
+                                </div>
+                            </>
+                        )}
                         {(post.upvotes || 0) > 0 && (
                             <>
                                 <span>•</span>
@@ -204,6 +220,12 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                             <Clock size={14} />
                             <span>{post.readingTime} min</span>
                         </div>
+                        {(post.views || 0) > 0 && (
+                            <div className="flex items-center gap-1">
+                                <Eye size={14} />
+                                <span>{post.views}</span>
+                            </div>
+                        )}
                         {(post.upvotes || 0) > 0 && (
                             <div className="flex items-center gap-1">
                                 <ArrowUp size={14} />

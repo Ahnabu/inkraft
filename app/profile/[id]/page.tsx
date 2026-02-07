@@ -14,7 +14,8 @@ import {
     ArrowUp,
     Calendar,
     Settings,
-    Bookmark
+    Bookmark,
+    Eye
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -46,15 +47,17 @@ async function getUserProfile(userId: string, tab: string = "published") {
             .lean();
     }
 
-    // Calculate total upvotes (always from authored posts)
-    const authoredPosts = await Post.find({ author: userId }).select("upvotes");
+    // Calculate total upvotes and views (always from authored posts)
+    const authoredPosts = await Post.find({ author: userId }).select("upvotes views");
     const totalUpvotes = authoredPosts.reduce((sum: number, post: { upvotes?: number }) => sum + (post.upvotes || 0), 0);
+    const totalViews = authoredPosts.reduce((sum: number, post: { views?: number }) => sum + (post.views || 0), 0);
     const totalPostsCount = await Post.countDocuments({ author: userId, published: true });
 
     return {
         user: JSON.parse(JSON.stringify(user)),
         posts: JSON.parse(JSON.stringify(posts)),
         totalUpvotes,
+        totalViews,
         totalPostsCount
     };
 }
@@ -80,7 +83,7 @@ export default async function UserProfilePage({
         notFound();
     }
 
-    const { user, posts, totalUpvotes, totalPostsCount } = profileData;
+    const { user, posts, totalUpvotes, totalViews, totalPostsCount } = profileData;
 
     return (
         <div className="min-h-screen">
@@ -170,6 +173,11 @@ export default async function UserProfilePage({
                                     <span className="text-muted-foreground">
                                         {totalPostsCount === 1 ? "Post" : "Posts"}
                                     </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Eye size={16} className="text-muted-foreground" />
+                                    <span className="font-semibold">{totalViews.toLocaleString()}</span>
+                                    <span className="text-muted-foreground">Views</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <ArrowUp size={16} className="text-muted-foreground" />

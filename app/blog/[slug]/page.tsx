@@ -8,7 +8,7 @@ import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareButtons } from "@/components/ShareButtons";
 import { VoteButton } from "@/components/VoteButton";
 import { Comments } from "@/components/Comments";
-import { Clock, Calendar, User, Tag } from "lucide-react";
+import { Clock, Calendar, User, Tag, Eye } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { auth } from "@/auth";
 import UserModel from "@/models/User"; // Renamed to avoid conflict with lucide-react User
@@ -254,6 +254,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                                                         <span className="mx-1">•</span>
                                                         <Clock size={14} />
                                                         <span>{post.readingTime} min read</span>
+                                                        <span className="mx-1">•</span>
+                                                        <Eye size={14} />
+                                                        <span>{post.views || 0} views</span>
                                                     </div>
                                                 </div>
                                             </div>
