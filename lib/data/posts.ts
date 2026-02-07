@@ -1,5 +1,7 @@
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import User from "@/models/User"; // Import User model to ensure it's registered for populate
 import Vote from "@/models/Vote";
 import Comment from "@/models/Comment";
 import { calculateEngagementScore, calculateTrendingScore } from "@/lib/engagement";

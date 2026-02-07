@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import User from "@/models/User"; // Import User model for populate
 import { getCategoryBySlug, DEFAULT_CATEGORIES } from "@/lib/categories";
 import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";

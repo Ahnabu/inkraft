@@ -13,7 +13,6 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { auth } from "@/auth";
 import UserModel from "@/models/User"; // Renamed to avoid conflict with lucide-react User
 import { SaveButton } from "@/components/SaveButton";
-import DOMPurify from "isomorphic-dompurify";
 import { TableOfContents } from "@/components/TableOfContents";
 import { getBaseUrl } from "@/lib/utils";
 
@@ -233,7 +232,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                                         prose-ul:text-foreground/90 prose-ol:text-foreground/90
                                         first-letter:text-6xl first-letter:font-bold first-letter:text-primary first-letter:mr-2 first-letter:float-left first-letter:leading-none"
                                         dangerouslySetInnerHTML={{
-                                            __html: DOMPurify.sanitize(post.content)
+                                            __html: post.content
                                         }}
                                     />
 
