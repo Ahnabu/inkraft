@@ -14,34 +14,48 @@ export async function POST(
     context: { params: Promise<{ slug: string }> }
 ) {
     try {
+        console.log("[VOTE_POST] Starting vote request");
+        
         const session = await auth();
+        console.log("[VOTE_POST] Session:", session ? "exists" : "null");
+        
         if (!session?.user) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
         const params = await context.params;
-        const { voteType } = await req.json(); // "upvote" | "downvote"
+        console.log("[VOTE_POST] Post slug:", params.slug);
+        
+        const { voteType } = await req.json();
+        console.log("[VOTE_POST] Vote type:", voteType);
 
         if (!["upvote", "downvote"].includes(voteType)) {
             return new NextResponse("Invalid vote type", { status: 400 });
         }
 
         await dbConnect();
+        console.log("[VOTE_POST] DB connected");
 
         // Find post
         const post = await Post.findOne({ slug: params.slug });
+        console.log("[VOTE_POST] Post found:", post ? "yes" : "no");
+        
         if (!post) {
             return new NextResponse("Post not found", { status: 404 });
         }
 
         // Get user data for trust score calculation
         const user = await User.findById(session.user.id);
+        console.log("[VOTE_POST] User found:", user ? "yes" : "no");
+        
         if (!user) {
             return new NextResponse("User not found", { status: 404 });
         }
 
         // Get user activity - set default values if not found
         let userActivity = await UserActivity.findOne({ user: session.user.id });
+        console.log("[VOTE_POST] UserActivity found:", userActivity ? "yes" : "no");
+        
         let articlesRead = 0;
         let contributions = 0;
         
@@ -50,12 +64,14 @@ export async function POST(
             contributions = userActivity.contributions || 0;
         } else {
             try {
+                console.log("[VOTE_POST] Creating new UserActivity");
                 // Create default activity if not exists
                 userActivity = await UserActivity.create({
                     user: session.user.id,
                     articlesRead: 0,
                     contributions: 0,
                 });
+                console.log("[VOTE_POST] UserActivity created");
             } catch (createError) {
                 console.error("[CREATE_USER_ACTIVITY_ERROR]", createError);
                 // Continue with default values if creation fails
@@ -69,12 +85,14 @@ export async function POST(
             articlesRead,
             contributions
         );
+        console.log("[VOTE_POST] Vote weight calculated:", voteWeight);
 
         // Check for existing vote
         const existingVote = await Vote.findOne({
             user: session.user.id,
             post: post._id,
         });
+        console.log("[VOTE_POST] Existing vote:", existingVote ? existingVote.voteType : "none");
 
         let oldVoteType: string | null = null;
         let oldWeight = 0;
@@ -86,6 +104,7 @@ export async function POST(
 
             // If same vote type, remove vote (toggle off)
             if (existingVote.voteType === voteType) {
+                console.log("[VOTE_POST] Toggling vote off");
                 await Vote.deleteOne({ _id: existingVote._id });
 
                 // Update post counts
@@ -98,6 +117,7 @@ export async function POST(
                 finalUserVote = null; // Vote toggled off
             } else {
                 // Switch vote type
+                console.log("[VOTE_POST] Switching vote from", oldVoteType, "to", voteType);
                 existingVote.voteType = voteType;
                 existingVote.weight = voteWeight;
                 await existingVote.save();
@@ -115,6 +135,7 @@ export async function POST(
             }
         } else {
             // Create new vote
+            console.log("[VOTE_POST] Creating new vote");
             await Vote.create({
                 user: session.user.id,
                 post: post._id,
@@ -144,7 +165,9 @@ export async function POST(
             daysSincePublish
         );
 
+        console.log("[VOTE_POST] Saving post with new vote counts");
         await post.save();
+        console.log("[VOTE_POST] Vote completed successfully");
 
         // Return updated vote counts
         return NextResponse.json({
@@ -154,13 +177,17 @@ export async function POST(
             userVote: finalUserVote,
         });
     } catch (error: unknown) {
-        console.error("[VOTE_POST]", error);
+        console.error("[VOTE_POST_ERROR]", error);
         if (error instanceof Error) {
             console.error("[VOTE_POST_STACK]", error.stack);
             console.error("[VOTE_POST_MESSAGE]", error.message);
+            console.error("[VOTE_POST_NAME]", error.name);
         }
         const message = error instanceof Error ? error.message : "Internal Error";
-        return new NextResponse(JSON.stringify({ error: message }), { 
+        return new NextResponse(JSON.stringify({ 
+            error: message,
+            details: error instanceof Error ? error.stack : String(error)
+        }), { 
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });
