@@ -37,6 +37,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         throw new Error("Invalid credentials");
                     }
 
+                    // Check if user is banned
+                    if (user.banned) {
+                        throw new Error("Account has been banned");
+                    }
+
                     // Check if user has password (might be OAuth-only user)
                     if (!user.password) {
                         throw new Error("Please sign in with Google");

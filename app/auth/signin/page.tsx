@@ -24,41 +24,43 @@ function SignInContent() {
         setError("");
 
         try {
+            // Use absolute URL for better Vercel compatibility
+            const absoluteCallbackUrl = callbackUrl.startsWith('http') 
+                ? callbackUrl 
+                : `${window.location.origin}${callbackUrl}`;
+
             const result = await signIn("credentials", {
                 email,
                 password,
-                redirect: false,
-                callbackUrl,
+                callbackUrl: absoluteCallbackUrl,
+                // Let NextAuth handle the redirect for better Vercel compatibility
             });
 
+            // Only handle errors - NextAuth will redirect on success
             if (result?.error) {
                 const errorMsg = "Invalid email or password";
                 setError(errorMsg);
                 toast.error(errorMsg);
-            } else if (result?.ok) {
-                toast.success("Successfully signed in! Redirecting...");
-                // Successful sign in - redirect
-                setTimeout(() => {
-                    window.location.href = callbackUrl;
-                }, 500);
-                return; // Don't set loading to false, page is redirecting
+                setLoading(false);
             }
         } catch (_error) {
             const errorMsg = "Something went wrong. Please try again.";
             setError(errorMsg);
             toast.error(errorMsg);
-        } finally {
             setLoading(false);
         }
     };
 
     const handleGoogleSignIn = async () => {
         setLoading(true);
-        toast.loading("Redirecting to Google...");
         try {
+            // Use absolute URL for better Vercel compatibility
+            const absoluteCallbackUrl = callbackUrl.startsWith('http') 
+                ? callbackUrl 
+                : `${window.location.origin}${callbackUrl}`;
+
             await signIn("google", { 
-                callbackUrl,
-                redirect: true,
+                callbackUrl: absoluteCallbackUrl,
             });
         } catch (error) {
             console.error("Google sign-in error:", error);

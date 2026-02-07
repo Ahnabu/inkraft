@@ -47,21 +47,14 @@ export default function RegisterPage() {
                 toast.success("Account created successfully! Signing you in...");
 
                 // Automatically sign in after registration
-                const result = await signIn("credentials", {
+                // Let NextAuth handle redirect for better Vercel compatibility
+                const absoluteCallbackUrl = `${window.location.origin}/dashboard`;
+                
+                await signIn("credentials", {
                     email,
                     password,
-                    redirect: false,
+                    callbackUrl: absoluteCallbackUrl,
                 });
-
-                if (result?.error) {
-                    toast.error("Please sign in manually");
-                    router.push("/auth/signin");
-                } else if (result?.ok) {
-                    toast.success("Welcome to Inkraft!");
-                    setTimeout(() => {
-                        window.location.href = "/dashboard";
-                    }, 500);
-                }
             } else {
                 const data = await res.json();
                 const errorMsg = data.message || "Registration failed";
