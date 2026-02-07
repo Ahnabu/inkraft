@@ -13,6 +13,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         strategy: "jwt",
         maxAge: 30 * 24 * 60 * 60, // 30 days
     },
+    cookies: {
+        sessionToken: {
+            name: process.env.NODE_ENV === "production" 
+                ? "__Secure-authjs.session-token" 
+                : "authjs.session-token",
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: process.env.NODE_ENV === "production",
+            },
+        },
+    },
     ...authConfig,
     providers: [
         ...authConfig.providers,
@@ -63,6 +76,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         email: user.email,
                         image: user.image,
                         role: user.role,
+                        banned: user.banned,
                     };
                 } catch (error) {
                     console.error("Auth error:", error);

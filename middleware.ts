@@ -12,33 +12,70 @@ export async function middleware(request: NextRequest) {
     }
 
     try {
-        // Try to get and validate the JWT token
+        // Check for session cookies first (faster check)
+        const cookieNames = [
+            "authjs.session-token",
+            "__Secure-authjs.session-token",
+            "next-auth.session-token",
+            "__Secure-next-auth.session-token"
+        ];
+        
+        const hasSessionCookie = cookieNames.some(name => request.cookies.get(name));
+        
+        if (!hasSessionCookie) {
+            console.log("No session cookie found, redirecting to sign in");
+            const signInUrl = new URL("/auth/signin", request.nextUrl.origin);
+            signInUrl.searchParams.set("callbackUrl", pathname);
+            return NextResponse.redirect(signInUrl);
+        }
+
+        // Validate the JWT token
         const token = await getToken({ 
             req: request,
             secret: process.env.AUTH_SECRET,
+            secureCookie: process.env.NODE_ENV === "production",
+            cookieName: process.env.NODE_ENV === "production" 
+                ? "__Secure-authjs.session-token" 
+                : "authjs.session-token"
         });
 
         if (!token) {
+            console.log("Token validation failed, redirecting to sign in");
             const signInUrl = new URL("/auth/signin", request.nextUrl.origin);
             signInUrl.searchParams.set("callbackUrl", pathname);
             return NextResponse.redirect(signInUrl);
         }
 
+        // Check if user is banned
+        if (token.banned) {
+            console.log("User is banned, redirecting to home");
+            return NextResponse.redirect(new URL("/", request.nextUrl.origin));
+        }
+
+        console.log("Token valid, allowing access to:", pathname);
         return NextResponse.next();
     } catch (error) {
         console.error("Middleware auth error:", error);
-        // On error, check for session cookie as fallback
-        const sessionCookie = request.cookies.get("authjs.session-token") || 
-                              request.cookies.get("__Secure-authjs.session-token");
-
-        if (!sessionCookie) {
-            const signInUrl = new URL("/auth/signin", request.nextUrl.origin);
-            signInUrl.searchParams.set("callbackUrl", pathname);
-            return NextResponse.redirect(signInUrl);
+        
+        // On error, be permissive and let through if any session cookie exists
+        const cookieNames = [
+            "authjs.session-token",
+            "__Secure-authjs.session-token",
+            "next-auth.session-token",
+            "__Secure-next-auth.session-token"
+        ];
+        
+        const hasSessionCookie = cookieNames.some(name => request.cookies.get(name));
+        
+        if (hasSessionCookie) {
+            console.log("Error during token validation, but session cookie exists - allowing through");
+            return NextResponse.next();
         }
 
-        // Let it through if cookie exists, server-side pages will validate
-        return NextResponse.next();
+        console.log("Error and no session cookie, redirecting to sign in");
+        const signInUrl = new URL("/auth/signin", request.nextUrl.origin);
+        signInUrl.searchParams.set("callbackUrl", pathname);
+        return NextResponse.redirect(signInUrl);
     }
 }
 

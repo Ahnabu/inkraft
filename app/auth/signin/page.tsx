@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
@@ -10,7 +10,6 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 function SignInContent() {
-    const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
     const [email, setEmail] = useState("");
@@ -46,7 +45,8 @@ function SignInContent() {
                 // Force a full page navigation for Vercel compatibility
                 window.location.href = absoluteCallbackUrl;
             }
-        } catch (_error) {
+        } catch (error) {
+            console.error("Sign in error:", error);
             const errorMsg = "Something went wrong. Please try again.";
             setError(errorMsg);
             toast.error(errorMsg);
@@ -125,7 +125,7 @@ function SignInContent() {
                         <span className="w-full border-t border-border" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-card px-3 text-foreground font-medium">
+                        <span className="bg-background px-3 text-muted-foreground font-medium">
                             Or continue with
                         </span>
                     </div>
