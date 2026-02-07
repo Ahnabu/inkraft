@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 function SignInContent() {
     const router = useRouter();
@@ -31,20 +32,39 @@ function SignInContent() {
             });
 
             if (result?.error) {
-                setError("Invalid email or password");
-            } else {
-                router.push(callbackUrl);
-                router.refresh();
+                const errorMsg = "Invalid email or password";
+                setError(errorMsg);
+                toast.error(errorMsg);
+            } else if (result?.ok) {
+                toast.success("Successfully signed in! Redirecting...");
+                // Successful sign in - redirect
+                setTimeout(() => {
+                    window.location.href = callbackUrl;
+                }, 500);
+                return; // Don't set loading to false, page is redirecting
             }
         } catch (_error) {
-            setError("Something went wrong. Please try again.");
+            const errorMsg = "Something went wrong. Please try again.";
+            setError(errorMsg);
+            toast.error(errorMsg);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleGoogleSignIn = () => {
-        signIn("google", { callbackUrl });
+    const handleGoogleSignIn = async () => {
+        setLoading(true);
+        toast.loading("Redirecting to Google...");
+        try {
+            await signIn("google", { 
+                callbackUrl,
+                redirect: true,
+            });
+        } catch (error) {
+            console.error("Google sign-in error:", error);
+            toast.error("Failed to sign in with Google");
+            setLoading(false);
+        }
     };
 
     return (
@@ -100,7 +120,7 @@ function SignInContent() {
                         <span className="w-full border-t border-border" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-background px-2 text-muted-foreground">
+                        <span className="bg-card px-3 text-foreground font-medium">
                             Or continue with
                         </span>
                     </div>

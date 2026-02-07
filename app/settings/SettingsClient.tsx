@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function SettingsClient() {
     const { data: session, status } = useSession();
@@ -58,6 +59,8 @@ export default function SettingsClient() {
         setError("");
         setSuccess(false);
 
+        toast.loading("Updating profile...", { id: "update-profile" });
+
         try {
             const res = await fetch(`/api/user/${session?.user?.id}`, {
                 method: "PATCH",
@@ -79,12 +82,14 @@ export default function SettingsClient() {
             }
 
             setSuccess(true);
+            toast.success("Profile updated successfully! Redirecting...", { id: "update-profile" });
             setTimeout(() => {
                 router.push("/dashboard");
             }, 1500);
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : "Failed to update profile";
             setError(message);
+            toast.error(message, { id: "update-profile" });
         } finally {
             setLoading(false);
         }

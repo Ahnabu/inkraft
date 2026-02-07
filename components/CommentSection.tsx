@@ -6,6 +6,7 @@ import { MessageSquare, Reply, Edit2, Trash2, Loader2 } from "lucide-react";
 import { CommentForm } from "./CommentForm";
 import { renderMarkdown } from "@/lib/markdown";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface Comment {
     _id: string;
@@ -111,12 +112,13 @@ export function CommentSection({
                         return comment;
                     })
                 );
+                toast.success("Comment deleted successfully");
             } else {
-                alert("Failed to delete comment");
+                toast.error("Failed to delete comment");
             }
         } catch (error) {
             console.error("Delete error:", error);
-            alert("Failed to delete comment");
+            toast.error("Failed to delete comment");
         }
     };
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Send, X, Eye, EyeOff, Loader2 } from "lucide-react";
 import { renderMarkdown, validateMarkdownContent } from "@/lib/markdown";
+import { toast } from "sonner";
 
 interface Comment {
     _id: string;
@@ -54,19 +55,26 @@ export function CommentForm({
         e.preventDefault();
 
         if (!session) {
-            setError("Please sign in to comment");
+            const errorMsg = "Please sign in to comment";
+            setError(errorMsg);
+            toast.error(errorMsg);
             return;
         }
 
         // Validate content
         const validation = validateMarkdownContent(content);
         if (!validation.valid) {
-            setError(validation.error || "Invalid content");
+            const errorMsg = validation.error || "Invalid content";
+            setError(errorMsg);
+            toast.error(errorMsg);
             return;
         }
 
         setLoading(true);
         setError("");
+
+        const toastId = isEditing ? "edit-comment" : "post-comment";
+        toast.loading(isEditing ? "Updating comment..." : "Posting comment...", { id: toastId });
 
         try {
             if (isEditing && commentId) {
@@ -83,6 +91,7 @@ export function CommentForm({
                 }
 
                 const updatedComment = await response.json();
+                toast.success("Comment updated successfully!", { id: toastId });
                 onSuccess?.(updatedComment);
                 setContent("");
             } else {
@@ -103,6 +112,7 @@ export function CommentForm({
 
                 const newComment = await response.json();
                 setRateLimitRemaining(newComment.rateLimitRemaining);
+                toast.success("Comment posted successfully!", { id: toastId });
                 onSuccess?.(newComment);
                 setContent("");
                 setShowPreview(false);
@@ -111,6 +121,7 @@ export function CommentForm({
             console.error("Comment submit error:", err);
             const message = err instanceof Error ? err.message : "Failed to submit comment";
             setError(message);
+            toast.error(message, { id: toastId });
         } finally {
             setLoading(false);
         }

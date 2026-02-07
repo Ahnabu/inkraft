@@ -6,6 +6,7 @@ export interface IUser extends Document {
     password?: string; // Hashed password for credentials login
     image?: string;
     role: "admin" | "author" | "reader";
+    banned: boolean;
     bio?: string;
     categories: string[]; // Writing categories for authors
     socialLinks?: {
@@ -45,6 +46,10 @@ const UserSchema: Schema<IUser> = new Schema(
             type: String,
             enum: ["admin", "author", "reader"],
             default: "reader",
+        },
+        banned: {
+            type: Boolean,
+            default: false,
         },
         bio: {
             type: String,

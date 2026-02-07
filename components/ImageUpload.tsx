@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { ImageIcon, Upload, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface ImageUploadProps {
     onUpload: (url: string) => void;
@@ -16,11 +17,12 @@ export function ImageUpload({ onUpload, onCancel }: ImageUploadProps) {
 
     const handleUpload = async (file: File) => {
         if (!file.type.startsWith("image/")) {
-            alert("Please upload an image file");
+            toast.error("Please upload an image file");
             return;
         }
 
         setUploading(true);
+        toast.loading("Uploading image...", { id: "image-upload" });
 
         try {
             // Convert to base64
@@ -42,6 +44,7 @@ export function ImageUpload({ onUpload, onCancel }: ImageUploadProps) {
                 }
 
                 const data = await response.json();
+                toast.success("Image uploaded successfully!", { id: "image-upload" });
                 onUpload(data.url);
             };
 
@@ -50,7 +53,7 @@ export function ImageUpload({ onUpload, onCancel }: ImageUploadProps) {
             };
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : "Upload failed";
-            alert(`Upload error: ${message}`);
+            toast.error(`Upload error: ${message}`, { id: "image-upload" });
             setUploading(false);
         }
     };

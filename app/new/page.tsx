@@ -10,6 +10,7 @@ import { DEFAULT_CATEGORIES } from "@/lib/categories";
 import { calculateReadingTime } from "@/lib/readingTime";
 import { Loader2, Save } from "lucide-react";
 import { ImageUploadButton } from "@/components/ImageUploadButton";
+import { toast } from "sonner";
 
 export default function NewPostPage() {
     const router = useRouter();
@@ -50,11 +51,14 @@ export default function NewPostPage() {
 
     const handlePublish = async (publishNow: boolean) => {
         if (!title || !content || !slug || !category) {
-            alert("Please fill in title, content, slug, and category");
+            toast.error("Please fill in title, content, slug, and category");
             return;
         }
 
         setLoading(true);
+        toast.loading(publishNow ? "Publishing your post..." : "Saving as draft...", {
+            id: "publish-post",
+        });
 
         try {
             const readingTime = calculateReadingTime(content);
@@ -91,10 +95,16 @@ export default function NewPostPage() {
             localStorage.removeItem("inkraft-draft");
 
             const post = await response.json();
-            router.push(`/blog/${post.slug}`);
+            toast.success(publishNow ? "Post published successfully!" : "Draft saved!", {
+                id: "publish-post",
+            });
+            
+            setTimeout(() => {
+                router.push(`/blog/${post.slug}`);
+            }, 500);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : "Failed to create post";
-            alert(`Error: ${message}`);
+            toast.error(message, { id: "publish-post" });
         } finally {
             setLoading(false);
         }

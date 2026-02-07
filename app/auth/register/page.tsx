@@ -7,6 +7,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -43,6 +44,8 @@ export default function RegisterPage() {
                     await res.text();
                 }
 
+                toast.success("Account created successfully! Signing you in...");
+
                 // Automatically sign in after registration
                 const result = await signIn("credentials", {
                     email,
@@ -51,17 +54,24 @@ export default function RegisterPage() {
                 });
 
                 if (result?.error) {
+                    toast.error("Please sign in manually");
                     router.push("/auth/signin");
-                } else {
-                    router.push("/dashboard");
-                    router.refresh();
+                } else if (result?.ok) {
+                    toast.success("Welcome to Inkraft!");
+                    setTimeout(() => {
+                        window.location.href = "/dashboard";
+                    }, 500);
                 }
             } else {
                 const data = await res.json();
-                setError(data.message || "Registration failed");
+                const errorMsg = data.message || "Registration failed";
+                setError(errorMsg);
+                toast.error(errorMsg);
             }
         } catch (_error) {
-            setError("Something went wrong. Please try again.");
+            const errorMsg = "Something went wrong. Please try again.";
+            setError(errorMsg);
+            toast.error(errorMsg);
         } finally {
             setLoading(false);
         }

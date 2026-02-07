@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
 import { calculateReadingTime } from "@/lib/readingTime";
 import { Loader2, Save, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 interface EditPostPageProps {
     params: Promise<{ slug: string }>;
@@ -60,7 +61,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
 
                 setLoading(false);
             } catch (_error) {
-                alert("Failed to load post");
+                toast.error("Failed to load post");
                 router.push("/dashboard");
             }
         }
@@ -91,11 +92,14 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
 
     const handleUpdate = async (publishNow: boolean) => {
         if (!title || !content || !slug || !category || !originalSlug) {
-            alert("Please fill in title, content, slug, and category");
+            toast.error("Please fill in title, content, slug, and category");
             return;
         }
 
         setSaving(true);
+        toast.loading(publishNow ? "Updating and publishing post..." : "Updating draft...", {
+            id: "update-post",
+        });
 
         try {
             const readingTime = calculateReadingTime(content);
@@ -130,10 +134,15 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
 
             localStorage.removeItem(`inkraft-edit-${originalSlug}`);
             const post = await response.json();
-            router.push(`/blog/${post.slug}`);
+            toast.success(publishNow ? "Post updated and published!" : "Draft updated!", {
+                id: "update-post",
+            });
+            setTimeout(() => {
+                router.push(`/blog/${post.slug}`);
+            }, 500);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : "Failed to save post";
-            alert(`Error: ${message}`);
+            toast.error(message, { id: "update-post" });
         } finally {
             setSaving(false);
         }

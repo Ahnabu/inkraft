@@ -2,6 +2,7 @@
 
 import { Share2, Twitter, Linkedin, Link2, Check, Facebook, Instagram } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface ShareButtonsProps {
     title: string;
@@ -33,7 +34,7 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
     const handleInstagramShare = () => {
         // Instagram doesn't support URL sharing, so copy link and notify user
         copyToClipboard();
-        alert("Link copied! You can now paste it in your Instagram post or story.");
+        toast.success("Link copied! You can now paste it in your Instagram post or story.");
     };
 
     return (

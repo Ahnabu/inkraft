@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { ArrowUp, ArrowDown, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface VoteButtonProps {
     postSlug: string;
@@ -48,7 +49,7 @@ export function VoteButton({
 
     const handleVote = async (voteType: "upvote" | "downvote") => {
         if (!session) {
-            alert("Please sign in to vote");
+            toast.error("Please sign in to vote");
             return;
         }
 
@@ -113,7 +114,7 @@ export function VoteButton({
             setUpvotes(previousUpvotes);
             setDownvotes(previousDownvotes);
 
-            alert("Failed to vote. Please try again.");
+            toast.error("Failed to vote. Please try again.");
         } finally {
             setLoading(false);
         }
