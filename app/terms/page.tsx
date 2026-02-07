@@ -1,8 +1,23 @@
 import { GlassCard } from "@/components/ui/GlassCard";
+import { Metadata } from "next";
 
-export const metadata = {
-    title: "Terms of Service - Inkraft",
-    description: "Terms and conditions for using the Inkraft blogging platform.",
+export const metadata: Metadata = {
+    title: "Terms of Service | Inkraft",
+    description: "Read Inkraft's terms and conditions for using our premium blogging platform. User agreements, content guidelines, and platform rules.",
+    keywords: ["inkraft terms", "terms of service", "user agreement", "platform rules"],
+    openGraph: {
+        title: "Terms of Service - Inkraft",
+        description: "Terms and conditions for using Inkraft platform",
+        type: "website",
+        url: "/terms",
+    },
+    alternates: {
+        canonical: "/terms",
+    },
+    robots: {
+        index: true,
+        follow: true,
+    },
 };
 
 export default function TermsPage() {

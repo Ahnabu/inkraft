@@ -55,21 +55,37 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     if (!post) return { title: "Post Not Found" };
 
     return {
-        title: post.seo?.title || post.title,
+        title: post.seo?.title || `${post.title} | Inkraft`,
         description: post.seo?.description || post.excerpt,
         keywords: post.seo?.keywords || post.tags,
+        authors: post.author?.name ? [{ name: post.author.name }] : [],
+        alternates: {
+            canonical: `/blog/${slug}`,
+        },
         openGraph: {
             title: post.title,
             description: post.excerpt,
             type: "article",
-            authors: [post.author?.name],
-            images: post.coverImage ? [post.coverImage] : [],
+            url: `/blog/${slug}`,
+            publishedTime: post.publishedAt || post.createdAt,
+            modifiedTime: post.updatedAt,
+            authors: [post.author?.name || "Anonymous"],
+            tags: post.tags || [],
+            images: post.coverImage ? [
+                {
+                    url: post.coverImage,
+                    width: 1200,
+                    height: 630,
+                    alt: post.title,
+                }
+            ] : [],
         },
         twitter: {
             card: "summary_large_image",
             title: post.title,
             description: post.excerpt,
             images: post.coverImage ? [post.coverImage] : [],
+            creator: post.author?.name ? `@${post.author.name.replace(/\s+/g, '')}` : "@inkraft",
         },
     };
 }
@@ -97,8 +113,44 @@ export default async function BlogPostPage({ params }: PageProps) {
     const relatedPosts = await getRelatedPosts(post.category, slug);
     const articleUrl = `${getBaseUrl()}/blog/${slug}`;
 
+    // Structured data for Article
+    const articleStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: post.title,
+        description: post.excerpt,
+        image: post.coverImage || `${getBaseUrl()}/api/og`,
+        datePublished: post.publishedAt || post.createdAt,
+        dateModified: post.updatedAt || post.publishedAt || post.createdAt,
+        author: {
+            '@type': 'Person',
+            name: post.author?.name || 'Anonymous',
+            url: post.author?._id ? `${getBaseUrl()}/profile/${post.author._id}` : undefined,
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'Inkraft',
+            logo: {
+                '@type': 'ImageObject',
+                url: `${getBaseUrl()}/icon-512.png`
+            }
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': articleUrl
+        },
+        keywords: post.tags?.join(', ') || '',
+        articleSection: post.category,
+        wordCount: post.content?.split(/\s+/).length || 0,
+        timeRequired: `PT${post.readingTime || 5}M`,
+    };
+
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }}
+            />
             <ReadingProgress />
             <ViewTracker postSlug={slug} />
 

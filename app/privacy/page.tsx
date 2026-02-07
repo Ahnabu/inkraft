@@ -1,8 +1,23 @@
 import { GlassCard } from "@/components/ui/GlassCard";
+import { Metadata } from "next";
 
-export const metadata = {
-    title: "Privacy Policy - Inkraft",
-    description: "How Inkraft collects, uses, and protects your personal information.",
+export const metadata: Metadata = {
+    title: "Privacy Policy | Inkraft",
+    description: "Learn how Inkraft collects, uses, and protects your personal information. Our commitment to privacy and data security for the Inkraft blog platform.",
+    keywords: ["inkraft privacy policy", "data protection", "privacy", "user data"],
+    openGraph: {
+        title: "Privacy Policy - Inkraft",
+        description: "How Inkraft protects your personal information",
+        type: "website",
+        url: "/privacy",
+    },
+    alternates: {
+        canonical: "/privacy",
+    },
+    robots: {
+        index: true,
+        follow: true,
+    },
 };
 
 export default function PrivacyPage() {

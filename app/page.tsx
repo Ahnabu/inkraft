@@ -3,8 +3,24 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { PostFeed } from "@/components/PostFeed";
 import { TrendingUp, Clock, Award, ArrowRight } from "lucide-react";
 import { auth } from "@/auth";
+import { Metadata } from "next";
 
 import { fetchLatestPosts, fetchTopPosts, fetchTrendingPosts } from "@/lib/data/posts";
+
+export const metadata: Metadata = {
+  title: "Inkraft | Premium Tech Blog - AI, Programming & Web Development",
+  description: "Discover expert articles on Artificial Intelligence, Programming, Cybersecurity, Web Development, and more. Join Inkraft's community of tech enthusiasts and quality writers.",
+  keywords: ["inkraft", "tech blog", "AI articles", "programming tutorials", "web development", "cybersecurity", "technology news"],
+  openGraph: {
+    title: "Inkraft - Premium Tech Blog Platform",
+    description: "Expert content on AI, Programming, Cybersecurity & Web Development",
+    type: "website",
+    url: "/",
+  },
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export const revalidate = 900; // Revalidate page every 15 minutes
 

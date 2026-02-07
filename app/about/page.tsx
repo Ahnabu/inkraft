@@ -1,10 +1,21 @@
 import Link from "next/link";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Sparkles, Users, Target, Zap, TrendingUp, Shield } from "lucide-react";
+import { Metadata } from "next";
 
-export const metadata = {
-    title: "About Inkraft - Modern Editorial Platform for Quality Writing",
-    description: "Inkraft is a premium blogging platform designed for long-form, high-quality writing with strong SEO, community engagement, and author ownership.",
+export const metadata: Metadata = {
+    title: "About Inkraft | Premium Tech Blog Platform",
+    description: "Learn about Inkraft - a premium blogging platform for tech writers. Discover our mission to provide quality content on AI, Programming, Cybersecurity, and Web Development with strong SEO and community engagement.",
+    keywords: ["about inkraft", "inkraft platform", "tech blog platform", "blogging community", "quality tech writing"],
+    openGraph: {
+        title: "About Inkraft - Premium Tech Blog Platform",
+        description: "Quality tech writing platform for AI, Programming & Web Development",
+        type: "website",
+        url: "/about",
+    },
+    alternates: {
+        canonical: "/about",
+    },
 };
 
 export default function AboutPage() {
