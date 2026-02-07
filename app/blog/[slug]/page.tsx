@@ -159,7 +159,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                     {/* Hero Section */}
                     <div className="relative navbar-hide hide-in-fullscreen">
                         {post.coverImage && (
-                            <div className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden">
+                            <div className="relative w-full h-[40vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden">
                                 <Image
                                     src={post.coverImage}
                                     alt={post.title}
@@ -173,8 +173,8 @@ export default async function BlogPostPage({ params }: PageProps) {
                     </div>
 
                     {/* Main Layout with Left TOC Sidebar */}
-                    <div className="container mx-auto px-4 lg:px-8 -mt-32 relative z-10">
-                        <div className="flex gap-8 lg:gap-12">
+                    <div className="container mx-auto px-3 sm:px-4 lg:px-8 -mt-24 sm:-mt-32 relative z-10">
+                        <div className="flex gap-6 sm:gap-8 lg:gap-12">
                             {/* Left Sidebar - Table of Contents (Desktop Only) */}
                             <aside className="hidden xl:block w-64 shrink-0">
                             <div className="p-8 md:p-12 mb-8">
@@ -190,8 +190,8 @@ export default async function BlogPostPage({ params }: PageProps) {
                             {/* Main Content Area */}
                             <div className="flex-1 max-w-4xl mx-auto xl:mx-0">
                                 {/* Article Header */}
-                                <GlassCard className="p-8 md:p-12 mb-8">
-                                    <div className="space-y-6">
+                                <GlassCard className="p-4 sm:p-6 md:p-8 lg:p-12 mb-6 sm:mb-8">
+                                    <div className="space-y-4 sm:space-y-6">
                                         {/* Category Badge */}
                                         <div className="flex items-center gap-2">
                                             <span className="px-4 py-1.5 bg-primary/10 text-primary text-sm font-semibold rounded-full">
@@ -205,46 +205,46 @@ export default async function BlogPostPage({ params }: PageProps) {
                                         </div>
 
                                         {/* Title */}
-                                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
                                             {post.title}
                                         </h1>
 
                                         {/* Subtitle */}
                                         {post.subtitle && (
-                                            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+                                            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground leading-relaxed">
                                                 {post.subtitle}
                                             </p>
                                         )}
 
                                         {/* Author Info + Voting - Combined */}
-                                        <div className="flex flex-wrap items-center justify-between gap-6 pt-4 border-t border-border">
+                                        <div className="flex flex-wrap items-center justify-between gap-4 sm:gap-6 pt-4 border-t border-border">
                                             {/* Author Info */}
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-2 sm:gap-3">
                                                 <Link href={`/profile/${post.author?._id}`}>
                                                     {post.author?.image ? (
                                                         <Image
                                                             src={post.author.image}
                                                             alt={post.author.name}
-                                                            width={48}
-                                                            height={48}
-                                                            className="rounded-full hover:opacity-80 transition-opacity"
+                                                            width={40}
+                                                            height={40}
+                                                            className="sm:w-12 sm:h-12 rounded-full hover:opacity-80 transition-opacity"
                                                         />
                                                     ) : (
-                                                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                                                            <User size={24} className="text-primary" />
+                                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
+                                                            <User size={20} className="sm:w-6 sm:h-6 text-primary" />
                                                         </div>
                                                     )}
                                                 </Link>
                                                 <div>
                                                     <Link
                                                         href={`/profile/${post.author?._id}`}
-                                                        className="font-semibold hover:text-primary transition-colors block"
+                                                        className="font-semibold text-sm sm:text-base hover:text-primary transition-colors block"
                                                     >
                                                         {post.author?.name || "Anonymous"}
                                                     </Link>
-                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                        <Calendar size={14} />
-                                                        <span>
+                                                    <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
+                                                        <Calendar size={12} className="sm:w-3.5 sm:h-3.5" />
+                                                        <span className="text-xs sm:text-sm">
                                                             {new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
                                                                 year: "numeric",
                                                                 month: "long",
@@ -252,11 +252,11 @@ export default async function BlogPostPage({ params }: PageProps) {
                                                             })}
                                                         </span>
                                                         <span className="mx-1">•</span>
-                                                        <Clock size={14} />
-                                                        <span>{post.readingTime} min read</span>
+                                                        <Clock size={12} className="sm:w-3.5 sm:h-3.5" />
+                                                        <span className="text-xs sm:text-sm">{post.readingTime} min read</span>
                                                         <span className="mx-1">•</span>
-                                                        <Eye size={14} />
-                                                        <span>{post.views || 0} views</span>
+                                                        <Eye size={12} className="sm:w-3.5 sm:h-3.5" />
+                                                        <span className="text-xs sm:text-sm">{post.views || 0} views</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -285,9 +285,9 @@ export default async function BlogPostPage({ params }: PageProps) {
 
                                 {/* Main Article Content */}
                                 <article>
-                                    <GlassCard className="p-8 md:p-12">
+                                    <GlassCard className="p-4 sm:p-6 md:p-8 lg:p-12">
                                         <div
-                                            className="prose prose-lg dark:prose-invert max-w-none
+                                            className="prose prose-sm sm:prose-base lg:prose-lg dark:prose-invert max-w-none
                                             prose-headings:font-bold prose-headings:tracking-tight
                                             prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
                                             prose-p:text-lg prose-p:leading-relaxed prose-p:text-foreground/90

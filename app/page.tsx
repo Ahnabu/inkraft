@@ -76,10 +76,10 @@ export default async function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section - Featured Post */}
       {featuredPost && (
-        <section className="container mx-auto px-4 py-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Award size={24} className="text-primary" />
-            <h2 className="text-2xl font-bold">Featured</h2>
+        <section className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <Award size={20} className="text-primary sm:w-6 sm:h-6" />
+            <h2 className="text-xl sm:text-2xl font-bold">Featured</h2>
           </div>
           <ArticleCard post={featuredPost} variant="featured" />
         </section>
@@ -87,18 +87,19 @@ export default async function HomePage() {
 
       {/* Trending Section */}
       {trendingPosts.length > 0 && (
-        <section className="container mx-auto px-4 py-12">
-          <div className="flex items-center justify-between mb-6">
+        <section className="container mx-auto px-3 sm:px-4 py-8 sm:py-12">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <div className="flex items-center gap-2">
-              <TrendingUp size={24} className="text-primary" />
-              <h2 className="text-2xl font-bold">Trending Now</h2>
+              <TrendingUp size={20} className="text-primary sm:w-6 sm:h-6" />
+              <h2 className="text-xl sm:text-2xl font-bold">Trending Now</h2>
             </div>
             <Link
               href="/trending"
-              className="text-primary hover:underline flex items-center gap-1"
+              className="text-primary hover:underline flex items-center gap-1 text-sm sm:text-base"
             >
-              View all
-              <ArrowRight size={16} />
+              <span className="hidden sm:inline">View all</span>
+              <span className="sm:hidden">All</span>
+              <ArrowRight size={14} className="sm:w-4 sm:h-4" />
             </Link>
           </div>
           <PostFeed posts={trendingPosts} columns={3} variant="standard" />
@@ -106,21 +107,22 @@ export default async function HomePage() {
       )}
 
       {/* Main Content Grid */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section className="container mx-auto px-3 sm:px-4 py-8 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Latest Posts - 2/3 width */}
           <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
               <div className="flex items-center gap-2">
-                <Clock size={24} className="text-primary" />
-                <h2 className="text-2xl font-bold">Latest Posts</h2>
+                <Clock size={20} className="text-primary sm:w-6 sm:h-6" />
+                <h2 className="text-xl sm:text-2xl font-bold">Latest Posts</h2>
               </div>
               <Link
                 href="/latest"
-                className="text-primary hover:underline flex items-center gap-1"
+                className="text-primary hover:underline flex items-center gap-1 text-sm sm:text-base"
               >
-                View all
-                <ArrowRight size={16} />
+                <span className="hidden sm:inline">View all</span>
+                <span className="sm:hidden">All</span>
+                <ArrowRight size={14} className="sm:w-4 sm:h-4" />
               </Link>
             </div>
             {latestPosts.length > 0 ? (
@@ -132,9 +134,9 @@ export default async function HomePage() {
 
           {/* Top Posts Sidebar - 1/3 width */}
           <div>
-            <div className="flex items-center gap-2 mb-6">
-              <Award size={24} className="text-primary" />
-              <h2 className="text-2xl font-bold">Top Posts</h2>
+            <div className="flex items-center gap-2 mb-4 sm:mb-6">
+              <Award size={20} className="text-primary sm:w-6 sm:h-6" />
+              <h2 className="text-xl sm:text-2xl font-bold">Top Posts</h2>
             </div>
             {topPosts.length > 0 ? (
               <PostFeed posts={topPosts} layout="list" variant="compact" />
@@ -146,8 +148,8 @@ export default async function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-purple-500/10 to-primary/5 rounded-3xl p-8 md:p-12 text-center border border-primary/30 shadow-2xl">
+      <section className="container mx-auto px-3 sm:px-4 py-10 sm:py-16">
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-purple-500/10 to-primary/5 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 text-center border border-primary/30 shadow-2xl">
           {/* Decorative gradient orbs */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -z-10"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl -z-10"></div>

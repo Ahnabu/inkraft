@@ -74,7 +74,7 @@ export function PostFeed({
     };
 
     return (
-        <div className={`grid ${gridCols[columns]} gap-6`}>
+        <div className={`grid ${gridCols[columns]} gap-4 sm:gap-6`}>
             {posts.map((post) => (
                 <ArticleCard key={post._id} post={post} variant={variant} />
             ))}

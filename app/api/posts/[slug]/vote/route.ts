@@ -40,23 +40,34 @@ export async function POST(
             return new NextResponse("User not found", { status: 404 });
         }
 
-        // Get user activity
+        // Get user activity - set default values if not found
         let userActivity = await UserActivity.findOne({ user: session.user.id });
-        if (!userActivity) {
-            // Create default activity if not exists
-            userActivity = await UserActivity.create({
-                user: session.user.id,
-                articlesRead: 0,
-                contributions: 0,
-            });
+        let articlesRead = 0;
+        let contributions = 0;
+        
+        if (userActivity) {
+            articlesRead = userActivity.articlesRead || 0;
+            contributions = userActivity.contributions || 0;
+        } else {
+            try {
+                // Create default activity if not exists
+                userActivity = await UserActivity.create({
+                    user: session.user.id,
+                    articlesRead: 0,
+                    contributions: 0,
+                });
+            } catch (createError) {
+                console.error("[CREATE_USER_ACTIVITY_ERROR]", createError);
+                // Continue with default values if creation fails
+            }
         }
 
         // Calculate vote weight based on trust
         const accountAgeDays = getAccountAgeDays(user.createdAt);
         const voteWeight = calculateVoteWeight(
             accountAgeDays,
-            userActivity.articlesRead,
-            userActivity.contributions
+            articlesRead,
+            contributions
         );
 
         // Check for existing vote
@@ -144,8 +155,15 @@ export async function POST(
         });
     } catch (error: unknown) {
         console.error("[VOTE_POST]", error);
+        if (error instanceof Error) {
+            console.error("[VOTE_POST_STACK]", error.stack);
+            console.error("[VOTE_POST_MESSAGE]", error.message);
+        }
         const message = error instanceof Error ? error.message : "Internal Error";
-        return new NextResponse(message, { status: 500 });
+        return new NextResponse(JSON.stringify({ error: message }), { 
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 }
 

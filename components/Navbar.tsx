@@ -23,8 +23,8 @@ export function Navbar() {
     ];
 
     return (
-        <header className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
-            <nav className="glass-card flex flex-col md:flex-row items-center justify-between px-6 py-3 w-full max-w-5xl rounded-[2rem] shadow-lg bg-white/70 backdrop-blur-md border border-white/20 dark:bg-black/50 dark:border-white/10 transition-all duration-300">
+        <header className="fixed top-2 sm:top-4 left-0 right-0 z-50 flex justify-center px-2 sm:px-4">
+            <nav className="glass-card flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3 w-full max-w-5xl rounded-2xl sm:rounded-[2rem] shadow-lg bg-white/70 backdrop-blur-md border border-white/20 dark:bg-black/50 dark:border-white/10 transition-all duration-300">
 
                 {/* Top Bar: Logo + Mobile Toggle + Auth (Mobile) */}
                 <div className="flex items-center justify-between w-full md:w-auto">
