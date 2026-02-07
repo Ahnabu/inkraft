@@ -7,13 +7,6 @@ import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import authConfig from "./auth.config";
 
-// Vercel deployment fix: Ensure NEXTAUTH_URL has protocol
-if (process.env.VERCEL_URL && !process.env.NEXTAUTH_URL) {
-    process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
-} else if (process.env.NEXTAUTH_URL && !process.env.NEXTAUTH_URL.startsWith("http")) {
-    process.env.NEXTAUTH_URL = `https://${process.env.NEXTAUTH_URL}`;
-}
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: MongoDBAdapter(clientPromise),
     session: { 

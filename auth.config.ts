@@ -5,7 +5,6 @@ export default {
     providers: [Google],
     trustHost: true,
     secret: process.env.AUTH_SECRET,
-    basePath: "/api/auth",
     callbacks: {
         async session({ session, token }) {
             if (token && session.user) {
