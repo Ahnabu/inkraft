@@ -32,16 +32,19 @@ function SignInContent() {
             const result = await signIn("credentials", {
                 email,
                 password,
+                redirect: false,
                 callbackUrl: absoluteCallbackUrl,
-                // Let NextAuth handle the redirect for better Vercel compatibility
             });
 
-            // Only handle errors - NextAuth will redirect on success
             if (result?.error) {
                 const errorMsg = "Invalid email or password";
                 setError(errorMsg);
                 toast.error(errorMsg);
                 setLoading(false);
+            } else if (result?.ok) {
+                toast.success("Successfully signed in!");
+                // Force a full page navigation for Vercel compatibility
+                window.location.href = absoluteCallbackUrl;
             }
         } catch (_error) {
             const errorMsg = "Something went wrong. Please try again.";
