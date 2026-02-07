@@ -23,3 +23,11 @@ export const metadata: Metadata = {
         canonical: "/explore",
     },
 };
+
+export default function ExploreLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return <>{children}</>;
+}
