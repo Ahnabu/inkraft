@@ -125,7 +125,7 @@ function SignInContent() {
                         <span className="w-full border-t border-border" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-background px-3 text-muted-foreground font-medium">
+                        <span className="bg-background px-3 text-gray-800 font-medium">
                             Or continue with
                         </span>
                     </div>

@@ -239,7 +239,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                             <select
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                             >
                                 <option value="">Select a category</option>
                                 {DEFAULT_CATEGORIES.map((cat) => (
@@ -260,7 +260,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                                 value={tags}
                                 onChange={(e) => setTags(e.target.value)}
                                 placeholder="nextjs, typescript, tutorial"
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                         </div>
 
@@ -272,7 +272,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                             <select
                                 value={difficultyLevel}
                                 onChange={(e) => setDifficultyLevel(e.target.value as "Beginner" | "Intermediate" | "Advanced" | "")}
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                             >
                                 <option value="">Not specified</option>
                                 <option value="Beginner">Beginner</option>
@@ -291,7 +291,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                                 value={coverImage}
                                 onChange={(e) => setCoverImage(e.target.value)}
                                 placeholder="https://..."
-                                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                             {coverImage && (
                                 <div className="mt-2 rounded-lg overflow-hidden border border-border">

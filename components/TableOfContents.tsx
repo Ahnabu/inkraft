@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { List } from "lucide-react";
 
 interface Heading {
     id: string;
@@ -55,32 +54,40 @@ export function TableOfContents() {
     if (headings.length === 0) return null;
 
     return (
-        <div className="space-y-4">
-            <div className="flex items-center gap-2 font-semibold text-foreground/80">
-                <List size={20} />
-                <span>Table of Contents</span>
-            </div>
-            <nav className="space-y-1">
+        <div className="space-y-3 py-4 px-2">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-2 mb-4">
+                Contents
+            </h3>
+            <nav className="space-y-0.5">
                 {headings.map((heading) => (
                     <a
                         key={heading.id}
                         href={`#${heading.id}`}
                         onClick={(e) => {
                             e.preventDefault();
-                            document.getElementById(heading.id)?.scrollIntoView({
-                                behavior: "smooth"
-                            });
-                            setActiveId(heading.id);
+                            const element = document.getElementById(heading.id);
+                            if (element) {
+                                const offset = 100; // Offset for sticky header
+                                const elementPosition = element.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - offset;
+                                
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: "smooth"
+                                });
+                                setActiveId(heading.id);
+                            }
                         }}
                         className={cn(
-                            "block text-sm py-1 transition-colors border-l-2 pl-4",
-                            heading.level === 3 && "ml-4",
+                            "block py-2 px-2 text-sm transition-all duration-150 border-l-2 rounded-r",
+                            heading.level === 2 && "font-normal",
+                            heading.level === 3 && "pl-6 text-xs",
                             activeId === heading.id
-                                ? "border-primary text-primary font-medium"
-                                : "border-transparent text-muted-foreground hover:text-foreground"
+                                ? "border-primary text-primary font-medium bg-primary/5"
+                                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border hover:bg-muted/30"
                         )}
                     >
-                        {heading.text}
+                        <span className="line-clamp-2 leading-snug">{heading.text}</span>
                     </a>
                 ))}
             </nav>
