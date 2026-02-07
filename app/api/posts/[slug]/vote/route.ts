@@ -52,47 +52,49 @@ export async function POST(
             return new NextResponse("User not found", { status: 404 });
         }
 
-        // Get user activity - set default values if not found
-        let userActivity = await UserActivity.findOne({ user: session.user.id });
-        console.log("[VOTE_POST] UserActivity found:", userActivity ? "yes" : "no");
-        
+        // Get user activity - use defaults if not found
         let articlesRead = 0;
         let contributions = 0;
         
-        if (userActivity) {
-            articlesRead = userActivity.articlesRead || 0;
-            contributions = userActivity.contributions || 0;
-        } else {
-            try {
-                console.log("[VOTE_POST] Creating new UserActivity");
-                // Create default activity if not exists
-                userActivity = await UserActivity.create({
-                    user: session.user.id,
-                    articlesRead: 0,
-                    contributions: 0,
-                });
-                console.log("[VOTE_POST] UserActivity created");
-            } catch (createError) {
-                console.error("[CREATE_USER_ACTIVITY_ERROR]", createError);
-                // Continue with default values if creation fails
+        try {
+            const userActivity = await UserActivity.findOne({ user: session.user.id });
+            if (userActivity) {
+                articlesRead = userActivity.articlesRead || 0;
+                contributions = userActivity.contributions || 0;
             }
+            console.log("[VOTE_POST] UserActivity loaded:", { articlesRead, contributions });
+        } catch (activityError) {
+            console.warn("[VOTE_POST] UserActivity error, using defaults:", activityError);
+            // Continue with defaults (0, 0)
         }
 
         // Calculate vote weight based on trust
-        const accountAgeDays = getAccountAgeDays(user.createdAt);
-        const voteWeight = calculateVoteWeight(
-            accountAgeDays,
-            articlesRead,
-            contributions
-        );
-        console.log("[VOTE_POST] Vote weight calculated:", voteWeight);
+        let voteWeight = 1.0;
+        try {
+            const accountAgeDays = getAccountAgeDays(user.createdAt);
+            voteWeight = calculateVoteWeight(
+                accountAgeDays,
+                articlesRead,
+                contributions
+            );
+            console.log("[VOTE_POST] Vote weight calculated:", voteWeight);
+        } catch (weightError) {
+            console.warn("[VOTE_POST] Vote weight calculation error, using default:", weightError);
+            voteWeight = 1.0;
+        }
 
         // Check for existing vote
-        const existingVote = await Vote.findOne({
-            user: session.user.id,
-            post: post._id,
-        });
-        console.log("[VOTE_POST] Existing vote:", existingVote ? existingVote.voteType : "none");
+        let existingVote = null;
+        try {
+            existingVote = await Vote.findOne({
+                user: session.user.id,
+                post: post._id,
+            });
+            console.log("[VOTE_POST] Existing vote:", existingVote ? existingVote.voteType : "none");
+        } catch (voteCheckError) {
+            console.error("[VOTE_POST] Error checking existing vote:", voteCheckError);
+            // Continue as if no existing vote
+        }
 
         let oldVoteType: string | null = null;
         let oldWeight = 0;
@@ -100,35 +102,45 @@ export async function POST(
 
         if (existingVote) {
             oldVoteType = existingVote.voteType;
-            oldWeight = existingVote.weight;
+            oldWeight = existingVote.weight || 1.0;
 
             // If same vote type, remove vote (toggle off)
             if (existingVote.voteType === voteType) {
                 console.log("[VOTE_POST] Toggling vote off");
-                await Vote.deleteOne({ _id: existingVote._id });
+                try {
+                    await Vote.deleteOne({ _id: existingVote._id });
+                } catch (deleteError) {
+                    console.error("[VOTE_POST] Error deleting vote:", deleteError);
+                    throw new Error("Failed to remove vote");
+                }
 
                 // Update post counts
                 if (voteType === "upvote") {
-                    post.upvotes = Math.max(0, post.upvotes - oldWeight);
+                    post.upvotes = Math.max(0, (post.upvotes || 0) - oldWeight);
                 } else {
-                    post.downvotes = Math.max(0, post.downvotes - oldWeight);
+                    post.downvotes = Math.max(0, (post.downvotes || 0) - oldWeight);
                 }
 
                 finalUserVote = null; // Vote toggled off
             } else {
                 // Switch vote type
                 console.log("[VOTE_POST] Switching vote from", oldVoteType, "to", voteType);
-                existingVote.voteType = voteType;
-                existingVote.weight = voteWeight;
-                await existingVote.save();
+                try {
+                    existingVote.voteType = voteType;
+                    existingVote.weight = voteWeight;
+                    await existingVote.save();
+                } catch (updateError) {
+                    console.error("[VOTE_POST] Error updating vote:", updateError);
+                    throw new Error("Failed to update vote");
+                }
 
                 // Update post counts (remove old, add new)
                 if (oldVoteType === "upvote") {
-                    post.upvotes = Math.max(0, post.upvotes - oldWeight);
-                    post.downvotes += voteWeight;
+                    post.upvotes = Math.max(0, (post.upvotes || 0) - oldWeight);
+                    post.downvotes = (post.downvotes || 0) + voteWeight;
                 } else {
-                    post.downvotes = Math.max(0, post.downvotes - oldWeight);
-                    post.upvotes += voteWeight;
+                    post.downvotes = Math.max(0, (post.downvotes || 0) - oldWeight);
+                    post.upvotes = (post.upvotes || 0) + voteWeight;
                 }
 
                 finalUserVote = voteType; // Vote switched
@@ -136,44 +148,59 @@ export async function POST(
         } else {
             // Create new vote
             console.log("[VOTE_POST] Creating new vote");
-            await Vote.create({
-                user: session.user.id,
-                post: post._id,
-                voteType,
-                weight: voteWeight,
-            });
+            try {
+                await Vote.create({
+                    user: session.user.id,
+                    post: post._id,
+                    voteType,
+                    weight: voteWeight,
+                });
+            } catch (createError) {
+                console.error("[VOTE_POST] Error creating vote:", createError);
+                throw new Error("Failed to create vote");
+            }
 
             // Update post counts
             if (voteType === "upvote") {
-                post.upvotes += voteWeight;
+                post.upvotes = (post.upvotes || 0) + voteWeight;
             } else {
-                post.downvotes += voteWeight;
+                post.downvotes = (post.downvotes || 0) + voteWeight;
             }
 
             finalUserVote = voteType; // New vote created
         }
 
         // Recalculate engagement score
-        const daysSincePublish = post.publishedAt
-            ? (Date.now() - post.publishedAt.getTime()) / (1000 * 60 * 60 * 24)
-            : 0;
+        try {
+            const daysSincePublish = post.publishedAt
+                ? (Date.now() - post.publishedAt.getTime()) / (1000 * 60 * 60 * 24)
+                : 0;
 
-        post.engagementScore = calculateEngagementScore(
-            post.upvotes,
-            post.downvotes,
-            post.commentCount,
-            daysSincePublish
-        );
+            post.engagementScore = calculateEngagementScore(
+                post.upvotes || 0,
+                post.downvotes || 0,
+                post.commentCount || 0,
+                daysSincePublish
+            );
+        } catch (engagementError) {
+            console.warn("[VOTE_POST] Engagement score calculation error:", engagementError);
+            // Continue without updating engagement score
+        }
 
         console.log("[VOTE_POST] Saving post with new vote counts");
-        await post.save();
-        console.log("[VOTE_POST] Vote completed successfully");
+        try {
+            await post.save();
+            console.log("[VOTE_POST] Vote completed successfully");
+        } catch (saveError) {
+            console.error("[VOTE_POST] Error saving post:", saveError);
+            throw new Error("Failed to save vote changes");
+        }
 
         // Return updated vote counts
         return NextResponse.json({
-            upvotes: Math.round(post.upvotes),
-            downvotes: Math.round(post.downvotes),
-            engagementScore: Math.round(post.engagementScore),
+            upvotes: Math.round(post.upvotes || 0),
+            downvotes: Math.round(post.downvotes || 0),
+            engagementScore: Math.round(post.engagementScore || 0),
             userVote: finalUserVote,
         });
     } catch (error: unknown) {
