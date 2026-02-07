@@ -16,7 +16,10 @@ if (process.env.VERCEL_URL && !process.env.NEXTAUTH_URL) {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: MongoDBAdapter(clientPromise),
-    session: { strategy: "jwt" },
+    session: { 
+        strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+    },
     ...authConfig,
     providers: [
         ...authConfig.providers,
