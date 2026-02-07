@@ -67,6 +67,7 @@ export async function POST(
 
         let oldVoteType: string | null = null;
         let oldWeight = 0;
+        let finalUserVote: "upvote" | "downvote" | null = null;
 
         if (existingVote) {
             oldVoteType = existingVote.voteType;
@@ -82,6 +83,8 @@ export async function POST(
                 } else {
                     post.downvotes = Math.max(0, post.downvotes - oldWeight);
                 }
+
+                finalUserVote = null; // Vote toggled off
             } else {
                 // Switch vote type
                 existingVote.voteType = voteType;
@@ -96,6 +99,8 @@ export async function POST(
                     post.downvotes = Math.max(0, post.downvotes - oldWeight);
                     post.upvotes += voteWeight;
                 }
+
+                finalUserVote = voteType; // Vote switched
             }
         } else {
             // Create new vote
@@ -112,6 +117,8 @@ export async function POST(
             } else {
                 post.downvotes += voteWeight;
             }
+
+            finalUserVote = voteType; // New vote created
         }
 
         // Recalculate engagement score
@@ -133,7 +140,7 @@ export async function POST(
             upvotes: Math.round(post.upvotes),
             downvotes: Math.round(post.downvotes),
             engagementScore: Math.round(post.engagementScore),
-            userVote: existingVote?.voteType === voteType ? null : voteType, // null if toggled off
+            userVote: finalUserVote,
         });
     } catch (error: unknown) {
         console.error("[VOTE_POST]", error);

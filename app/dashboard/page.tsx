@@ -13,7 +13,8 @@ import {
     Edit,
     Eye,
     Plus,
-    Settings
+    Settings,
+    Bookmark
 } from "lucide-react";
 
 // Force dynamic rendering
@@ -22,8 +23,16 @@ export const dynamic = 'force-dynamic';
 async function getDashboardData(userId: string) {
     await dbConnect();
 
-    const [user, posts, userActivity] = await Promise.all([
-        User.findById(userId).lean(),
+    const userWithSaved = await User.findById(userId)
+        .populate({
+            path: "savedPosts",
+            match: { published: true },
+            populate: { path: "author", select: "name image" },
+            options: { limit: 10, sort: { createdAt: -1 } }
+        })
+        .lean();
+
+    const [posts, userActivity] = await Promise.all([
         Post.find({ author: userId })
             .sort({ createdAt: -1 })
             .limit(10)
@@ -36,10 +45,12 @@ async function getDashboardData(userId: string) {
     const draftPosts = posts.filter((p) => !p.published);
     const totalUpvotes = Math.round(posts.reduce((sum: number, p: { upvotes?: number }) => sum + (p.upvotes || 0), 0));
     const totalComments = posts.reduce((sum: number, p: { commentCount?: number }) => sum + (p.commentCount || 0), 0);
+    const savedPosts = userWithSaved?.savedPosts || [];
 
     return {
-        user: JSON.parse(JSON.stringify(user)),
+        user: JSON.parse(JSON.stringify(userWithSaved)),
         posts: JSON.parse(JSON.stringify(posts)),
+        savedPosts: JSON.parse(JSON.stringify(savedPosts)),
         userActivity: userActivity ? JSON.parse(JSON.stringify(userActivity)) : null,
         stats: {
             totalPosts: posts.length,
@@ -47,6 +58,7 @@ async function getDashboardData(userId: string) {
             draftPosts: draftPosts.length,
             totalUpvotes,
             totalComments,
+            savedPostsCount: savedPosts.length,
         },
     };
 }
@@ -58,7 +70,7 @@ export default async function DashboardPage() {
         redirect("/auth/signin");
     }
 
-    const { user, posts, stats } = await getDashboardData(
+    const { user, posts, savedPosts, stats } = await getDashboardData(
         session.user.id
     );
 
@@ -92,7 +104,7 @@ export default async function DashboardPage() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
                     <div className="bg-card rounded-xl p-6 border border-border">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-muted-foreground text-sm">Total Posts</span>
@@ -123,6 +135,17 @@ export default async function DashboardPage() {
                         <p className="text-3xl font-bold">{stats.totalComments}</p>
                         <p className="text-xs text-muted-foreground mt-1">
                             Total discussions
+                        </p>
+                    </div>
+
+                    <div className="bg-card rounded-xl p-6 border border-border">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-muted-foreground text-sm">Saved Posts</span>
+                            <Bookmark size={20} className="text-purple-500" />
+                        </div>
+                        <p className="text-3xl font-bold">{stats.savedPostsCount}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Bookmarked articles
                         </p>
                     </div>
 
@@ -183,6 +206,10 @@ export default async function DashboardPage() {
                                             <td className="p-4">
                                                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                                                     <div className="flex items-center gap-1">
+                                                        <Eye size={14} />
+                                                        <span>{post.views || 0}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
                                                         <ArrowUp size={14} />
                                                         <span>{Math.round(post.upvotes || 0)}</span>
                                                     </div>
@@ -229,6 +256,102 @@ export default async function DashboardPage() {
                                 className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors inline-block"
                             >
                                 Create Your First Post
+                            </Link>
+                        </div>
+                    )}
+                </div>
+
+                {/* Saved Posts */}
+                <div className="bg-card rounded-xl border border-border overflow-hidden mt-8">
+                    <div className="p-6 border-b border-border flex items-center justify-between">
+                        <h2 className="text-xl font-bold">Saved Posts</h2>
+                        <Link
+                            href={`/profile/${session.user.id}?tab=saved`}
+                            className="text-sm text-primary hover:underline"
+                        >
+                            View All
+                        </Link>
+                    </div>
+
+                    {savedPosts.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-muted/50">
+                                    <tr>
+                                        <th className="text-left p-4 text-sm font-semibold">Title</th>
+                                        <th className="text-left p-4 text-sm font-semibold">Author</th>
+                                        <th className="text-left p-4 text-sm font-semibold">Category</th>
+                                        <th className="text-left p-4 text-sm font-semibold">Engagement</th>
+                                        <th className="text-right p-4 text-sm font-semibold">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {savedPosts.map((post: { _id: string; slug: string; title: string; category: string; author: { _id: string; name: string }; upvotes: number; commentCount: number; views: number }) => (
+                                        <tr key={post._id} className="border-b border-border last:border-0">
+                                            <td className="p-4">
+                                                <Link
+                                                    href={`/blog/${post.slug}`}
+                                                    className="font-medium hover:text-primary transition-colors line-clamp-1"
+                                                >
+                                                    {post.title}
+                                                </Link>
+                                            </td>
+                                            <td className="p-4 text-sm text-muted-foreground">
+                                                <Link
+                                                    href={`/profile/${post.author._id}`}
+                                                    className="hover:text-primary transition-colors"
+                                                >
+                                                    {post.author.name}
+                                                </Link>
+                                            </td>
+                                            <td className="p-4">
+                                                <span className="px-2 py-1 bg-muted text-foreground rounded text-xs font-medium">
+                                                    {post.category}
+                                                </span>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                                    <div className="flex items-center gap-1">
+                                                        <Eye size={14} />
+                                                        <span>{post.views || 0}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <ArrowUp size={14} />
+                                                        <span>{Math.round(post.upvotes || 0)}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <MessageSquare size={14} />
+                                                        <span>{post.commentCount || 0}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <Link
+                                                        href={`/blog/${post.slug}`}
+                                                        className="p-2 hover:bg-muted rounded-lg transition-colors"
+                                                        title="View"
+                                                    >
+                                                        <Eye size={16} />
+                                                    </Link>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <div className="p-12 text-center">
+                            <Bookmark size={48} className="mx-auto text-muted-foreground mb-3" />
+                            <p className="text-muted-foreground mb-4">
+                                You haven&apos;t saved any posts yet
+                            </p>
+                            <Link
+                                href="/explore"
+                                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors inline-block"
+                            >
+                                Explore Articles
                             </Link>
                         </div>
                     )}
