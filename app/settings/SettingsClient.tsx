@@ -130,7 +130,7 @@ export default function SettingsClient() {
                                 onChange={(e) =>
                                     setFormData({ ...formData, name: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-4 py-2 rounded-lg border-0 bg-secondary/50 ring-1 ring-inset ring-border focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                                 required
                             />
                         </div>
@@ -150,7 +150,7 @@ export default function SettingsClient() {
                                 rows={4}
                                 maxLength={500}
                                 placeholder="Tell us about yourself..."
-                                className="w-full px-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                                className="w-full px-4 py-2 rounded-lg border-0 bg-secondary/50 ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary resize-none"
                             />
                             <p className="text-xs text-muted-foreground mt-1">
                                 {formData.bio.length}/500 characters
@@ -170,7 +170,7 @@ export default function SettingsClient() {
                                     setFormData({ ...formData, website: e.target.value })
                                 }
                                 placeholder="https://yourwebsite.com"
-                                className="w-full px-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-4 py-2 rounded-lg border-0 bg-secondary/50 ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                             />
                         </div>
 
@@ -189,7 +189,7 @@ export default function SettingsClient() {
                                         setFormData({ ...formData, twitter: e.target.value })
                                     }
                                     placeholder="username"
-                                    className="flex-1 px-4 py-2 rounded-r-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                    className="flex-1 px-4 py-2 rounded-r-lg border-0 bg-secondary/50 ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                                 />
                             </div>
                         </div>
@@ -204,8 +204,8 @@ export default function SettingsClient() {
                                 onChange={(e) =>
                                     setFormData({ ...formData, linkedin: e.target.value })
                                 }
-                                placeholder="https://l inkedin.com/in/username"
-                                className="w-full px-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                placeholder="https://linkedin.com/in/username"
+                                className="w-full px-4 py-2 rounded-lg border-0 bg-secondary/50 ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                             />
                         </div>
                     </div>

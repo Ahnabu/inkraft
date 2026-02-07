@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 
 import { Providers } from "@/components/Providers";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/next";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -93,6 +94,7 @@ export default function RootLayout({
             </main>
             <Footer />
           </div>
+          <Analytics />
         </Providers>
       </body>
     </html>

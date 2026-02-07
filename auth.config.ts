@@ -5,6 +5,7 @@ export default {
     providers: [Google],
     trustHost: true,
     secret: process.env.AUTH_SECRET,
+    basePath: "/api/auth",
     callbacks: {
         async session({ session, token }) {
             if (token && session.user) {
@@ -20,6 +21,18 @@ export default {
                 token.role = user.role;
             }
             return token;
+        },
+        authorized({ auth, request }) {
+            const { pathname } = request.nextUrl;
+            const isLoggedIn = !!auth?.user;
+            const protectedPaths = ["/write", "/dashboard", "/admin", "/new", "/settings", "/edit"];
+            const isProtectedRoute = protectedPaths.some(path => pathname.startsWith(path));
+            
+            if (isProtectedRoute && !isLoggedIn) {
+                return false; // Redirect to login
+            }
+            
+            return true;
         },
     },
     pages: {
