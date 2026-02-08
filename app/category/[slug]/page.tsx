@@ -7,6 +7,8 @@ import User from "@/models/User"; // Import User model for populate
 import { getCategoryBySlug, DEFAULT_CATEGORIES } from "@/lib/categories";
 import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
+import { generateSEO, generateBreadcrumbSchema } from "@/lib/seo";
+import { getBaseUrl } from "@/lib/utils";
 
 interface PageProps {
     params: { slug: string };
@@ -30,14 +32,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         return { title: "Category Not Found" };
     }
 
-    return {
-        title: `${categoryConfig.name} - Inkraft`,
-        description: categoryConfig.description,
-        openGraph: {
-            title: `${categoryConfig.name} Articles`,
-            description: categoryConfig.description,
-        },
-    };
+    const baseUrl = getBaseUrl();
+    const categoryUrl = `${baseUrl}/category/${params.slug}`;
+
+    return generateSEO({
+        title: `${categoryConfig.name} Articles - Expert Content & Tutorials | Inkraft`,
+        description: `${categoryConfig.description} Discover in-depth articles, tutorials, and expert insights on ${categoryConfig.name}.`,
+        keywords: [
+            categoryConfig.name,
+            `${categoryConfig.name} blog`,
+            `${categoryConfig.name} articles`,
+            `${categoryConfig.name} tutorials`,
+            `learn ${categoryConfig.name}`,
+            ...categoryConfig.slug.split("-"),
+        ],
+        url: categoryUrl,
+        type: "website",
+    });
 }
 
 export async function generateStaticParams() {
@@ -57,8 +68,49 @@ export default async function CategoryPage({ params }: PageProps) {
     const featuredPost = posts[0];
     const recentPosts = posts.slice(1);
 
+    // Breadcrumb structured data
+    const baseUrl = getBaseUrl();
+    const breadcrumbSchema = generateBreadcrumbSchema([
+        { name: "Home", url: baseUrl },
+        { name: "Categories", url: `${baseUrl}/explore` },
+        { name: categoryConfig.name, url: `${baseUrl}/category/${params.slug}` },
+    ]);
+
+    // Collection page structured data
+    const collectionSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: `${categoryConfig.name} Articles`,
+        description: categoryConfig.description,
+        url: `${baseUrl}/category/${params.slug}`,
+        about: {
+            "@type": "Thing",
+            name: categoryConfig.name,
+            description: categoryConfig.description,
+        },
+        mainEntity: {
+            "@type": "ItemList",
+            numberOfItems: posts.length,
+            itemListElement: posts.slice(0, 10).map((post: { title: string; slug: string }, index: number) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                url: `${baseUrl}/blog/${post.slug}`,
+                name: post.title,
+            })),
+        },
+    };
+
     return (
-        <div className="space-y-12">
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+            />
+            <div className="space-y-12">
             {/* Category Header */}
             <header className="text-center space-y-4 pb-8 border-b border-border/40">
                 <div
@@ -146,5 +198,6 @@ export default async function CategoryPage({ params }: PageProps) {
                 )}
             </section>
         </div>
+        </>
     );
 }

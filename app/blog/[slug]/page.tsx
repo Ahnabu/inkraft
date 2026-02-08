@@ -17,6 +17,7 @@ import { TableOfContents } from "@/components/TableOfContents";
 import { getBaseUrl } from "@/lib/utils";
 import { ViewTracker } from "@/components/ViewTracker";
 import { BlogPostClient } from "@/components/BlogPostClient";
+import { BlogContent } from "@/components/BlogContent";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -54,38 +55,71 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     if (!post) return { title: "Post Not Found" };
 
+    const baseUrl = getBaseUrl();
+    const wordCount = post.content?.split(/\s+/).length || 0;
+    const articleUrl = `${baseUrl}/blog/${slug}`;
+
     return {
         title: post.seo?.title || `${post.title} | Inkraft`,
         description: post.seo?.description || post.excerpt,
         keywords: post.seo?.keywords || post.tags,
-        authors: post.author?.name ? [{ name: post.author.name }] : [],
+        authors: post.author?.name ? [{ name: post.author.name, url: `${baseUrl}/profile/${post.author._id}` }] : [],
+        creator: post.author?.name || "Inkraft",
+        publisher: "Inkraft",
         alternates: {
-            canonical: `/blog/${slug}`,
+            canonical: articleUrl,
         },
         openGraph: {
-            title: post.title,
-            description: post.excerpt,
+            title: post.seo?.title || post.title,
+            description: post.seo?.description || post.excerpt,
             type: "article",
-            url: `/blog/${slug}`,
+            url: articleUrl,
             publishedTime: post.publishedAt || post.createdAt,
             modifiedTime: post.updatedAt,
             authors: [post.author?.name || "Anonymous"],
             tags: post.tags || [],
+            section: post.category,
             images: post.coverImage ? [
                 {
                     url: post.coverImage,
                     width: 1200,
                     height: 630,
+                    alt: post.seo?.title || post.title,
+                    type: "image/jpeg",
+                }
+            ] : [
+                {
+                    url: `${baseUrl}/api/og?title=${encodeURIComponent(post.title)}`,
+                    width: 1200,
+                    height: 630,
                     alt: post.title,
                 }
-            ] : [],
+            ],
         },
         twitter: {
             card: "summary_large_image",
-            title: post.title,
-            description: post.excerpt,
-            images: post.coverImage ? [post.coverImage] : [],
+            title: post.seo?.title || post.title,
+            description: post.seo?.description || post.excerpt,
+            images: post.coverImage ? [post.coverImage] : [`${baseUrl}/api/og?title=${encodeURIComponent(post.title)}`],
             creator: post.author?.name ? `@${post.author.name.replace(/\s+/g, '')}` : "@inkraft",
+            site: "@inkraft",
+        },
+        robots: {
+            index: true,
+            follow: true,
+            nocache: false,
+            googleBot: {
+                index: true,
+                follow: true,
+                noimageindex: false,
+                "max-video-preview": -1,
+                "max-image-preview": "large",
+                "max-snippet": -1,
+            },
+        },
+        other: {
+            "article:word_count": wordCount.toString(),
+            "article:section": post.category,
         },
     };
 }
@@ -113,40 +147,118 @@ export default async function BlogPostPage({ params }: PageProps) {
     const relatedPosts = await getRelatedPosts(post.category, slug);
     const articleUrl = `${getBaseUrl()}/blog/${slug}`;
 
-    // Structured data for Article
+    // Enhanced structured data with Breadcrumbs and Article
+    const wordCount = post.content?.split(/\s+/).length || 0;
+    
+    const breadcrumbStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: getBaseUrl(),
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Blog',
+                item: `${getBaseUrl()}/explore`,
+            },
+            {
+                '@type': 'ListItem',
+                position: 3,
+                name: post.category,
+                item: `${getBaseUrl()}/category/${post.category.toLowerCase()}`,
+            },
+            {
+                '@type': 'ListItem',
+                position: 4,
+                name: post.title,
+                item: articleUrl,
+            },
+        ],
+    };
+
     const articleStructuredData = {
         '@context': 'https://schema.org',
-        '@type': 'Article',
+        '@type': 'BlogPosting',
         headline: post.title,
+        alternativeHeadline: post.subtitle || undefined,
         description: post.excerpt,
-        image: post.coverImage || `${getBaseUrl()}/api/og`,
+        image: post.coverImage ? {
+            '@type': 'ImageObject',
+            url: post.coverImage,
+            width: 1200,
+            height: 630,
+        } : `${getBaseUrl()}/api/og?title=${encodeURIComponent(post.title)}`,
         datePublished: post.publishedAt || post.createdAt,
         dateModified: post.updatedAt || post.publishedAt || post.createdAt,
         author: {
             '@type': 'Person',
             name: post.author?.name || 'Anonymous',
             url: post.author?._id ? `${getBaseUrl()}/profile/${post.author._id}` : undefined,
+            image: post.author?.image || undefined,
+            description: post.author?.bio || undefined,
         },
         publisher: {
             '@type': 'Organization',
             name: 'Inkraft',
+            url: getBaseUrl(),
             logo: {
                 '@type': 'ImageObject',
-                url: `${getBaseUrl()}/icon-512.png`
-            }
+                url: `${getBaseUrl()}/icon-512.png`,
+                width: 512,
+                height: 512,
+            },
+            sameAs: [
+                'https://twitter.com/inkraft',
+                'https://github.com/inkraft',
+            ],
         },
         mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': articleUrl
+            '@id': articleUrl,
         },
         keywords: post.tags?.join(', ') || '',
         articleSection: post.category,
-        wordCount: post.content?.split(/\s+/).length || 0,
+        articleBody: post.excerpt,
+        wordCount: wordCount,
         timeRequired: `PT${post.readingTime || 5}M`,
+        url: articleUrl,
+        inLanguage: 'en-US',
+        copyrightYear: new Date(post.publishedAt || post.createdAt).getFullYear(),
+        copyrightHolder: {
+            '@type': 'Organization',
+            name: 'Inkraft',
+        },
+        commentCount: post.comments?.length || 0,
+        interactionStatistic: [
+            {
+                '@type': 'InteractionCounter',
+                interactionType: 'https://schema.org/ReadAction',
+                userInteractionCount: post.views || 0,
+            },
+            {
+                '@type': 'InteractionCounter',
+                interactionType: 'https://schema.org/LikeAction',
+                userInteractionCount: post.upvotes || 0,
+            },
+            {
+                '@type': 'InteractionCounter',
+                interactionType: 'https://schema.org/CommentAction',
+                userInteractionCount: post.comments?.length || 0,
+            },
+        ],
     };
 
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+            />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }}
@@ -286,24 +398,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                                 {/* Main Article Content */}
                                 <article>
                                     <GlassCard className="p-4 sm:p-6 md:p-8 lg:p-12">
-                                        <div
-                                            className="prose prose-sm sm:prose-base lg:prose-lg dark:prose-invert max-w-none
-                                            prose-headings:font-bold prose-headings:tracking-tight
-                                            prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
-                                            prose-p:text-lg prose-p:leading-relaxed prose-p:text-foreground/90
-                                            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                                            prose-strong:text-foreground prose-strong:font-semibold
-                                            prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-                                            prose-pre:bg-muted prose-pre:border prose-pre:border-border
-                                            prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-1
-                                            prose-img:rounded-lg prose-img:shadow-lg
-                                            prose-hr:border-border
-                                            prose-ul:text-foreground/90 prose-ol:text-foreground/90
-                                            first-letter:text-6xl first-letter:font-bold first-letter:text-primary first-letter:mr-2 first-letter:float-left first-letter:leading-none"
-                                            dangerouslySetInnerHTML={{
-                                                __html: post.content
-                                            }}
-                                        />
+                                        <BlogContent content={post.content} />
 
                                         {/* Tags */}
                                         {post.tags && post.tags.length > 0 && (
