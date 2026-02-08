@@ -104,7 +104,7 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
     return (
         <>
             <div
-                className={`blog-content prose prose-lg dark:prose-invert max-w-none ${className}`}
+                className={`blog-content prose dark:prose-invert max-w-none ${className}`}
                 dangerouslySetInnerHTML={{ __html: content }}
             />
             <style jsx global>{`
@@ -137,37 +137,29 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
                 /* Blog Content Styling */
                 .blog-content {
                     color: hsl(var(--foreground) / 0.9);
-                    font-size: 1.125rem;
-                    line-height: 1.8;
+                    font-size: 1rem;
+                    line-height: 1.75;
                 }
 
                 .blog-content h1 {
-                    font-size: 2.5rem;
+                    font-size: 2.25rem;
                     font-weight: 700;
-                    margin-top: 3rem;
-                    margin-bottom: 1.5rem;
+                    margin-top: 2.5rem;
+                    margin-bottom: 1.25rem;
                     line-height: 1.2;
                     scroll-margin-top: 6rem;
                 }
 
                 .blog-content h2 {
-                    font-size: 2rem;
+                    font-size: 1.875rem;
                     font-weight: 700;
-                    margin-top: 2.5rem;
-                    margin-bottom: 1.25rem;
+                    margin-top: 2rem;
+                    margin-bottom: 1rem;
                     line-height: 1.3;
                     scroll-margin-top: 6rem;
                 }
 
                 .blog-content h3 {
-                    font-size: 1.75rem;
-                    font-weight: 600;
-                    margin-top: 2rem;
-                    margin-bottom: 1rem;
-                    scroll-margin-top: 6rem;
-                }
-
-                .blog-content h4 {
                     font-size: 1.5rem;
                     font-weight: 600;
                     margin-top: 1.75rem;
@@ -175,7 +167,7 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
                     scroll-margin-top: 6rem;
                 }
 
-                .blog-content h5 {
+                .blog-content h4 {
                     font-size: 1.25rem;
                     font-weight: 600;
                     margin-top: 1.5rem;
@@ -183,26 +175,34 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
                     scroll-margin-top: 6rem;
                 }
 
-                .blog-content h6 {
+                .blog-content h5 {
                     font-size: 1.125rem;
                     font-weight: 600;
                     margin-top: 1.25rem;
+                    margin-bottom: 0.625rem;
+                    scroll-margin-top: 6rem;
+                }
+
+                .blog-content h6 {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    margin-top: 1rem;
                     margin-bottom: 0.5rem;
                     scroll-margin-top: 6rem;
                 }
 
                 .blog-content p {
-                    margin-bottom: 1.5rem;
-                    line-height: 1.8;
+                    margin-bottom: 1.25rem;
+                    line-height: 1.75;
                 }
 
-                .blog-content p:first-of-type::first-letter {
-                    font-size: 3.5rem;
+                .blog-content > p:first-child::first-letter {
+                    font-size: 3.25rem;
                     font-weight: 700;
                     float: left;
-                    line-height: 1;
+                    line-height: 0.9;
                     margin-right: 0.5rem;
-                    margin-top: 0.1em;
+                    margin-top: 0.05em;
                     color: hsl(var(--primary));
                 }
 
@@ -316,28 +316,6 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
                     font-style: italic;
                 }
 
-                @media (max-width: 768px) {
-                    .blog-content {
-                        font-size: 1rem;
-                    }
-
-                    .blog-content h1 {
-                        font-size: 2rem;
-                    }
-
-                    .blog-content h2 {
-                        font-size: 1.75rem;
-                    }
-
-                    .blog-content h3 {
-                        font-size: 1.5rem;
-                    }
-
-                    .blog-content p:first-of-type::first-letter {
-                        font-size: 2.5rem;
-                    }
-                }
-
                 .heading-anchor {
                     position: absolute;
                     left: -2rem;
@@ -360,11 +338,252 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
                     overflow-x: auto;
                     margin: 2rem 0;
                     border-radius: 0.5rem;
+                    -webkit-overflow-scrolling: touch;
                 }
 
+                /* Tablet Screens (1024px and below) */
+                @media (max-width: 1024px) {
+                    .blog-content {
+                        font-size: 0.9675rem;
+                    }
+
+                    .blog-content h1 {
+                        font-size: 2rem;
+                        margin-top: 2.25rem;
+                        margin-bottom: 1.125rem;
+                    }
+
+                    .blog-content h2 {
+                        font-size: 1.75rem;
+                        margin-top: 2rem;
+                        margin-bottom: 1rem;
+                    }
+
+                    .blog-content h3 {
+                        font-size: 1.375rem;
+                    }
+
+                    .blog-content > p:first-child::first-letter {
+                        font-size: 3rem;
+                    }
+
+                    .heading-anchor {
+                        left: -1.5rem;
+                    }
+                }
+
+                /* Mobile Landscape & Small Tablets (768px and below) */
                 @media (max-width: 768px) {
+                    .blog-content {
+                        font-size: 0.9375rem;
+                        line-height: 1.7;
+                    }
+
+                    .blog-content h1 {
+                        font-size: 1.75rem;
+                        margin-top: 2rem;
+                        margin-bottom: 1rem;
+                    }
+
+                    .blog-content h2 {
+                        font-size: 1.5rem;
+                        margin-top: 1.75rem;
+                        margin-bottom: 0.875rem;
+                    }
+
+                    .blog-content h3 {
+                        font-size: 1.25rem;
+                        margin-top: 1.5rem;
+                        margin-bottom: 0.75rem;
+                    }
+
+                    .blog-content h4 {
+                        font-size: 1.125rem;
+                        margin-top: 1.25rem;
+                        margin-bottom: 0.625rem;
+                    }
+
+                    .blog-content > p:first-child::first-letter {
+                        font-size: 2.5rem;
+                        line-height: 0.85;
+                    }
+
+                    .blog-content p {
+                        margin-bottom: 1rem;
+                    }
+
+                    .blog-content ul,
+                    .blog-content ol {
+                        margin-left: 1rem;
+                    }
+
+                    .blog-content pre {
+                        padding: 1rem;
+                        margin: 1.5rem -1rem;
+                        border-radius: 0.5rem;
+                    }
+
+                    .blog-content img {
+                        margin: 1.5rem -1rem;
+                        border-radius: 0.5rem;
+                        width: calc(100% + 2rem);
+                        max-width: calc(100% + 2rem);
+                    }
+
                     .heading-anchor {
                         display: none;
+                    }
+
+                    .table-wrapper {
+                        margin: 1.5rem -1rem;
+                        border-radius: 0;
+                    }
+
+                    .blog-content table {
+                        font-size: 0.875rem;
+                    }
+
+                    .blog-content th,
+                    .blog-content td {
+                        padding: 0.5rem 0.75rem;
+                    }
+
+                    .copy-button {
+                        top: 0.5rem;
+                        right: 0.5rem;
+                        padding: 0.375rem 0.5rem;
+                        font-size: 0.75rem;
+                    }
+                }
+
+                /* Mobile Portrait (640px and below) */
+                @media (max-width: 640px) {
+                    .blog-content {
+                        font-size: 0.9125rem;
+                    }
+
+                    .blog-content h1 {
+                        font-size: 1.625rem;
+                        margin-top: 1.75rem;
+                    }
+
+                    .blog-content h2 {
+                        font-size: 1.375rem;
+                        margin-top: 1.5rem;
+                    }
+
+                    .blog-content h3 {
+                        font-size: 1.125rem;
+                    }
+
+                    .blog-content h4 {
+                        font-size: 1.0625rem;
+                    }
+
+                    .blog-content > p:first-child::first-letter {
+                        font-size: 2.25rem;
+                    }
+
+                    .blog-content blockquote {
+                        padding: 0.875rem 1.25rem;
+                        margin: 1.5rem -0.5rem;
+                    }
+
+                    .blog-content pre {
+                        font-size: 0.875rem;
+                    }
+                }
+
+                /* Small Mobile (375px and below) */
+                @media (max-width: 375px) {
+                    .blog-content {
+                        font-size: 0.875rem;
+                        line-height: 1.65;
+                    }
+
+                    .blog-content h1 {
+                        font-size: 1.5rem;
+                        margin-top: 1.5rem;
+                        margin-bottom: 0.875rem;
+                    }
+
+                    .blog-content h2 {
+                        font-size: 1.25rem;
+                        margin-top: 1.375rem;
+                        margin-bottom: 0.75rem;
+                    }
+
+                    .blog-content h3 {
+                        font-size: 1.0625rem;
+                        margin-top: 1.25rem;
+                        margin-bottom: 0.625rem;
+                    }
+
+                    .blog-content h4 {
+                        font-size: 1rem;
+                        margin-top: 1.125rem;
+                        margin-bottom: 0.5rem;
+                    }
+
+                    .blog-content > p:first-child::first-letter {
+                        font-size: 2rem;
+                        line-height: 0.8;
+                        margin-right: 0.375rem;
+                    }
+
+                    .blog-content p {
+                        margin-bottom: 0.875rem;
+                    }
+
+                    .blog-content ul,
+                    .blog-content ol {
+                        margin-left: 0.75rem;
+                        padding-left: 0.25rem;
+                    }
+
+                    .blog-content blockquote {
+                        padding: 0.75rem 1rem;
+                        margin: 1.25rem -0.5rem;
+                        font-size: 0.875rem;
+                    }
+
+                    .blog-content pre {
+                        padding: 0.875rem;
+                        margin: 1.25rem -0.75rem;
+                        font-size: 0.8125rem;
+                    }
+
+                    .blog-content img {
+                        margin: 1.25rem -0.75rem;
+                        width: calc(100% + 1.5rem);
+                        max-width: calc(100% + 1.5rem);
+                    }
+
+                    .blog-content table {
+                        font-size: 0.8125rem;
+                    }
+
+                    .blog-content th,
+                    .blog-content td {
+                        padding: 0.375rem 0.5rem;
+                    }
+
+                    .table-wrapper {
+                        margin: 1.25rem -0.75rem;
+                    }
+
+                    .copy-button {
+                        padding: 0.25rem 0.375rem;
+                        font-size: 0.6875rem;
+                    }
+
+                    .copy-button span {
+                        display: none;
+                    }
+
+                    .copy-button svg {
+                        width: 14px;
+                        height: 14px;
                     }
                 }
             `}</style>
