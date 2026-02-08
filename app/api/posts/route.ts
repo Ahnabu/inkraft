@@ -2,11 +2,19 @@ import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 import { NextResponse } from "next/server";
+import { checkBotId } from "botid/server";
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
     try {
+        // Check for bot activity
+        const verification = await checkBotId();
+        
+        if (verification.isBot) {
+            return new NextResponse("Bot detected. Access denied.", { status: 403 });
+        }
+
         const session = await auth();
 
         // For demo purposes, if no session, we might allow it or mock it.

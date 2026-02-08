@@ -1,10 +1,18 @@
 import { NextResponse } from "next/server";
 import cloudinary from "@/lib/cloudinary";
+import { checkBotId } from "botid/server";
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
     try {
+        // Check for bot activity
+        const verification = await checkBotId();
+        
+        if (verification.isBot) {
+            return new NextResponse("Bot detected. Access denied.", { status: 403 });
+        }
+
         // Check authentication - temporarily disabled for testing
         // const session = await auth();
         // if (!session) {

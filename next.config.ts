@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withBotId } from 'botid/next/config';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -48,7 +49,7 @@ const nextConfig: NextConfig = {
       }
     ];
   },
-  serverExternalPackages: ["mongoose"],
+  serverExternalPackages: ["mongoose", "geoip-lite"],
 };
 
-export default nextConfig;
+export default withBotId(nextConfig);

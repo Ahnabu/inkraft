@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { checkBotId } from "botid/server";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,16 @@ type ContactFormData = {
 
 export async function POST(request: NextRequest) {
     try {
+        // Check for bot activity first
+        const verification = await checkBotId();
+        
+        if (verification.isBot) {
+            return NextResponse.json(
+                { error: "Bot detected. Access denied." },
+                { status: 403 }
+            );
+        }
+
         const data: ContactFormData = await request.json();
         const { name, email, subject, message } = data;
 

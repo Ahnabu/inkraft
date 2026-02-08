@@ -183,9 +183,21 @@ Inkraft is a **premium editorial blogging platform** designed for content creato
 - **Security Features**
   - Session-based authentication
   - CSRF protection
+  - **Vercel BotID** - Advanced bot protection on all forms and APIs
   - Rate limiting on API routes
   - SQL injection prevention (NoSQL)
   - XSS protection
+  - Automated bot detection and blocking
+
+- **Bot Protection (Vercel BotID)**
+  - AI-powered bot detection
+  - Form spam prevention
+  - Fake account blocking
+  - Vote manipulation prevention
+  - Comment spam filtering
+  - Upload abuse protection
+  - Edge-based (ultra-fast)
+  - Zero impact on real users
 
 - **User Roles**
   - Admin dashboard
@@ -249,11 +261,14 @@ Inkraft is a **premium editorial blogging platform** designed for content creato
 - **ODM**: Mongoose 8.x
 - **Authentication**: NextAuth.js v5
 - **Image Storage**: Cloudinary
+- **Email**: Nodemailer + Gmail SMTP
 - **Geolocation**: geoip-lite
 - **User Agent Parsing**: ua-parser-js
+- **Bot Protection**: Vercel BotID
 
 ### DevOps
 - **Deployment**: Vercel (Serverless)
+- **Security**: Vercel BotID (Pro/Enterprise)
 - **CI/CD**: GitHub Actions ready
 - **Monitoring**: Vercel Analytics
 - **Logging**: Console Ninja integration
@@ -1135,6 +1150,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ### Related Documentation
 
+- [Gmail Setup Guide](GMAIL_SETUP_GUIDE.md) - Complete guide for setting up contact form emails
+- [BotID Setup Guide](BOTID_SETUP_GUIDE.md) - Vercel bot protection configuration
 - [SEO Guide](SEO_GUIDE.md) - Complete SEO optimization guide
 - [Blog Formatting Guide](BLOG_FORMATTING_GUIDE.md) - Content creator guide
 - [Deployment Guide](DEPLOYMENT.md) - Detailed deployment instructions

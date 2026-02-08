@@ -6,6 +6,7 @@ import Post from "@/models/Post";
 import User from "@/models/User";
 import UserActivity from "@/models/UserActivity";
 import { calculateVoteWeight, getAccountAgeDays, calculateEngagementScore } from "@/lib/engagement";
+import { checkBotId } from "botid/server";
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,13 @@ export async function POST(
 ) {
     try {
         console.log("[VOTE_POST] Starting vote request");
+        
+        // Check for bot activity
+        const verification = await checkBotId();
+        
+        if (verification.isBot) {
+            return new NextResponse("Bot detected. Access denied.", { status: 403 });
+        }
         
         const session = await auth();
         console.log("[VOTE_POST] Session:", session ? "exists" : "null");

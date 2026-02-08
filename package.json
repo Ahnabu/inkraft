@@ -35,6 +35,7 @@
     "@types/nodemailer": "^7.0.9",
     "@vercel/analytics": "^1.6.1",
     "bcryptjs": "^3.0.3",
+    "botid": "^1.5.10",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",

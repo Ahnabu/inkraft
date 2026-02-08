@@ -5,6 +5,7 @@ import Comment from "@/models/Comment";
 import Post from "@/models/Post";
 import User from "@/models/User";
 import { checkRateLimit, recordComment } from "@/lib/rateLimit";
+import { checkBotId } from "botid/server";
 
 export const dynamic = 'force-dynamic';
 
@@ -109,6 +110,13 @@ export async function POST(
     context: { params: Promise<{ slug: string }> }
 ) {
     try {
+        // Check for bot activity
+        const verification = await checkBotId();
+        
+        if (verification.isBot) {
+            return new NextResponse("Bot detected. Access denied.", { status: 403 });
+        }
+
         const session = await auth();
         if (!session?.user) {
             return new NextResponse("Unauthorized", { status: 401 });
