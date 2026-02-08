@@ -13,17 +13,37 @@ export default function ContactPage() {
         message: "",
     });
     const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setStatus("sending");
+        setErrorMessage("");
 
-        // Simulate form submission (replace with actual API call)
-        setTimeout(() => {
-            setStatus("success");
-            setFormData({ name: "", email: "", subject: "", message: "" });
-            setTimeout(() => setStatus("idle"), 3000);
-        }, 1500);
+        try {
+            const response = await fetch("/api/contact", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setStatus("success");
+                setFormData({ name: "", email: "", subject: "", message: "" });
+                setTimeout(() => setStatus("idle"), 5000);
+            } else {
+                setStatus("error");
+                setErrorMessage(data.error || "Failed to send message. Please try again.");
+            }
+        } catch (error) {
+            console.error("Contact form error:", error);
+            setStatus("error");
+            setErrorMessage("Network error. Please check your connection and try again.");
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -124,7 +144,7 @@ export default function ContactPage() {
 
                                 {status === "error" && (
                                     <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-600">
-                                        ✗ Something went wrong. Please try again.
+                                        ✗ {errorMessage || "Something went wrong. Please try again."}
                                     </div>
                                 )}
 
@@ -157,8 +177,8 @@ export default function ContactPage() {
                             <p className="text-sm text-muted-foreground mb-3">
                                 For general inquiries and support
                             </p>
-                            <a href="mailto:hello@inkraft.com" className="text-primary hover:underline">
-                                hello@inkraft.com
+                            <a href="mailto:syedmdabuhoraira@gmail.com" className="text-primary hover:underline">
+                                syedmdabuhoraira@gmail.com
                             </a>
                         </GlassCard>
 

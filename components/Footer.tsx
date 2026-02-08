@@ -80,7 +80,7 @@ export function Footer() {
                                     <Twitter size={20} />
                                 </a>
                                 <a
-                                    href="https://linkedin.com"
+                                    href="https://www.linkedin.com/in/sm-abu-horaira/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="p-2 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
@@ -89,7 +89,7 @@ export function Footer() {
                                     <Linkedin size={20} />
                                 </a>
                                 <a
-                                    href="https://github.com"
+                                    href="https://github.com/Ahnabu"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="p-2 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
