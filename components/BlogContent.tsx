@@ -139,6 +139,8 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
                     color: hsl(var(--foreground) / 0.9);
                     font-size: 1rem;
                     line-height: 1.75;
+                    overflow-x: hidden;
+                    max-width: 100%;
                 }
 
                 .blog-content h1 {
@@ -419,15 +421,15 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
 
                     .blog-content pre {
                         padding: 1rem;
-                        margin: 1.5rem -1rem;
+                        margin: 1.5rem 0;
                         border-radius: 0.5rem;
                     }
 
                     .blog-content img {
-                        margin: 1.5rem -1rem;
+                        margin: 1.5rem 0;
                         border-radius: 0.5rem;
-                        width: calc(100% + 2rem);
-                        max-width: calc(100% + 2rem);
+                        width: 100%;
+                        max-width: 100%;
                     }
 
                     .heading-anchor {
@@ -435,8 +437,8 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
                     }
 
                     .table-wrapper {
-                        margin: 1.5rem -1rem;
-                        border-radius: 0;
+                        margin: 1.5rem 0;
+                        border-radius: 0.5rem;
                     }
 
                     .blog-content table {
@@ -486,11 +488,12 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
 
                     .blog-content blockquote {
                         padding: 0.875rem 1.25rem;
-                        margin: 1.5rem -0.5rem;
+                        margin: 1.5rem 0;
                     }
 
                     .blog-content pre {
                         font-size: 0.875rem;
+                        margin: 1.5rem 0;
                     }
                 }
 
@@ -543,20 +546,20 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
 
                     .blog-content blockquote {
                         padding: 0.75rem 1rem;
-                        margin: 1.25rem -0.5rem;
+                        margin: 1.25rem 0;
                         font-size: 0.875rem;
                     }
 
                     .blog-content pre {
                         padding: 0.875rem;
-                        margin: 1.25rem -0.75rem;
+                        margin: 1.25rem 0;
                         font-size: 0.8125rem;
                     }
 
                     .blog-content img {
-                        margin: 1.25rem -0.75rem;
-                        width: calc(100% + 1.5rem);
-                        max-width: calc(100% + 1.5rem);
+                        margin: 1.25rem 0;
+                        width: 100%;
+                        max-width: 100%;
                     }
 
                     .blog-content table {
@@ -569,7 +572,7 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
                     }
 
                     .table-wrapper {
-                        margin: 1.25rem -0.75rem;
+                        margin: 1.25rem 0;
                     }
 
                     .copy-button {

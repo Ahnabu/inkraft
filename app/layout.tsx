@@ -140,7 +140,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#6366f1" />
       </head>
       <body
-        className={`${dmSans.variable} antialiased bg-background text-text font-body min-h-screen flex flex-col`}
+        className={`${dmSans.variable} antialiased bg-background text-text font-body min-h-screen flex flex-col overflow-x-hidden`}
       >
         <Providers>
           <Toaster position="top-right" richColors />

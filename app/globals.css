@@ -76,11 +76,16 @@
   --ring: #6366F1;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-body);
   line-height: var(--line-height-body);
+  overflow-x: hidden;
 }
 
 /* Responsive Typography */
