@@ -88,7 +88,7 @@ export async function PATCH(req: Request) {
 
         // Mark resolved
         alert.resolved = true;
-        alert.resolvedBy = session.user.id;
+        alert.resolvedBy = session.user.id as any;
         alert.resolvedAt = new Date();
         await alert.save();
 

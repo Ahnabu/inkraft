@@ -14,6 +14,18 @@ import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import { BubbleMenu } from "@tiptap/react/menus";
 import { FloatingMenu } from "@tiptap/react/menus";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { common, createLowlight } from "lowlight";
+import css from "highlight.js/lib/languages/css";
+import js from "highlight.js/lib/languages/javascript";
+import ts from "highlight.js/lib/languages/typescript";
+import html from "highlight.js/lib/languages/xml";
+
+const lowlight = createLowlight(common);
+lowlight.register("html", html);
+lowlight.register("css", css);
+lowlight.register("js", js);
+lowlight.register("ts", ts);
 import {
     Bold,
     Italic,
@@ -55,7 +67,10 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
-                codeBlock: false, // We'll use CodeBlockLowlight instead
+                codeBlock: false, // We use CodeBlockLowlight instead
+            }),
+            CodeBlockLowlight.configure({
+                lowlight,
             }),
             Image.configure({
                 HTMLAttributes: {

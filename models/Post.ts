@@ -30,6 +30,7 @@ export interface IPost extends Document {
         description?: string;
         keywords?: string[];
     };
+    editorsPick?: boolean;
     createdAt: Date;
     updatedAt: Date;
 }

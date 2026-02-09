@@ -3,6 +3,7 @@ import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { SyntaxHighlighting } from "@/components/SyntaxHighlighting";
 
 import { Providers } from "@/components/Providers";
 import { Toaster } from "sonner";
@@ -150,6 +151,7 @@ export default function RootLayout({
         className={`${dmSans.variable} antialiased bg-background text-text font-body min-h-screen flex flex-col overflow-x-hidden`}
       >
         <Providers>
+          <SyntaxHighlighting />
           <Toaster position="top-right" richColors />
           <div className="flex-1 flex flex-col relative z-0">
             <Navbar />

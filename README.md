@@ -112,6 +112,23 @@ Inkraft is a **premium editorial blogging platform** designed for content creato
   - Analytics.js support
   - Indexing API ready
   - Structured data validation
+  - **Analytics Integration**
+  - Completion rate tracking (read percentage)
+  - Exit point analysis (scroll depth)
+  - Referrer quality scoring
+
+### 📚 **Reader Experience**
+- **Personal Library**
+  - Save posts for later reading
+  - Reading history tracking
+  - Progress synchronisation across devices
+  - Export reading list
+
+- **Content Portability**
+  - Import from Markdown files
+  - Import from Medium exports (HTML)
+  - Auto-normalization to Inkraft blocks
+  - Syntax highlighting for code blocks
 
 ### 💬 **Community & Engagement**
 
@@ -264,6 +281,8 @@ Inkraft is a **premium editorial blogging platform** designed for content creato
   - **Trust & Safety Tools**
   - Vote nullification for suspicious posts
   - Trust score freezing for bad actors
+  - Content import moderation
+  - User history tracking
 
 
 ---

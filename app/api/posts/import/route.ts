@@ -42,8 +42,12 @@ export async function POST(req: Request) {
                 }
             }
 
-            // Convert Markdown to HTML
-            content = await marked.parse(mdContent);
+            // Configure marked for syntax highlighting classes
+            // This ensures <code> blocks get class="language-js" etc.
+            content = await marked.parse(mdContent, {
+                gfm: true,
+                breaks: true,
+            });
 
         } else if (type === "medium") {
             // Medium exports are HTML files
@@ -60,13 +64,44 @@ export async function POST(req: Request) {
             const article = doc.querySelector(".h-entry") || doc.querySelector("article") || doc.body;
 
             // Cleanup common Medium export noise
-            // Remove the "Written by" header if exists
-            const header = article.querySelector("header");
-            if (header) header.remove();
+            const elementsToRemove = [
+                "header",
+                "footer",
+                ".graf--title",
+                ".graf--subtitle",
+                ".section-divider",
+            ];
 
-            // Remove footer which often contains "Originally published at..."
-            const footer = article.querySelector("footer");
-            if (footer) footer.remove();
+            elementsToRemove.forEach(selector => {
+                const els = article.querySelectorAll(selector);
+                els.forEach(el => el.remove());
+            });
+
+            // Unwrap <figure> tags for images to simple <img> for TipTap compatibility if needed
+            // TipTap can handle figure/img but simple is often better for editors
+            const figures = article.querySelectorAll("figure");
+            figures.forEach(figure => {
+                const img = figure.querySelector("img");
+                const caption = figure.querySelector("figcaption");
+
+                if (img) {
+                    // Create a clean image element
+                    const newImg = doc.createElement("img");
+                    newImg.src = img.src;
+                    newImg.alt = img.alt || caption?.textContent || "";
+
+                    // Replace figure with just the image
+                    figure.replaceWith(newImg);
+
+                    // Append caption if it existed (as a paragraph)
+                    if (caption && caption.textContent) {
+                        const p = doc.createElement("p");
+                        p.textContent = caption.textContent;
+                        p.className = "text-center text-sm text-muted-foreground italic mt-2";
+                        newImg.after(p);
+                    }
+                }
+            });
 
             content = article.innerHTML;
         } else {
@@ -74,7 +109,11 @@ export async function POST(req: Request) {
         }
 
         // Sanitize the HTML
-        const cleanContent = DOMPurify.sanitize(content);
+        // Allow img tags and attributes needed for TipTap and normal rendering
+        const cleanContent = DOMPurify.sanitize(content, {
+            ADD_TAGS: ["iframe"], // Allow embeds if any
+            ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "class"],
+        });
 
         return NextResponse.json({
             title,
