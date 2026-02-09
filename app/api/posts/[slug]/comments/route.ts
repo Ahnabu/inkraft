@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import Comment from "@/models/Comment";
+import CommentHistory from "@/models/CommentHistory";
 import Post from "@/models/Post";
 import User from "@/models/User";
 import Notification from "@/models/Notification";
 import { checkRateLimit, recordComment } from "@/lib/rateLimit";
+import { canUseFeature, sanitizeCommentContent } from "@/lib/trust";
 import { checkBotId } from "botid/server";
 
 export const dynamic = 'force-dynamic';
@@ -67,6 +69,8 @@ export async function GET(
                         parentComment: r.parentComment?.toString(),
                         createdAt: r.createdAt.toISOString(),
                         updatedAt: r.updatedAt.toISOString(),
+                        edited: r.edited,
+                        editedAt: r.editedAt?.toISOString(),
                     })),
                 };
             })
@@ -91,6 +95,8 @@ export async function GET(
                 post: c.post.toString(),
                 createdAt: c.createdAt.toISOString(),
                 updatedAt: c.updatedAt.toISOString(),
+                edited: c.edited,
+                editedAt: c.editedAt?.toISOString(),
             })),
             pagination: {
                 page,
@@ -145,13 +151,19 @@ export async function POST(
         }
 
         // Check rate limit
-        const rateLimitCheck = checkRateLimit(session.user.id as string, user.trustScore);
-        if (!rateLimitCheck.allowed) {
-            const resetIn = Math.ceil((rateLimitCheck.resetTime - Date.now()) / 60000);
-            return new NextResponse(
-                `Rate limit exceeded. Try again in ${resetIn} minutes.`,
-                { status: 429 }
-            );
+        // Check rate limit using trust-based helper if available, or basic rate limit
+        // We can use canUseFeature to check for unlimited replies
+        const hasUnlimitedReplies = canUseFeature({ trustScore: user.trustScore } as any, "unlimitedReplies");
+
+        if (!hasUnlimitedReplies) {
+            const rateLimitCheck = checkRateLimit(session.user.id as string, user.trustScore);
+            if (!rateLimitCheck.allowed) {
+                const resetIn = Math.ceil((rateLimitCheck.resetTime - Date.now()) / 60000);
+                return new NextResponse(
+                    `Rate limit exceeded. Try again in ${resetIn} minutes.`,
+                    { status: 429 }
+                );
+            }
         }
 
         // Find post
@@ -180,13 +192,17 @@ export async function POST(
             }
         }
 
-        // Auto-approve trusted users, pending for new users
-        const moderationStatus =
-            user.trustScore >= 1.2 ? "approved" : "pending";
+        // Auto-approve trusted users based on feature flag
+        const moderationStatus = canUseFeature({ trustScore: user.trustScore } as any, "skipModeration")
+            ? "approved"
+            : "pending";
+
+        // Sanitize content based on user trust
+        const sanitizedContent = sanitizeCommentContent(content.trim(), { trustScore: user.trustScore } as any);
 
         // Create comment
         const comment = await Comment.create({
-            content: content.trim(),
+            content: sanitizedContent,
             author: session.user.id,
             post: post._id,
             parentComment: parentCommentId || undefined,
@@ -195,7 +211,9 @@ export async function POST(
         });
 
         // Record for rate limiting
-        recordComment(session.user.id as string);
+        if (!hasUnlimitedReplies) {
+            recordComment(session.user.id as string);
+        }
 
         // Update post comment count (only for approved comments)
         if (moderationStatus === "approved") {
@@ -234,7 +252,8 @@ export async function POST(
             parentComment: populatedComment!.parentComment?.toString(),
             createdAt: populatedComment!.createdAt.toISOString(),
             updatedAt: populatedComment!.updatedAt.toISOString(),
-            rateLimitRemaining: rateLimitCheck.remaining - 1,
+            // rateLimitRemaining is not accurate if unlimited replies, but we can return something generic
+            rateLimitRemaining: hasUnlimitedReplies ? 999 : 5,
         });
     } catch (error: unknown) {
         console.error("[POST_COMMENT]", error);
@@ -331,7 +350,20 @@ export async function PUT(
             return new NextResponse("Unauthorized", { status: 403 });
         }
 
+        // Save edit history before updating (only if content is different)
+        if (comment.content !== content.trim()) {
+            await CommentHistory.create({
+                comment: comment._id,
+                previousContent: comment.content,
+                editedAt: new Date(),
+                editedBy: session.user.id
+            });
+        }
+
+        // Update comment with edited flag
         comment.content = content.trim();
+        comment.edited = true;
+        comment.editedAt = new Date();
         await comment.save();
 
         const populatedComment = await Comment.findById(comment._id)

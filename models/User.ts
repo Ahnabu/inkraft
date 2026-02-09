@@ -21,6 +21,11 @@ export interface IUser extends Document {
     followers: mongoose.Types.ObjectId[];
     following: mongoose.Types.ObjectId[];
     followedCategories: string[];
+    isSavedPostsPublic: boolean;
+    trustFrozen?: boolean;
+    trustFrozenAt?: Date;
+    trustFrozenBy?: string;
+    trustFrozenReason?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -64,6 +69,13 @@ const UserSchema: Schema<IUser> = new Schema(
             min: 0.5,
             max: 2.0,
         },
+        trustFrozen: {
+            type: Boolean,
+            default: false,
+        },
+        trustFrozenAt: Date,
+        trustFrozenBy: String,
+        trustFrozenReason: String,
         totalUpvotes: {
             type: Number,
             default: 0,
@@ -91,6 +103,10 @@ const UserSchema: Schema<IUser> = new Schema(
             type: Schema.Types.ObjectId,
             ref: "Post",
         }],
+        isSavedPostsPublic: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Shield, Users, FileText, MessageSquare, Search, Loader2, Ban, Check, Trash2, Eye, EyeOff } from "lucide-react";
+import { Shield, Users, FileText, MessageSquare, Search, Loader2, Ban, Check, Trash2, Eye, EyeOff, Bell, AlertTriangle, XCircle, Lock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { toast } from "sonner";
@@ -56,11 +56,37 @@ interface Stats {
     pendingComments: number;
 }
 
+interface Alert {
+    _id: string;
+    type: "vote_spike" | "spam_velocity" | "low_trust_engagement" | "repeated_reports" | "suspicious_activity";
+    severity: "low" | "medium" | "high" | "critical";
+    title: string;
+    description: string;
+    targetUser?: {
+        _id: string;
+        name: string;
+        email: string;
+        trustScore: number;
+    };
+    targetPost?: {
+        _id: string;
+        title: string;
+        slug: string;
+    };
+    resolved: boolean;
+    resolvedBy?: {
+        name: string;
+    };
+    action?: string;
+    createdAt: string;
+}
+
 export default function AdminDashboardClient({ initialStats }: { initialStats: Stats }) {
-    const [activeTab, setActiveTab] = useState<"users" | "posts" | "comments">("users");
+    const [activeTab, setActiveTab] = useState<"users" | "posts" | "comments" | "alerts">("users");
     const [users, setUsers] = useState<User[]>([]);
     const [posts, setPosts] = useState<Post[]>([]);
     const [comments, setComments] = useState<Comment[]>([]);
+    const [alerts, setAlerts] = useState<Alert[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("");
@@ -74,6 +100,8 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
             fetchPosts();
         } else if (activeTab === "comments") {
             fetchComments();
+        } else if (activeTab === "alerts") {
+            fetchAlerts();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab, searchTerm, roleFilter, publishedFilter]);
@@ -129,6 +157,22 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
         } catch (error) {
             console.error("Error fetching comments:", error);
             toast.error("Failed to fetch comments");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchAlerts = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch("/api/admin/alerts?resolved=false");
+            if (response.ok) {
+                const data = await response.json();
+                setAlerts(data.alerts);
+            }
+        } catch (error) {
+            console.error("Error fetching alerts:", error);
+            toast.error("Failed to fetch alerts");
         } finally {
             setLoading(false);
         }
@@ -227,6 +271,29 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
         }
     };
 
+    const handleAlertAction = async (alertId: string, action: "dismiss" | "ban_user" | "freeze_trust" | "nullify_votes") => {
+        const loadingId = `alert-${action}-${alertId}`;
+        toast.loading(`Processing...`, { id: loadingId });
+
+        try {
+            const response = await fetch("/api/admin/alerts", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ alertId, action }),
+            });
+
+            if (response.ok) {
+                setAlerts(alerts.filter(a => a._id !== alertId));
+                toast.success("Alert resolved successfully", { id: loadingId });
+            } else {
+                throw new Error("Failed to update alert");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            toast.error("Action failed", { id: loadingId });
+        }
+    };
+
     return (
         <div className="min-h-screen bg-muted/30">
             <div className="container mx-auto px-4 py-8">
@@ -270,8 +337,8 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
                     <button
                         onClick={() => setActiveTab("users")}
                         className={`px-4 py-2 font-medium transition-colors ${activeTab === "users"
-                                ? "text-primary border-b-2 border-primary"
-                                : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary border-b-2 border-primary"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
                         <Users className="inline h-4 w-4 mr-2" />
@@ -280,8 +347,8 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
                     <button
                         onClick={() => setActiveTab("posts")}
                         className={`px-4 py-2 font-medium transition-colors ${activeTab === "posts"
-                                ? "text-primary border-b-2 border-primary"
-                                : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary border-b-2 border-primary"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
                         <FileText className="inline h-4 w-4 mr-2" />
@@ -290,12 +357,22 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
                     <button
                         onClick={() => setActiveTab("comments")}
                         className={`px-4 py-2 font-medium transition-colors ${activeTab === "comments"
-                                ? "text-primary border-b-2 border-primary"
-                                : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary border-b-2 border-primary"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
                         <MessageSquare className="inline h-4 w-4 mr-2" />
                         Comment Review
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("alerts")}
+                        className={`px-4 py-2 font-medium transition-colors ${activeTab === "alerts"
+                            ? "text-primary border-b-2 border-primary"
+                            : "text-muted-foreground hover:text-foreground"
+                            }`}
+                    >
+                        <Bell className="inline h-4 w-4 mr-2" />
+                        Alerts
                     </button>
                 </div>
 
@@ -599,10 +676,10 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <span className={`px-2 py-1 rounded text-sm ${comment.moderationStatus === "pending"
-                                                                ? "bg-yellow-500/20 text-yellow-500"
-                                                                : comment.moderationStatus === "approved"
-                                                                    ? "bg-green-500/20 text-green-500"
-                                                                    : "bg-red-500/20 text-red-500"
+                                                            ? "bg-yellow-500/20 text-yellow-500"
+                                                            : comment.moderationStatus === "approved"
+                                                                ? "bg-green-500/20 text-green-500"
+                                                                : "bg-red-500/20 text-red-500"
                                                             }`}>
                                                             {comment.moderationStatus || "pending"}
                                                         </span>
@@ -615,6 +692,128 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
                                 {comments.length === 0 && (
                                     <div className="text-center py-12 text-muted-foreground">
                                         No comments found
+                                    </div>
+                                )}
+                            </GlassCard>
+                        )}
+
+                        {/* Alerts Table */}
+                        {activeTab === "alerts" && (
+                            <GlassCard className="overflow-hidden">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full">
+                                        <thead className="bg-muted/50">
+                                            <tr>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                    Severity
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                    Alert Info
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                    Target
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                    Actions
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-border">
+                                            {alerts.map((alert) => (
+                                                <tr key={alert._id} className="hover:bg-muted/30">
+                                                    <td className="px-6 py-4">
+                                                        <span className={`px-2 py-1 rounded text-sm capitalize font-medium ${alert.severity === "critical" ? "bg-red-500/20 text-red-500" :
+                                                            alert.severity === "high" ? "bg-orange-500/20 text-orange-500" :
+                                                                alert.severity === "medium" ? "bg-yellow-500/20 text-yellow-500" :
+                                                                    "bg-blue-500/20 text-blue-500"
+                                                            }`}>
+                                                            {alert.severity}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div>
+                                                            <div className="font-medium flex items-center gap-2">
+                                                                <AlertTriangle size={16} className="text-muted-foreground" />
+                                                                {alert.title}
+                                                            </div>
+                                                            <div className="text-sm text-muted-foreground mt-1">{alert.description}</div>
+                                                            <div className="text-xs text-muted-foreground mt-1">
+                                                                {new Date(alert.createdAt).toLocaleString()}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        {alert.targetUser && (
+                                                            <div className="mb-2">
+                                                                <div className="text-xs font-semibold text-muted-foreground">User:</div>
+                                                                <div className="text-sm">{alert.targetUser.name}</div>
+                                                                <div className="text-xs text-muted-foreground">Trust: {alert.targetUser.trustScore.toFixed(2)}</div>
+                                                            </div>
+                                                        )}
+                                                        {alert.targetPost && (
+                                                            <div>
+                                                                <div className="text-xs font-semibold text-muted-foreground">Post:</div>
+                                                                <Link href={`/blog/${alert.targetPost.slug}`} target="_blank" className="text-sm hover:underline text-primary">
+                                                                    {alert.targetPost.title}
+                                                                </Link>
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex flex-wrap gap-2">
+                                                            <Button
+                                                                size="sm"
+                                                                variant="ghost"
+                                                                onClick={() => handleAlertAction(alert._id, "dismiss")}
+                                                                title="Dismiss Alert"
+                                                            >
+                                                                <Check className="h-4 w-4" />
+                                                            </Button>
+
+                                                            {alert.targetUser && (
+                                                                <>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="ghost"
+                                                                        onClick={() => handleAlertAction(alert._id, "ban_user")}
+                                                                        className="text-red-500 hover:text-red-600"
+                                                                        title="Ban User"
+                                                                    >
+                                                                        <Ban className="h-4 w-4" />
+                                                                    </Button>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="ghost"
+                                                                        onClick={() => handleAlertAction(alert._id, "freeze_trust")}
+                                                                        className="text-orange-500 hover:text-orange-600"
+                                                                        title="Freeze Trust Score"
+                                                                    >
+                                                                        <Lock className="h-4 w-4" />
+                                                                    </Button>
+                                                                </>
+                                                            )}
+
+                                                            {alert.targetPost && (
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    onClick={() => handleAlertAction(alert._id, "nullify_votes")}
+                                                                    className="text-red-500 hover:text-red-600"
+                                                                    title="Nullify Votes"
+                                                                >
+                                                                    <XCircle className="h-4 w-4" />
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {alerts.length === 0 && (
+                                    <div className="text-center py-12 text-muted-foreground">
+                                        No active alerts found
                                     </div>
                                 )}
                             </GlassCard>

@@ -4,9 +4,13 @@ import { useEffect, useRef, useState } from "react";
 
 interface ViewTrackerProps {
     postSlug: string;
+    postId: string;
 }
 
-export function ViewTracker({ postSlug }: ViewTrackerProps) {
+import { useSession } from "next-auth/react";
+
+export function ViewTracker({ postSlug, postId }: ViewTrackerProps) {
+    const { data: session } = useSession();
     const [sessionId] = useState(() => {
         // Get or create sessionId
         if (typeof window !== "undefined") {
@@ -73,6 +77,13 @@ export function ViewTracker({ postSlug }: ViewTrackerProps) {
             const timeOnPage = Math.round((Date.now() - startTimeRef.current) / 1000); // in seconds
             const scrollDepth = Math.min(maxScrollRef.current, 100);
 
+            // Calculate exit position
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const currentScroll = Math.round(((scrollTop + windowHeight) / documentHeight) * 100);
+            const exitScrollDepth = Math.min(currentScroll, 100);
+
             try {
                 await fetch(`/api/posts/${postSlug}/analytics`, {
                     method: "POST",
@@ -81,10 +92,34 @@ export function ViewTracker({ postSlug }: ViewTrackerProps) {
                         sessionId,
                         timeOnPage,
                         scrollDepth,
+                        reachedEnd: scrollDepth > 85, // Considered "read" if > 85%
+                        exitScrollDepth,
                     }),
                 });
             } catch (error) {
                 console.error("Error tracking analytics:", error);
+            }
+
+            // Sync reading history if logged in (using session from hook)
+            if (session?.user) {
+                const historyData = JSON.stringify({
+                    postId,
+                    progress: scrollDepth,
+                    completed: scrollDepth > 85
+                });
+
+                // Use sendBeacon for reliable delivery on unload if available
+                if (navigator.sendBeacon) {
+                    const blob = new Blob([historyData], { type: 'application/json' });
+                    navigator.sendBeacon("/api/user/history", blob);
+                } else {
+                    // Fallback
+                    fetch("/api/user/history", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: historyData
+                    }).catch(err => console.error("Error syncing history:", err));
+                }
             }
         };
 

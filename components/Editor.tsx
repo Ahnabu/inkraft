@@ -32,10 +32,12 @@ import {
     Undo,
     Redo,
     GripHorizontal,
+    Upload,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { countWords, calculateReadingTime } from "@/lib/readingTime";
 import { ImageUpload } from "@/components/ImageUpload";
+import { ImportModal } from "@/components/ImportModal";
 import { motion } from "framer-motion";
 
 interface EditorProps {
@@ -48,6 +50,7 @@ interface EditorProps {
 export function Editor({ content, onChange, onAutoSave, placeholder = "Start writing your story..." }: EditorProps) {
     const autoSaveInterval = useRef<NodeJS.Timeout | null>(null);
     const [showImageUpload, setShowImageUpload] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
 
     const editor = useEditor({
         extensions: [
@@ -206,6 +209,17 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
         editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
     };
 
+    const handleImport = (content: string, title?: string) => {
+        if (title) {
+            // We can't easily set the title from here as it's likely managed by the parent
+            // But we can insert it as an H1 if needed, or better, let the parent handle it
+            // For now, we'll just set the content
+            console.log("Imported title:", title); // Placeholder for future parent communication
+        }
+        editor?.commands.setContent(content);
+        setShowImportModal(false);
+    };
+
     return (
         <div className="space-y-4">
             {/* Toolbar - Draggable & Theme Aware */}
@@ -350,6 +364,14 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
                 >
                     <LinkIcon size={18} />
                 </button>
+                <div className="w-px h-6 bg-border mx-1" />
+                <button
+                    onClick={() => setShowImportModal(true)}
+                    className="p-2 rounded-lg hover:bg-muted transition-colors"
+                    title="Import Content (Markdown/HTML)"
+                >
+                    <Upload size={18} />
+                </button>
 
                 <div className="ml-auto flex items-center gap-4 text-xs font-medium text-muted-foreground px-2">
                     <span>{wordCount} words</span>
@@ -430,6 +452,14 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
                         />
                     </div>
                 </div>
+            )}
+
+            {/* Import Modal */}
+            {showImportModal && (
+                <ImportModal
+                    onImport={handleImport}
+                    onClose={() => setShowImportModal(false)}
+                />
             )}
         </div >
     );

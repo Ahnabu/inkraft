@@ -9,14 +9,14 @@ import authConfig from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: MongoDBAdapter(clientPromise),
-    session: { 
+    session: {
         strategy: "jwt",
         maxAge: 30 * 24 * 60 * 60, // 30 days
     },
     cookies: {
         sessionToken: {
-            name: process.env.NODE_ENV === "production" 
-                ? "__Secure-authjs.session-token" 
+            name: process.env.NODE_ENV === "production"
+                ? "__Secure-authjs.session-token"
                 : "authjs.session-token",
             options: {
                 httpOnly: true,
@@ -77,6 +77,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         image: user.image,
                         role: user.role,
                         banned: user.banned,
+                        trustScore: user.trustScore,
                     };
                 } catch (error) {
                     console.error("Auth error:", error);

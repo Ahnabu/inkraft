@@ -7,6 +7,7 @@ import User from "@/models/User";
 import UserActivity from "@/models/UserActivity";
 import { calculateVoteWeight, getAccountAgeDays, calculateEngagementScore } from "@/lib/engagement";
 import { checkBotId } from "botid/server";
+import { detectVoteSpike } from "@/lib/alertTriggers";
 
 export const dynamic = 'force-dynamic';
 
@@ -16,24 +17,24 @@ export async function POST(
 ) {
     try {
         console.log("[VOTE_POST] Starting vote request");
-        
+
         // Check for bot activity
         const verification = await checkBotId();
-        
+
         if (verification.isBot) {
             return new NextResponse("Bot detected. Access denied.", { status: 403 });
         }
-        
+
         const session = await auth();
         console.log("[VOTE_POST] Session:", session ? "exists" : "null");
-        
+
         if (!session?.user) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
         const params = await context.params;
         console.log("[VOTE_POST] Post slug:", params.slug);
-        
+
         const { voteType } = await req.json();
         console.log("[VOTE_POST] Vote type:", voteType);
 
@@ -47,7 +48,7 @@ export async function POST(
         // Find post
         const post = await Post.findOne({ slug: params.slug });
         console.log("[VOTE_POST] Post found:", post ? "yes" : "no");
-        
+
         if (!post) {
             return new NextResponse("Post not found", { status: 404 });
         }
@@ -55,7 +56,7 @@ export async function POST(
         // Get user data for trust score calculation
         const user = await User.findById(session.user.id);
         console.log("[VOTE_POST] User found:", user ? "yes" : "no");
-        
+
         if (!user) {
             return new NextResponse("User not found", { status: 404 });
         }
@@ -63,7 +64,7 @@ export async function POST(
         // Get user activity - use defaults if not found
         let articlesRead = 0;
         let contributions = 0;
-        
+
         try {
             const userActivity = await UserActivity.findOne({ user: session.user.id });
             if (userActivity) {
@@ -199,6 +200,11 @@ export async function POST(
         try {
             await post.save();
             console.log("[VOTE_POST] Vote completed successfully");
+
+            // Check for vote spikes (async, don't await)
+            detectVoteSpike(post._id.toString()).catch(err =>
+                console.error("[VOTE_SPIKE_CHECK_ERROR]", err)
+            );
         } catch (saveError) {
             console.error("[VOTE_POST] Error saving post:", saveError);
             throw new Error("Failed to save vote changes");
@@ -219,10 +225,10 @@ export async function POST(
             console.error("[VOTE_POST_NAME]", error.name);
         }
         const message = error instanceof Error ? error.message : "Internal Error";
-        return new NextResponse(JSON.stringify({ 
+        return new NextResponse(JSON.stringify({
             error: message,
             details: error instanceof Error ? error.stack : String(error)
-        }), { 
+        }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });

@@ -71,8 +71,8 @@ export function calculateTrendingScore(
     recentComments: number,
     hoursSincePublish: number
 ): number {
-    // Prevent division by zero and boost very new posts
-    const timeDivider = Math.max(0.5, hoursSincePublish);
+    // Exponential decay: Score / (Time + 2)^1.5
+    const timeDivider = Math.pow(hoursSincePublish + 2, 1.5);
 
     const engagementPoints = recentUpvotes + recentComments * 2.0;
     return engagementPoints / timeDivider;

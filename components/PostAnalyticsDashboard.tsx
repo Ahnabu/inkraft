@@ -25,6 +25,8 @@ interface PostAnalyticsData {
     uniqueVisitors: number;
     avgTimeOnPage: number;
     avgScrollDepth: number;
+    completionRate: number;
+    avgExitDepth: number;
   };
   countries: Array<{ country: string; countryCode: string; views: number }>;
   devices: Array<{ device: string; views: number }>;
@@ -92,11 +94,10 @@ export function PostAnalyticsDashboard({ slug }: { slug: string }) {
           <button
             key={d}
             onClick={() => setDays(d)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              days === d
-                ? "bg-primary text-white"
-                : "bg-muted hover:bg-muted/80"
-            }`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${days === d
+              ? "bg-primary text-white"
+              : "bg-muted hover:bg-muted/80"
+              }`}
           >
             Last {d} days
           </button>
@@ -151,6 +152,30 @@ export function PostAnalyticsDashboard({ slug }: { slug: string }) {
             <div>
               <p className="text-sm text-muted-foreground">Avg. Scroll</p>
               <p className="text-2xl font-bold">{Math.round(summary.avgScrollDepth)}%</p>
+            </div>
+          </div>
+        </GlassCard>
+
+        <GlassCard className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-indigo-500/10 rounded-lg">
+              <TrendingUp className="text-indigo-600" size={24} />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Completion</p>
+              <p className="text-2xl font-bold">{Math.round(summary.completionRate || 0)}%</p>
+            </div>
+          </div>
+        </GlassCard>
+
+        <GlassCard className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-rose-500/10 rounded-lg">
+              <TrendingUp className="text-rose-600" size={24} />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Avg. Exit</p>
+              <p className="text-2xl font-bold">{Math.round(summary.avgExitDepth || 0)}%</p>
             </div>
           </div>
         </GlassCard>

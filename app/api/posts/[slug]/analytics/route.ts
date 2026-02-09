@@ -22,7 +22,7 @@ export async function POST(
 
     // Get request data
     const body = await request.json();
-    const { sessionId, timeOnPage, scrollDepth } = body;
+    const { sessionId, timeOnPage, scrollDepth, reachedEnd, exitScrollDepth } = body;
 
     // Extract client information
     const clientIP = getClientIP(request);
@@ -43,6 +43,8 @@ export async function POST(
       sessionId,
       timeOnPage: timeOnPage || 0,
       scrollDepth: scrollDepth || 0,
+      reachedEnd: reachedEnd || false,
+      exitScrollDepth: exitScrollDepth || 0,
     });
 
     return NextResponse.json({ success: true, id: analytics._id });
@@ -165,6 +167,8 @@ export async function GET(
             _id: null,
             avgTimeOnPage: { $avg: "$timeOnPage" },
             avgScrollDepth: { $avg: "$scrollDepth" },
+            completionRate: { $avg: { $cond: ["$reachedEnd", 100, 0] } },
+            avgExitDepth: { $avg: "$exitScrollDepth" },
           },
         },
       ]),
@@ -176,6 +180,8 @@ export async function GET(
         uniqueVisitors,
         avgTimeOnPage: avgEngagement[0]?.avgTimeOnPage || 0,
         avgScrollDepth: avgEngagement[0]?.avgScrollDepth || 0,
+        completionRate: avgEngagement[0]?.completionRate || 0,
+        avgExitDepth: avgEngagement[0]?.avgExitDepth || 0,
       },
       countries: countryStats.map((stat: { _id: string; count: number; countryCode: string }) => ({
         country: stat._id,

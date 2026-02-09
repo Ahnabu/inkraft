@@ -18,6 +18,7 @@ export default {
                 session.user.id = token.sub as string;
                 session.user.role = token.role;
                 session.user.banned = token.banned;
+                session.user.trustScore = token.trustScore;
             }
             return session;
         },
@@ -25,6 +26,7 @@ export default {
             if (user) {
                 token.role = user.role;
                 token.banned = user.banned;
+                token.trustScore = user.trustScore;
             }
 
             // For OAuth providers, check user ban status from database

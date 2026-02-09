@@ -11,7 +11,7 @@ export interface IAdminAlert extends Document {
     resolved: boolean;
     resolvedBy?: mongoose.Types.ObjectId;
     resolvedAt?: Date;
-    action?: "dismissed" | "trust_frozen" | "post_hidden" | "user_banned" | "votes_nullified";
+    action?: "dismissed" | "trust_frozen" | "post_hidden" | "user_banned" | "votes_nullified" | "content_shadow_limited" | "trust_adjusted" | "comment_locked";
     createdAt: Date;
     updatedAt: Date;
 }
@@ -63,7 +63,7 @@ const AdminAlertSchema: Schema<IAdminAlert> = new Schema(
         },
         action: {
             type: String,
-            enum: ["dismissed", "trust_frozen", "post_hidden", "user_banned", "votes_nullified"],
+            enum: ["dismissed", "trust_frozen", "post_hidden", "user_banned", "votes_nullified", "content_shadow_limited", "trust_adjusted", "comment_locked"],
         },
     },
     { timestamps: true }

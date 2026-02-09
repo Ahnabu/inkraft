@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, MessageSquare, ArrowUp, User, Eye } from "lucide-react";
+import { Clock, MessageSquare, ArrowUp, User, Eye, Flame, Award, TrendingUp, Info } from "lucide-react";
 
 interface ArticleCardProps {
     post: {
@@ -23,6 +23,13 @@ interface ArticleCardProps {
         commentCount?: number;
         views?: number;
         publishedAt?: string;
+        editorsPick?: boolean;
+        rankingDetails?: {
+            type: string;
+            score: number;
+            formula?: string;
+            factors?: Record<string, number>;
+        };
     };
     variant?: "featured" | "standard" | "compact";
 }
@@ -46,10 +53,16 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                         {/* Category Badge */}
-                        <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+                        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex gap-2">
                             <span className="px-3 py-1 sm:px-4 sm:py-1.5 bg-primary text-primary-foreground text-xs sm:text-sm font-semibold rounded-full">
                                 {post.category}
                             </span>
+                            {post.editorsPick && (
+                                <span className="px-3 py-1 sm:px-4 sm:py-1.5 bg-amber-500 text-white text-xs sm:text-sm font-semibold rounded-full flex items-center gap-1">
+                                    <Award size={14} />
+                                    Editor's Pick
+                                </span>
+                            )}
                         </div>
 
                         {/* Content Overlay */}
@@ -138,6 +151,16 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                         {post.title}
                     </h3>
                     <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                        {post.editorsPick && (
+                            <span className="text-amber-500 flex items-center gap-1" title="Editor's Pick">
+                                <Award size={12} />
+                            </span>
+                        )}
+                        {post.rankingDetails?.type === 'trending' && (
+                            <span className="text-rose-500 flex items-center gap-1" title={`Trending Score: ${post.rankingDetails.score}`}>
+                                <TrendingUp size={12} />
+                            </span>
+                        )}
                         <span className="truncate max-w-[100px]">{post.author.name}</span>
                         <span className="hidden sm:inline">•</span>
                         <span className="hidden sm:inline">{post.readingTime} min</span>
@@ -181,10 +204,23 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     {/* Category Badge */}
-                    <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
+                    <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-wrap gap-2">
                         <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
                             {post.category}
                         </span>
+                        {post.editorsPick && (
+                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-amber-500 text-white text-xs font-semibold rounded-full flex items-center gap-1">
+                                <Award size={12} />
+                                <span className="hidden sm:inline">Pick</span>
+                            </span>
+                        )}
+                        {post.rankingDetails?.type === 'trending' && (
+                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-rose-500 text-white text-xs font-semibold rounded-full flex items-center gap-1"
+                                title={`Score: ${post.rankingDetails.score} (${post.rankingDetails.formula})`}>
+                                <Flame size={12} />
+                                <span className="hidden sm:inline">Trending</span>
+                            </span>
+                        )}
                     </div>
                 </div>
             )}

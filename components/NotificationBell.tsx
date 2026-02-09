@@ -1,17 +1,31 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Bell, Check, X } from "lucide-react";
+import { Bell, Check, Archive, TrendingUp, FolderOpen, Megaphone } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
+type NotificationType =
+    | "new_post"
+    | "comment_reply"
+    | "new_follower"
+    | "series_update"
+    | "category_post"
+    | "upvote_milestone"
+    | "admin_announcement";
+
+type NotificationState = "unread" | "read" | "archived";
+
 interface Notification {
     _id: string;
-    type: "new_post" | "comment_reply" | "new_follower" | "series_update";
+    type: NotificationType;
+    state: NotificationState;
     actor?: { _id: string; name: string; image?: string };
     post?: { _id: string; title: string; slug: string };
+    category?: string;
     message?: string;
-    read: boolean;
+    read: boolean; // Legacy field
+    batchCount?: number;
     createdAt: string;
 }
 
@@ -21,6 +35,7 @@ export function NotificationBell() {
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showArchived, setShowArchived] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Fetch notifications
@@ -28,7 +43,7 @@ export function NotificationBell() {
         if (!session?.user) return;
         setLoading(true);
         try {
-            const res = await fetch("/api/notifications?limit=10");
+            const res = await fetch(`/api/notifications?limit=10&includeArchived=${showArchived}`);
             if (res.ok) {
                 const data = await res.json();
                 setNotifications(data.notifications);
@@ -49,10 +64,26 @@ export function NotificationBell() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ markAllRead: true }),
             });
-            setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+            setNotifications((prev) => prev.map((n) => ({ ...n, read: true, state: "read" as NotificationState })));
             setUnreadCount(0);
         } catch (error) {
             console.error("Failed to mark as read:", error);
+        }
+    };
+
+    // Archive notification
+    const archiveNotification = async (id: string, e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+            await fetch("/api/notifications", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ids: [id], state: "archived" }),
+            });
+            setNotifications((prev) => prev.filter((n) => n._id !== id));
+        } catch (error) {
+            console.error("Failed to archive notification:", error);
         }
     };
 
@@ -72,26 +103,49 @@ export function NotificationBell() {
         if (session?.user) {
             fetchNotifications();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session?.user]);
 
     useEffect(() => {
         if (isOpen) {
             fetchNotifications();
         }
-    }, [isOpen]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, showArchived]);
 
     if (!session?.user) return null;
 
+    const getNotificationIcon = (type: NotificationType) => {
+        switch (type) {
+            case "upvote_milestone":
+                return <TrendingUp size={14} className="text-green-500" />;
+            case "category_post":
+                return <FolderOpen size={14} className="text-blue-500" />;
+            case "admin_announcement":
+                return <Megaphone size={14} className="text-orange-500" />;
+            default:
+                return <Bell size={14} className="text-muted-foreground" />;
+        }
+    };
+
     const getNotificationText = (n: Notification) => {
+        const batchSuffix = n.batchCount && n.batchCount > 1 ? ` (+${n.batchCount - 1} more)` : "";
+
         switch (n.type) {
             case "new_post":
-                return `${n.actor?.name || "Someone"} published a new post`;
+                return `${n.actor?.name || "Someone"} published a new post${batchSuffix}`;
             case "comment_reply":
-                return `${n.actor?.name || "Someone"} replied to your comment`;
+                return `${n.actor?.name || "Someone"} replied to your comment${batchSuffix}`;
             case "new_follower":
-                return `${n.actor?.name || "Someone"} started following you`;
+                return `${n.actor?.name || "Someone"} started following you${batchSuffix}`;
             case "series_update":
-                return `New part added to a series you follow`;
+                return `New part added to a series you follow${batchSuffix}`;
+            case "category_post":
+                return `New post in ${n.category || "a category you follow"}${batchSuffix}`;
+            case "upvote_milestone":
+                return n.message || `Your post reached a milestone!`;
+            case "admin_announcement":
+                return n.message || "Important announcement";
             default:
                 return n.message || "New notification";
         }
@@ -99,6 +153,7 @@ export function NotificationBell() {
 
     const getNotificationLink = (n: Notification) => {
         if (n.post?.slug) return `/blog/${n.post.slug}`;
+        if (n.category) return `/category/${n.category}`;
         if (n.actor?._id) return `/profile/${n.actor._id}`;
         return "#";
     };
@@ -135,15 +190,24 @@ export function NotificationBell() {
                     {/* Header */}
                     <div className="flex items-center justify-between p-3 border-b border-border">
                         <h3 className="font-semibold">Notifications</h3>
-                        {unreadCount > 0 && (
+                        <div className="flex items-center gap-2">
                             <button
-                                onClick={markAllAsRead}
-                                className="text-xs text-primary hover:underline flex items-center gap-1"
+                                onClick={() => setShowArchived(!showArchived)}
+                                className={`p-1 rounded hover:bg-muted transition-colors ${showArchived ? "text-primary" : "text-muted-foreground"}`}
+                                title={showArchived ? "Hide archived" : "Show archived"}
                             >
-                                <Check size={12} />
-                                Mark all read
+                                <Archive size={14} />
                             </button>
-                        )}
+                            {unreadCount > 0 && (
+                                <button
+                                    onClick={markAllAsRead}
+                                    className="text-xs text-primary hover:underline flex items-center gap-1"
+                                >
+                                    <Check size={12} />
+                                    Mark all read
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Notifications list */}
@@ -162,11 +226,11 @@ export function NotificationBell() {
                                     key={notification._id}
                                     href={getNotificationLink(notification)}
                                     onClick={() => setIsOpen(false)}
-                                    className={`block p-3 hover:bg-muted/50 transition-colors border-b border-border last:border-0 ${!notification.read ? "bg-primary/5" : ""
-                                        }`}
+                                    className={`block p-3 hover:bg-muted/50 transition-colors border-b border-border last:border-0 group ${notification.state === "unread" || !notification.read ? "bg-primary/5" : ""
+                                        } ${notification.state === "archived" ? "opacity-60" : ""}`}
                                 >
                                     <div className="flex gap-3">
-                                        {/* Avatar */}
+                                        {/* Avatar/Icon */}
                                         <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                                             {notification.actor?.image ? (
                                                 <img
@@ -175,7 +239,7 @@ export function NotificationBell() {
                                                     className="w-full h-full object-cover"
                                                 />
                                             ) : (
-                                                <Bell size={14} className="text-muted-foreground" />
+                                                getNotificationIcon(notification.type)
                                             )}
                                         </div>
 
@@ -194,10 +258,21 @@ export function NotificationBell() {
                                             </p>
                                         </div>
 
-                                        {/* Unread indicator */}
-                                        {!notification.read && (
-                                            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-primary mt-2" />
-                                        )}
+                                        {/* Actions */}
+                                        <div className="flex-shrink-0 flex items-start gap-1">
+                                            {notification.state !== "archived" && (
+                                                <button
+                                                    onClick={(e) => archiveNotification(notification._id, e)}
+                                                    className="p-1 rounded hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    title="Archive"
+                                                >
+                                                    <Archive size={12} className="text-muted-foreground" />
+                                                </button>
+                                            )}
+                                            {(notification.state === "unread" || !notification.read) && (
+                                                <div className="w-2 h-2 rounded-full bg-primary mt-2" />
+                                            )}
+                                        </div>
                                     </div>
                                 </Link>
                             ))
@@ -208,3 +283,4 @@ export function NotificationBell() {
         </div>
     );
 }
+

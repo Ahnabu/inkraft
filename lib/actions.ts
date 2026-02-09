@@ -92,7 +92,10 @@ export async function updatePostStatus(postId: string, status: "draft" | "submit
         updates.publishedAt = new Date();
         updates.published = true; // Sync legacy field
 
-        // Notify all followers about the new post
+        // Import notification utilities
+        const { notifyCategoryFollowers } = await import("@/lib/notifications");
+
+        // Notify all author followers about the new post
         const author = await User.findById(post.author).select("followers");
         if (author?.followers && author.followers.length > 0) {
             const notifications = author.followers.map((followerId: unknown) => ({
@@ -100,10 +103,20 @@ export async function updatePostStatus(postId: string, status: "draft" | "submit
                 type: "new_post",
                 actor: post.author,
                 post: post._id,
-                message: `published a new post: "${post.title}"`
+                message: `published a new post: "${post.title}"`,
+                state: "unread",
+                read: false
             }));
             await Notification.insertMany(notifications);
         }
+
+        // Notify category followers (NEW - from New_Features.md)
+        await notifyCategoryFollowers(
+            post._id.toString(),
+            post.category,
+            post.author.toString(),
+            post.title
+        );
     }
 
     await Post.findByIdAndUpdate(postId, updates);
@@ -112,3 +125,36 @@ export async function updatePostStatus(postId: string, status: "draft" | "submit
     return { success: true };
 }
 
+/**
+ * Follow a category to get notifications when new posts are published in it
+ */
+export async function followCategory(category: string) {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Unauthorized");
+
+    await dbConnect();
+
+    await User.findByIdAndUpdate(session.user.id, {
+        $addToSet: { followedCategories: category }
+    });
+
+    revalidatePath(`/category/${category}`);
+    return { success: true };
+}
+
+/**
+ * Unfollow a category to stop receiving notifications
+ */
+export async function unfollowCategory(category: string) {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Unauthorized");
+
+    await dbConnect();
+
+    await User.findByIdAndUpdate(session.user.id, {
+        $pull: { followedCategories: category }
+    });
+
+    revalidatePath(`/category/${category}`);
+    return { success: true };
+}

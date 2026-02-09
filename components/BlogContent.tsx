@@ -1,17 +1,96 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+
+interface SeriesPost {
+    _id: string;
+    title: string;
+    slug: string;
+}
+
+interface SeriesContext {
+    title: string;
+    slug: string;
+    posts: SeriesPost[];
+    currentIndex: number; // 0-based index of current post in series
+}
 
 interface BlogContentProps {
     content: string;
     className?: string;
+    series?: SeriesContext;
 }
 
-export function BlogContent({ content, className = "" }: BlogContentProps) {
+function SeriesNavigation({ series }: { series: SeriesContext }) {
+    const { title, slug, posts, currentIndex } = series;
+    const totalParts = posts.length;
+    const partNumber = currentIndex + 1;
+    const prevPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
+    const nextPost = currentIndex < totalParts - 1 ? posts[currentIndex + 1] : null;
+
+    return (
+        <div className="series-navigation mb-8 p-4 rounded-xl border border-border bg-card/50">
+            {/* Series header */}
+            <div className="flex items-center gap-2 mb-3">
+                <BookOpen size={18} className="text-primary" />
+                <Link
+                    href={`/series/${slug}`}
+                    className="font-semibold text-foreground hover:text-primary transition-colors"
+                >
+                    {title}
+                </Link>
+                <span className="text-muted-foreground text-sm">
+                    • Part {partNumber} of {totalParts}
+                </span>
+            </div>
+
+            {/* Progress bar */}
+            <div className="w-full h-1.5 bg-muted rounded-full mb-4 overflow-hidden">
+                <div
+                    className="h-full bg-primary rounded-full transition-all"
+                    style={{ width: `${(partNumber / totalParts) * 100}%` }}
+                />
+            </div>
+
+            {/* Prev/Next navigation */}
+            <div className="flex justify-between items-center gap-4">
+                {prevPost ? (
+                    <Link
+                        href={`/blog/${prevPost.slug}`}
+                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group max-w-[45%]"
+                    >
+                        <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+                        <span className="truncate">{prevPost.title}</span>
+                    </Link>
+                ) : (
+                    <div />
+                )}
+
+                {nextPost ? (
+                    <Link
+                        href={`/blog/${nextPost.slug}`}
+                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group max-w-[45%] text-right"
+                    >
+                        <span className="truncate">{nextPost.title}</span>
+                        <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+                ) : (
+                    <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                        <span>✓ Series Complete</span>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+export function BlogContent({ content, className = "", series }: BlogContentProps) {
     useEffect(() => {
         // Add copy button to code blocks
         const codeBlocks = document.querySelectorAll(".blog-content pre");
-        
+
         codeBlocks.forEach((block) => {
             // Skip if button already exists
             if (block.querySelector(".copy-button")) return;
@@ -25,7 +104,7 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
                 </svg>
                 <span>Copy</span>
             `;
-            
+
             button.addEventListener("click", async () => {
                 const code = block.querySelector("code");
                 if (code) {
@@ -55,7 +134,7 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
 
         // Add anchor links to headings
         const headings = document.querySelectorAll(".blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4, .blog-content h5, .blog-content h6");
-        
+
         headings.forEach((heading) => {
             if (!heading.id) {
                 heading.id = heading.textContent?.toLowerCase().replace(/[^\w]+/g, '-') || '';
@@ -73,7 +152,7 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                 </svg>
             `;
-            
+
             const headingElement = heading as HTMLElement;
             headingElement.style.position = "relative";
             heading.appendChild(anchor);
@@ -103,6 +182,7 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
 
     return (
         <>
+            {series && <SeriesNavigation series={series} />}
             <div
                 className={`blog-content prose dark:prose-invert max-w-none ${className}`}
                 dangerouslySetInnerHTML={{ __html: content }}

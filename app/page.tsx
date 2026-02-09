@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { ArticleCard } from "@/components/ArticleCard";
 import { PostFeed } from "@/components/PostFeed";
-import { TrendingUp, Clock, Award, ArrowRight } from "lucide-react";
+import { TrendingUp, Clock, Award, ArrowRight, Sparkles } from "lucide-react";
 import { auth } from "@/auth";
 import { Metadata } from "next";
 
-import { fetchLatestPosts, fetchTopPosts, fetchTrendingPosts } from "@/lib/data/posts";
+import { fetchLatestPosts, fetchTopPosts, fetchTrendingPosts, fetchPersonalizedFeed, fetchFollowedPosts } from "@/lib/data/posts";
 
 export const metadata: Metadata = {
   title: "Inkraft | Premium Tech Blog - AI, Programming & Web Development",
@@ -74,12 +74,16 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const searchParams = (await props.searchParams) as any;
-  const feedType = searchParams?.feed || "latest";
+  const feedType = searchParams?.feed || (session?.user?.id ? "foryou" : "latest");
 
+  // Get main feed posts based on selected feed type
   let mainPosts = latestPosts;
-  if (feedType === "following" && session?.user?.id) {
-    const { fetchFollowedPosts } = await import("@/lib/data/posts");
-    mainPosts = await fetchFollowedPosts(session.user.id);
+  if (session?.user?.id) {
+    if (feedType === "foryou") {
+      mainPosts = await fetchPersonalizedFeed(session.user.id);
+    } else if (feedType === "following") {
+      mainPosts = await fetchFollowedPosts(session.user.id);
+    }
   }
 
   return (
@@ -123,6 +127,15 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <div className="flex items-center gap-4">
+                {session && (
+                  <Link
+                    href="/?feed=foryou"
+                    className={`flex items-center gap-2 text-xl sm:text-2xl font-bold transition-colors ${feedType === 'foryou' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  >
+                    <Sparkles size={20} className={feedType === 'foryou' ? "text-primary sm:w-6 sm:h-6" : "sm:w-6 sm:h-6"} />
+                    For You
+                  </Link>
+                )}
                 <Link
                   href="/?feed=latest"
                   className={`flex items-center gap-2 text-xl sm:text-2xl font-bold transition-colors ${feedType === 'latest' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
@@ -156,9 +169,11 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
                 <p className="text-muted-foreground mb-4">
                   {feedType === 'following'
                     ? "You aren't following anyone yet, or they haven't posted recently."
-                    : "No posts yet"}
+                    : feedType === 'foryou'
+                      ? "Follow some authors or categories to get personalized recommendations!"
+                      : "No posts yet"}
                 </p>
-                {feedType === 'following' && (
+                {(feedType === 'following' || feedType === 'foryou') && (
                   <Link href="/authors" className="text-primary hover:underline">
                     Discover Authors
                   </Link>

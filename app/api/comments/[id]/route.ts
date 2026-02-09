@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import Comment from "@/models/Comment";
+import CommentHistory from "@/models/CommentHistory";
+import { sanitizeCommentContent } from "@/lib/trust";
+import User from "@/models/User";
 
 export const dynamic = 'force-dynamic';
 
@@ -53,8 +56,20 @@ export async function PATCH(
             return new NextResponse("Edit window expired (24 hours)", { status: 400 });
         }
 
+        // Save history before updating
+        await CommentHistory.create({
+            comment: comment._id,
+            previousContent: comment.content,
+            editedAt: new Date(),
+            editedBy: session.user.id
+        });
+
+        // Sanitize content
+        const user = await User.findById(session.user.id);
+        const sanitizedContent = sanitizeCommentContent(content.trim(), { trustScore: user?.trustScore || 0 } as any);
+
         // Update comment
-        comment.content = content.trim();
+        comment.content = sanitizedContent;
         comment.edited = true;
         comment.editedAt = new Date();
         await comment.save();

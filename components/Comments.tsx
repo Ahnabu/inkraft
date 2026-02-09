@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { MessageSquare, Send, Loader2, User, Reply, AlertCircle, Trash2, MoreVertical } from "lucide-react";
+import { MessageSquare, Send, Loader2, User, Reply, AlertCircle, Trash2, MoreVertical, Pencil, ShieldAlert } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { canUseFeature } from "@/lib/trust";
 import { GlassCard } from "./ui/GlassCard";
 import { Button } from "./ui/Button";
 import { toast } from "sonner";
@@ -24,6 +26,8 @@ interface Comment {
         image?: string;
     };
     createdAt: string;
+    edited?: boolean;
+    editedAt?: string;
     replies?: Comment[];
     depth: number;
 }
@@ -190,6 +194,12 @@ export function Comments({ postSlug }: CommentsProps) {
                                     minute: "2-digit",
                                 })}
                             </span>
+                            {comment.edited && comment.editedAt && (
+                                <span className="text-xs text-muted-foreground flex items-center gap-1" title={`Edited ${new Date(comment.editedAt).toLocaleString()}`}>
+                                    <Pencil size={10} />
+                                    edited {formatDistanceToNow(new Date(comment.editedAt), { addSuffix: true })}
+                                </span>
+                            )}
                         </div>
                         <div className="flex justify-between items-start gap-4">
                             {editingCommentId === comment._id ? (
@@ -366,6 +376,20 @@ export function Comments({ postSlug }: CommentsProps) {
                                     maxLength={1500}
                                 />
                                 <div className="flex justify-between items-center mt-2">
+                                    <div className="flex gap-2">
+                                        {!canUseFeature({ trustScore: session.user?.trustScore || 0.5 } as any, "links") && (
+                                            <span className="text-xs text-muted-foreground flex items-center gap-1" title="Earn trust to post links">
+                                                <ShieldAlert size={12} />
+                                                No links
+                                            </span>
+                                        )}
+                                        {!canUseFeature({ trustScore: session.user?.trustScore || 0.5 } as any, "codeBlocks") && (
+                                            <span className="text-xs text-muted-foreground flex items-center gap-1" title="Earn trust to post code">
+                                                <ShieldAlert size={12} />
+                                                No code
+                                            </span>
+                                        )}
+                                    </div>
                                     <span className="text-xs text-muted-foreground">
                                         {newComment.length}/1500
                                     </span>

@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
+import Series from "@/models/Series";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import Image from "next/image";
@@ -34,6 +35,39 @@ async function getPost(slug: string) {
 
     // View tracking is now handled client-side with time-window
     return JSON.parse(JSON.stringify(post));
+}
+
+// Get series context for a post (if it belongs to a series)
+async function getSeriesContext(postId: string) {
+    await dbConnect();
+
+    // Find series that contains this post
+    const series = await Series.findOne({ posts: postId })
+        .populate("posts", "_id title slug")
+        .lean();
+
+    if (!series) return null;
+
+    // Find current post's index in series
+    const postIdStr = postId.toString();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const currentIndex = (series.posts as any[]).findIndex(
+        (p: { _id: { toString(): string } }) => p._id.toString() === postIdStr
+    );
+
+    if (currentIndex === -1) return null;
+
+    return {
+        title: series.title,
+        slug: series.slug,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        posts: (series.posts as any[]).map((p: any) => ({
+            _id: p._id.toString(),
+            title: p.title,
+            slug: p.slug
+        })),
+        currentIndex
+    };
 }
 
 async function getRelatedPosts(category: string, currentSlug: string) {
@@ -151,6 +185,7 @@ export default async function BlogPostPage({ params }: PageProps) {
     }
 
     const relatedPosts = await getRelatedPosts(post.category, slug);
+    const seriesContext = await getSeriesContext(post._id);
     const articleUrl = `${getBaseUrl()}/blog/${slug}`;
 
     // Enhanced structured data with Breadcrumbs and Article
@@ -270,7 +305,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }}
             />
             <ReadingProgress />
-            <ViewTracker postSlug={slug} />
+            <ViewTracker postSlug={slug} postId={post._id.toString()} />
 
             <BlogPostClient>
                 <div className="min-h-screen">
@@ -404,7 +439,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                                 {/* Main Article Content */}
                                 <article>
                                     <GlassCard className="p-4 sm:p-6 md:p-8 lg:p-12">
-                                        <BlogContent content={post.content} />
+                                        <BlogContent content={post.content} series={seriesContext || undefined} />
 
                                         {/* Tags */}
                                         {post.tags && post.tags.length > 0 && (

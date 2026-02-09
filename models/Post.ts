@@ -140,6 +140,10 @@ const PostSchema: Schema<IPost> = new Schema(
             description: String,
             keywords: [String],
         },
+        editorsPick: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );

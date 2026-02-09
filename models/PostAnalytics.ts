@@ -73,6 +73,15 @@ const PostAnalyticsSchema = new Schema(
       type: Number, // percentage
       default: 0,
     },
+    // Completion tracking
+    reachedEnd: {
+      type: Boolean,
+      default: false,
+    },
+    exitScrollDepth: {
+      type: Number, // percentage where they left
+      default: 0,
+    },
     // Timestamps
     viewedAt: {
       type: Date,

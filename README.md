@@ -261,6 +261,10 @@ Inkraft is a **premium editorial blogging platform** designed for content creato
   - Low-trust engagement alerts
   - Severity-based prioritization
   - One-click resolution actions
+  - **Trust & Safety Tools**
+  - Vote nullification for suspicious posts
+  - Trust score freezing for bad actors
+
 
 ---
 

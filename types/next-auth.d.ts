@@ -4,6 +4,7 @@ declare module "@auth/core/adapters" {
     interface AdapterUser {
         role: "admin" | "author" | "reader"
         banned: boolean
+        trustScore: number
     }
 }
 
@@ -16,12 +17,14 @@ declare module "next-auth" {
             id: string
             role: "admin" | "author" | "reader"
             banned: boolean
+            trustScore: number
         } & DefaultSession["user"]
     }
 
     interface User {
         role: "admin" | "author" | "reader"
         banned: boolean
+        trustScore: number
     }
 }
 
@@ -30,5 +33,6 @@ declare module "next-auth/jwt" {
     interface JWT {
         role: "admin" | "author" | "reader"
         banned: boolean
+        trustScore: number
     }
 }

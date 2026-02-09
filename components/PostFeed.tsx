@@ -20,6 +20,13 @@ interface Post {
     upvotes?: number;
     commentCount?: number;
     publishedAt?: string;
+    editorsPick?: boolean;
+    rankingDetails?: {
+        type: string;
+        score: number;
+        formula?: string;
+        factors?: Record<string, number>;
+    };
 }
 
 interface PostFeedProps {
