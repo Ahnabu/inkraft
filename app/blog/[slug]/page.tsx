@@ -12,6 +12,7 @@ import { Clock, Calendar, User, Tag, Eye } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { auth } from "@/auth";
 import UserModel from "@/models/User"; // Renamed to avoid conflict with lucide-react User
+import FollowButton from "@/components/FollowButton";
 import { SaveButton } from "@/components/SaveButton";
 import { TableOfContents } from "@/components/TableOfContents";
 import { getBaseUrl } from "@/lib/utils";
@@ -135,12 +136,17 @@ export default async function BlogPostPage({ params }: PageProps) {
     // Check if post is saved by current user
     const session = await auth();
     let isSaved = false;
+    let isFollowingAuthor = false;
     if (session?.user?.id) {
         await dbConnect();
-        const user = await UserModel.findById(session.user.id).select("savedPosts");
+        const user = await UserModel.findById(session.user.id).select("savedPosts following");
         if (user && user.savedPosts) {
             // Check if post ID is in savedPosts array
             isSaved = user.savedPosts.some((id: unknown) => (id as { toString(): string }).toString() === post._id);
+        }
+        // Check if following the author
+        if (user && user.following && post.author?._id) {
+            isFollowingAuthor = user.following.some((id: unknown) => (id as { toString(): string }).toString() === post.author._id);
         }
     }
 
@@ -149,7 +155,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
     // Enhanced structured data with Breadcrumbs and Article
     const wordCount = post.content?.split(/\s+/).length || 0;
-    
+
     const breadcrumbStructuredData = {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
@@ -289,9 +295,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                         <div className="flex gap-6 sm:gap-8 lg:gap-12">
                             {/* Left Sidebar - Table of Contents (Desktop Only) */}
                             <aside className="hidden xl:block w-64 shrink-0">
-                            <div className="p-8 md:p-12 mb-8">
+                                <div className="p-8 md:p-12 mb-8">
                                     <div className="space-y-6">
-                                        
+
                                     </div>
                                 </div>
                                 <div className="sticky top-24">
@@ -445,16 +451,24 @@ export default async function BlogPostPage({ params }: PageProps) {
                                                         </div>
                                                     )}
                                                 </Link>
-                                                <div>
-                                                    <h3 className="text-xl font-bold mb-2">
-                                                        About{" "}
-                                                        <Link
-                                                            href={`/profile/${post.author._id}`}
-                                                            className="hover:text-primary transition-colors"
-                                                        >
-                                                            {post.author.name}
-                                                        </Link>
-                                                    </h3>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center justify-between gap-4 mb-2">
+                                                        <h3 className="text-xl font-bold">
+                                                            About{" "}
+                                                            <Link
+                                                                href={`/profile/${post.author._id}`}
+                                                                className="hover:text-primary transition-colors"
+                                                            >
+                                                                {post.author.name}
+                                                            </Link>
+                                                        </h3>
+                                                        {session && session.user?.id !== post.author._id && (
+                                                            <FollowButton
+                                                                targetUserId={post.author._id}
+                                                                isFollowing={isFollowingAuthor}
+                                                            />
+                                                        )}
+                                                    </div>
                                                     <p className="text-muted-foreground">{post.author.bio}</p>
                                                 </div>
                                             </div>

@@ -6,6 +6,7 @@ import User from "@/models/User";
 import Post from "@/models/Post";
 import { auth } from "@/auth";
 import { PostFeed } from "@/components/PostFeed";
+import FollowButton from "@/components/FollowButton";
 import {
     Globe,
     Twitter,
@@ -15,11 +16,12 @@ import {
     Calendar,
     Settings,
     Bookmark,
-    Eye
+    Eye,
+    Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-async function getUserProfile(userId: string, tab: string = "published") {
+async function getUserProfile(userId: string, tab: string = "published", currentUserId?: string) {
     await dbConnect();
 
     const user = await User.findById(userId).lean();
@@ -53,12 +55,28 @@ async function getUserProfile(userId: string, tab: string = "published") {
     const totalViews = authoredPosts.reduce((sum: number, post: { views?: number }) => sum + (post.views || 0), 0);
     const totalPostsCount = await Post.countDocuments({ author: userId, published: true });
 
+    // Check if current user follows this profile
+    let isFollowing = false;
+    if (currentUserId && currentUserId !== userId) {
+        const currentUser = await User.findById(currentUserId).select("following");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        isFollowing = currentUser?.following?.some((id: any) => id.toString() === userId) || false;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const userObj = user as any;
+    const followerCount = userObj.followers?.length || 0;
+    const followingCount = userObj.following?.length || 0;
+
     return {
         user: JSON.parse(JSON.stringify(user)),
         posts: JSON.parse(JSON.stringify(posts)),
         totalUpvotes,
         totalViews,
-        totalPostsCount
+        totalPostsCount,
+        isFollowing,
+        followerCount,
+        followingCount
     };
 }
 
@@ -77,13 +95,13 @@ export default async function UserProfilePage({
     // Only allow "saved" tab if it is own profile, otherwise default to "published"
     const currentTab = (tab === "saved" && isOwnProfile) ? "saved" : "published";
 
-    const profileData = await getUserProfile(id, currentTab);
+    const profileData = await getUserProfile(id, currentTab, session?.user?.id);
 
     if (!profileData) {
         notFound();
     }
 
-    const { user, posts, totalUpvotes, totalViews, totalPostsCount } = profileData;
+    const { user, posts, totalUpvotes, totalViews, totalPostsCount, isFollowing, followerCount, followingCount } = profileData;
 
     return (
         <div className="min-h-screen">
@@ -114,15 +132,20 @@ export default async function UserProfilePage({
                                     <h1 className="text-3xl font-bold mb-1">{user.name}</h1>
                                     <p className="text-muted-foreground">{user.email}</p>
                                 </div>
-                                {isOwnProfile && (
-                                    <Link
-                                        href="/settings"
-                                        className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
-                                    >
-                                        <Settings size={16} />
-                                        Edit Profile
-                                    </Link>
-                                )}
+                                <div className="flex items-center gap-2">
+                                    {!isOwnProfile && session && (
+                                        <FollowButton targetUserId={id} isFollowing={isFollowing} />
+                                    )}
+                                    {isOwnProfile && (
+                                        <Link
+                                            href="/settings"
+                                            className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
+                                        >
+                                            <Settings size={16} />
+                                            Edit Profile
+                                        </Link>
+                                    )}
+                                </div>
                             </div>
 
                             {user.bio && (
@@ -173,6 +196,15 @@ export default async function UserProfilePage({
                                     <span className="text-muted-foreground">
                                         {totalPostsCount === 1 ? "Post" : "Posts"}
                                     </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Users size={16} className="text-muted-foreground" />
+                                    <span className="font-semibold">{followerCount}</span>
+                                    <span className="text-muted-foreground">Followers</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-semibold">{followingCount}</span>
+                                    <span className="text-muted-foreground">Following</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Eye size={16} className="text-muted-foreground" />
