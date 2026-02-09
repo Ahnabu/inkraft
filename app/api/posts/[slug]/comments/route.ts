@@ -4,6 +4,7 @@ import dbConnect from "@/lib/mongodb";
 import Comment from "@/models/Comment";
 import Post from "@/models/Post";
 import User from "@/models/User";
+import Notification from "@/models/Notification";
 import { checkRateLimit, recordComment } from "@/lib/rateLimit";
 import { checkBotId } from "botid/server";
 
@@ -112,7 +113,7 @@ export async function POST(
     try {
         // Check for bot activity
         const verification = await checkBotId();
-        
+
         if (verification.isBot) {
             return new NextResponse("Bot detected. Access denied.", { status: 403 });
         }
@@ -205,6 +206,17 @@ export async function POST(
         // Update user comment count
         user.commentCount += 1;
         await user.save();
+
+        // Create notification for comment reply (if replying to someone else)
+        if (parentComment && parentComment.author.toString() !== session.user.id) {
+            await Notification.create({
+                user: parentComment.author,
+                type: "comment_reply",
+                actor: session.user.id,
+                post: post._id,
+                message: `replied to your comment`
+            });
+        }
 
         // Populate author for response
         const populatedComment = await Comment.findById(comment._id)

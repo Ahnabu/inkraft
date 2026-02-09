@@ -131,13 +131,20 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="google-site-verification" content="jMiToSCrGKGdzXOOrfgEHRCQTDORKrsaT3xPjHBRHQw" />
+        {/* Bing/Edge verification - submit at bing.com/webmasters */}
+        <meta name="msvalidate.01" content="" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Favicons for all browsers */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/favicon.ico" />
         <meta name="theme-color" content="#6366f1" />
+        {/* Force browsers to update favicon */}
+        <link rel="icon" href="/favicon.ico?v=2" />
       </head>
       <body
         className={`${dmSans.variable} antialiased bg-background text-text font-body min-h-screen flex flex-col overflow-x-hidden`}

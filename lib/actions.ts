@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import User from "@/models/User";
 import Series from "@/models/Series";
 import Post from "@/models/Post";
+import Notification from "@/models/Notification";
 import dbConnect from "@/lib/mongodb";
 import { revalidatePath } from "next/cache";
 
@@ -26,6 +27,14 @@ export async function followUser(targetUserId: string) {
     // Add to followers
     await User.findByIdAndUpdate(targetUserId, {
         $addToSet: { followers: session.user.id }
+    });
+
+    // Create notification for the target user
+    await Notification.create({
+        user: targetUserId,
+        type: "new_follower",
+        actor: session.user.id,
+        message: `started following you`
     });
 
     revalidatePath(`/author/${targetUserId}`);
@@ -78,10 +87,23 @@ export async function updatePostStatus(postId: string, status: "draft" | "submit
         throw new Error("Unauthorized");
     }
 
-    const updates: any = { status };
+    const updates: Record<string, unknown> = { status };
     if (status === 'published' && !post.publishedAt) {
         updates.publishedAt = new Date();
         updates.published = true; // Sync legacy field
+
+        // Notify all followers about the new post
+        const author = await User.findById(post.author).select("followers");
+        if (author?.followers && author.followers.length > 0) {
+            const notifications = author.followers.map((followerId: unknown) => ({
+                user: followerId,
+                type: "new_post",
+                actor: post.author,
+                post: post._id,
+                message: `published a new post: "${post.title}"`
+            }));
+            await Notification.insertMany(notifications);
+        }
     }
 
     await Post.findByIdAndUpdate(postId, updates);
@@ -89,3 +111,4 @@ export async function updatePostStatus(postId: string, status: "draft" | "submit
     revalidatePath(`/dashboard`);
     return { success: true };
 }
+

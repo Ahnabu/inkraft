@@ -138,9 +138,9 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                         {post.title}
                     </h3>
                     <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                        <span>{post.author.name}</span>
-                        <span>•</span>
-                        <span>{post.readingTime} min</span>
+                        <span className="truncate max-w-[100px]">{post.author.name}</span>
+                        <span className="hidden sm:inline">•</span>
+                        <span className="hidden sm:inline">{post.readingTime} min</span>
                         {(post.views || 0) > 0 && (
                             <>
                                 <span>•</span>
@@ -215,8 +215,8 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                         <span className="text-muted-foreground">{post.author.name}</span>
                     </div>
 
-                    <div className="flex items-center gap-3 text-muted-foreground">
-                        <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground">
+                        <div className="hidden sm:flex items-center gap-1">
                             <Clock size={14} />
                             <span>{post.readingTime} min</span>
                         </div>
