@@ -7,7 +7,6 @@ export async function GET(request: Request) {
     try {
         const session = await auth();
 
-        // @ts-expect-error - role property not in default session type
         if (!session?.user || session.user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }

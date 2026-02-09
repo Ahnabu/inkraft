@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { PenTool, Menu, X, Sun, Moon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { UserNav } from "@/components/UserNav";
+import { NotificationBell } from "@/components/NotificationBell";
 import { useState } from "react";
 import { useTheme } from "next-themes";
 
@@ -40,6 +41,7 @@ export function Navbar() {
 
                     {/* Mobile Controls */}
                     <div className="flex items-center gap-2 md:hidden">
+                        {session && <NotificationBell />}
                         {session && <UserNav />}
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -86,7 +88,10 @@ export function Navbar() {
                     </div>
 
                     {session ? (
-                        <UserNav />
+                        <div className="flex items-center gap-2">
+                            <NotificationBell />
+                            <UserNav />
+                        </div>
                     ) : (
                         <div className="flex items-center gap-2">
                             <Link href="/api/auth/signin">

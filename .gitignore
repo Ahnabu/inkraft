@@ -41,6 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 Plan.md
-
+New_Features.md
 
 pre-deploy-check.sh

@@ -9,7 +9,7 @@ import AdminDashboardClient from "./AdminClient";
 export default async function AdminDashboardPage() {
     const session = await auth();
 
-    // @ts-expect-error - role property not in default session type
+
     if (!session?.user || session.user.role !== "admin") {
         redirect("/");
     }

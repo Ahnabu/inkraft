@@ -77,7 +77,6 @@ export async function GET(
 
     // Check if user is author or admin
     const isAuthor = post.author._id.toString() === session.user.id;
-    // @ts-expect-error - role property extended in custom type
     const isAdmin = session.user.role === "admin";
 
     if (!isAuthor && !isAdmin) {

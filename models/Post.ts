@@ -8,9 +8,11 @@ export interface IPost extends Document {
     excerpt?: string;
     coverImage?: string;
     author: mongoose.Types.ObjectId;
+    series?: mongoose.Types.ObjectId;
     category: string; // Single category (Technology, AI, etc.)
     tags: string[];
     published: boolean;
+    status: "draft" | "submitted" | "needs_revision" | "scheduled" | "published" | "archived";
     publishedAt?: Date;
     lastUpdatedAt?: Date;
     readingTime: number; // Auto-calculated in minutes
@@ -21,6 +23,7 @@ export interface IPost extends Document {
     downvotes: number;
     commentCount: number;
     engagementScore: number; // Calculated field for ranking
+    trendingScore: number; // Recalculated periodically
     adPlacement: "after-40" | "end" | "none";
     seo?: {
         title?: string;
@@ -65,6 +68,10 @@ const PostSchema: Schema<IPost> = new Schema(
             ref: "User",
             required: true,
         },
+        series: {
+            type: Schema.Types.ObjectId,
+            ref: "Series",
+        },
         category: {
             type: String,
             required: [true, "Please select a category"],
@@ -73,6 +80,11 @@ const PostSchema: Schema<IPost> = new Schema(
         published: {
             type: Boolean,
             default: false,
+        },
+        status: {
+            type: String,
+            enum: ["draft", "submitted", "needs_revision", "scheduled", "published", "archived"],
+            default: "draft",
         },
         publishedAt: {
             type: Date,
@@ -112,6 +124,11 @@ const PostSchema: Schema<IPost> = new Schema(
             type: Number,
             default: 0,
             index: true, // For ranking queries
+        },
+        trendingScore: {
+            type: Number,
+            default: 0,
+            index: true,
         },
         adPlacement: {
             type: String,

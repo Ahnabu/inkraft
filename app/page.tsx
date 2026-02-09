@@ -63,7 +63,7 @@ async function getTopPosts() {
   }
 }
 
-export default async function HomePage() {
+export default async function HomePage(props: { searchParams?: Promise<{ feed?: string }> }) {
   const session = await auth();
   const [featuredPost, trendingPosts, latestPosts, topPosts] = await Promise.all([
     getFeaturedPost(),
@@ -71,6 +71,16 @@ export default async function HomePage() {
     getLatestPosts(),
     getTopPosts(),
   ]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const searchParams = (await props.searchParams) as any;
+  const feedType = searchParams?.feed || "latest";
+
+  let mainPosts = latestPosts;
+  if (feedType === "following" && session?.user?.id) {
+    const { fetchFollowedPosts } = await import("@/lib/data/posts");
+    mainPosts = await fetchFollowedPosts(session.user.id);
+  }
 
   return (
     <div className="min-h-screen">
@@ -109,12 +119,25 @@ export default async function HomePage() {
       {/* Main Content Grid */}
       <section className="container mx-auto px-3 sm:px-4 py-8 sm:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Latest Posts - 2/3 width */}
+          {/* Main Feed - 2/3 width */}
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <div className="flex items-center gap-2">
-                <Clock size={20} className="text-primary sm:w-6 sm:h-6" />
-                <h2 className="text-xl sm:text-2xl font-bold">Latest Posts</h2>
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/?feed=latest"
+                  className={`flex items-center gap-2 text-xl sm:text-2xl font-bold transition-colors ${feedType === 'latest' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  <Clock size={20} className={feedType === 'latest' ? "text-primary sm:w-6 sm:h-6" : "sm:w-6 sm:h-6"} />
+                  Latest
+                </Link>
+                {session && (
+                  <Link
+                    href="/?feed=following"
+                    className={`flex items-center gap-2 text-xl sm:text-2xl font-bold transition-colors ${feedType === 'following' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  >
+                    Following
+                  </Link>
+                )}
               </div>
               <Link
                 href="/latest"
@@ -125,10 +148,22 @@ export default async function HomePage() {
                 <ArrowRight size={14} className="sm:w-4 sm:h-4" />
               </Link>
             </div>
-            {latestPosts.length > 0 ? (
-              <PostFeed posts={latestPosts} columns={2} variant="standard" />
+
+            {mainPosts.length > 0 ? (
+              <PostFeed posts={mainPosts} columns={2} variant="standard" />
             ) : (
-              <p className="text-muted-foreground">No posts yet</p>
+              <div className="py-12 text-center border rounded-xl bg-card">
+                <p className="text-muted-foreground mb-4">
+                  {feedType === 'following'
+                    ? "You aren't following anyone yet, or they haven't posted recently."
+                    : "No posts yet"}
+                </p>
+                {feedType === 'following' && (
+                  <Link href="/authors" className="text-primary hover:underline">
+                    Discover Authors
+                  </Link>
+                )}
+              </div>
             )}
           </div>
 

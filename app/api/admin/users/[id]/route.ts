@@ -15,7 +15,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     try {
         const session = await auth();
 
-        // @ts-expect-error - role property not in default session type
         if (!session?.user || session.user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
@@ -73,7 +72,6 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     try {
         const session = await auth();
 
-        // @ts-expect-error - role property not in default session type
         if (!session?.user || session.user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }

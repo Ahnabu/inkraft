@@ -5,16 +5,18 @@
 export function calculateTrustMultiplier(
     accountAgeDays: number,
     articlesRead: number,
-    contributions: number
+    contributions: number,
+    followersCount: number = 0 // New signal
 ): number {
     const ageScore = Math.min(0.3, (accountAgeDays / 90) * 0.3);
     const readingScore = Math.min(0.4, (articlesRead / 100) * 0.4);
     const contributionScore = Math.min(0.3, (contributions / 20) * 0.3);
+    const socialScore = Math.min(0.5, (followersCount / 50) * 0.5); // Cap at 50 followers for max boost
 
-    const trustMultiplier = ageScore + readingScore + contributionScore;
+    const trustMultiplier = ageScore + readingScore + contributionScore + socialScore;
 
-    // Clamp between 0.5 and 2.0
-    return Math.min(2.0, Math.max(0.5, 1.0 + trustMultiplier));
+    // Clamp between 0.5 and 2.0 (New: can go up to 2.5 with social proof)
+    return Math.min(2.5, Math.max(0.5, 1.0 + trustMultiplier));
 }
 
 /**
@@ -23,13 +25,15 @@ export function calculateTrustMultiplier(
 export function calculateVoteWeight(
     accountAgeDays: number,
     articlesRead: number,
-    contributions: number
+    contributions: number,
+    followersCount: number = 0
 ): number {
     const baseWeight = 1.0;
     const trustMultiplier = calculateTrustMultiplier(
         accountAgeDays,
         articlesRead,
-        contributions
+        contributions,
+        followersCount
     );
 
     return baseWeight * trustMultiplier;
@@ -49,10 +53,11 @@ export function calculateEngagementScore(
     daysSincePublish: number
 ): number {
     const voteScore = upvotes * 2 - downvotes;
-    const commentScore = commentCount * 1;
-    const freshnessFactor = 10 / Math.sqrt(daysSincePublish + 1);
+    const commentScore = commentCount * 2; // Increased weight for comments
+    // Gravity-based decay: Score / (Time + 2)^1.8
+    const timeFactor = Math.pow(daysSincePublish + 2, 1.8);
 
-    return voteScore + commentScore + freshnessFactor;
+    return (voteScore + commentScore) / timeFactor;
 }
 
 /**
@@ -66,10 +71,11 @@ export function calculateTrendingScore(
     recentComments: number,
     hoursSincePublish: number
 ): number {
-    if (hoursSincePublish === 0) return 0;
+    // Prevent division by zero and boost very new posts
+    const timeDivider = Math.max(0.5, hoursSincePublish);
 
-    const engagementPoints = recentUpvotes + recentComments * 1.5;
-    return engagementPoints / hoursSincePublish;
+    const engagementPoints = recentUpvotes + recentComments * 2.0;
+    return engagementPoints / timeDivider;
 }
 
 /**

@@ -16,29 +16,24 @@ export default {
         async session({ session, token }) {
             if (token && session.user) {
                 session.user.id = token.sub as string;
-                // @ts-expect-error - role property extended in custom type
-                session.user.role = token.role as string;
-                // @ts-expect-error - banned property extended in custom type
-                session.user.banned = token.banned as boolean;
+                session.user.role = token.role;
+                session.user.banned = token.banned;
             }
             return session;
         },
         async jwt({ token, user, account }) {
             if (user) {
-                // @ts-expect-error - role property extended in custom type
                 token.role = user.role;
-                // @ts-expect-error - banned property extended in custom type
                 token.banned = user.banned;
             }
-            
+
             // For OAuth providers, check user ban status from database
             if (account?.provider === "google" && user) {
-                // @ts-expect-error - banned property might exist
                 if (user.banned) {
                     throw new Error("Account has been banned");
                 }
             }
-            
+
             return token;
         },
     },

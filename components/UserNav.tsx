@@ -97,8 +97,7 @@ export function UserNav() {
                             Dashboard
                         </Link>
 
-                        {/* Admin Link - Only visible if has role check logic, simpler for now to just show */}
-                        {/* @ts-expect-error - Check for admin role if property exists */}
+                        {/* Admin Link - Only visible for admins */}
                         {user.role === 'admin' && (
                             <Link
                                 href="/admin"

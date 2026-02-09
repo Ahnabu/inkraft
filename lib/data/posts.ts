@@ -155,3 +155,41 @@ export async function fetchTrendingPosts(limit = 10, page = 1) {
     const skip = (page - 1) * limit;
     return trendingPosts.slice(skip, skip + limit);
 }
+
+export async function fetchFollowedPosts(userId: string, limit = 20, page = 1) {
+    await dbConnect();
+    const user = await User.findById(userId).select("following");
+
+    if (!user || !user.following || user.following.length === 0) {
+        return [];
+    }
+
+    const skip = (page - 1) * limit;
+    const posts = await Post.find({
+        author: { $in: user.following },
+        published: true,
+    })
+        .sort({ publishedAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("author", "name image")
+        .lean();
+
+    return posts.map((post) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const postObj = post as any;
+        return {
+            ...post,
+            _id: post._id.toString(),
+            author: {
+                _id: postObj.author._id.toString(),
+                name: postObj.author.name,
+                image: postObj.author.image,
+            },
+            excerpt: post.excerpt || "",
+            publishedAt: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
+            createdAt: post.createdAt.toISOString(),
+            updatedAt: post.updatedAt.toISOString(),
+        };
+    });
+}

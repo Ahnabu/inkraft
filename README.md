@@ -134,8 +134,22 @@ Inkraft is a **premium editorial blogging platform** designed for content creato
   - Save/bookmark articles
   - Share buttons (Twitter, Facebook, LinkedIn, Copy Link)
   - Author profiles with bio
-  - Follow system ready
+  - **Follow System** - Follow authors and categories
+  - Personalized "Following" feed on homepage
   - User activity tracking
+
+- **Notifications**
+  - Real-time notification bell
+  - New post from followed authors
+  - Comment replies
+  - Follower alerts
+  - Unread count badge
+
+- **Series System**
+  - Multi-part content organization
+  - Series landing pages (`/series/[slug]`)
+  - Progress indicators
+  - SEO-optimized with JSON-LD schema
 
 ### 📧 **Contact & Communication**
 
@@ -240,6 +254,13 @@ Inkraft is a **premium editorial blogging platform** designed for content creato
   - Growth metrics
   - Engagement rates
   - System health
+
+- **Admin Alerts System**
+  - Automated detection of vote spikes
+  - Spam velocity monitoring
+  - Low-trust engagement alerts
+  - Severity-based prioritization
+  - One-click resolution actions
 
 ---
 
@@ -470,7 +491,9 @@ git push origin main
 | `/dashboard` | User dashboard | Authenticated |
 | `/analytics` | Overall author analytics | Authenticated |
 | `/analytics/[slug]` | Single post analytics | Author/Admin |
+| `/series/[slug]` | Series landing page | Public |
 | `/admin` | Admin panel | Admin only |
+| `/admin/alerts` | Admin alerts dashboard | Admin only |
 | `/settings` | User settings | Authenticated |
 | `/profile/[id]` | User profile | Public |
 

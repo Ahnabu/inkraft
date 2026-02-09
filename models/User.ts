@@ -18,6 +18,9 @@ export interface IUser extends Document {
     trustScore: number; // For vote weighting (0.5 - 2.0)
     totalUpvotes: number;
     commentCount: number;
+    followers: mongoose.Types.ObjectId[];
+    following: mongoose.Types.ObjectId[];
+    followedCategories: string[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -69,6 +72,15 @@ const UserSchema: Schema<IUser> = new Schema(
             type: Number,
             default: 0,
         },
+        followers: [{
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        }],
+        following: [{
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        }],
+        followedCategories: [{ type: String }],
         categories: [{ type: String }],
         socialLinks: {
             twitter: String,
