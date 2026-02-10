@@ -86,24 +86,24 @@ export default async function DashboardPage() {
                             Welcome back, {user.name}
                         </p>
                     </div>
-                    <div className="flex items-center gap-3 w-full md:w-auto">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
                         <Link
                             href="/analytics"
-                            className="flex-1 md:flex-none justify-center px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center gap-2"
+                            className="justify-center px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center gap-2"
                         >
                             <BarChart3 size={16} />
                             Analytics
                         </Link>
                         <Link
                             href="/new"
-                            className="flex-1 md:flex-none justify-center px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
+                            className="justify-center px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
                         >
                             <Plus size={16} />
                             New Post
                         </Link>
                         <Link
                             href="/settings"
-                            className="flex-1 md:flex-none justify-center px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
+                            className="justify-center px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
                         >
                             <Settings size={16} />
                             Settings

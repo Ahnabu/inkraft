@@ -20,6 +20,7 @@ import { getBaseUrl } from "@/lib/utils";
 import { ViewTracker } from "@/components/ViewTracker";
 import { BlogPostClient } from "@/components/BlogPostClient";
 import { BlogContent } from "@/components/BlogContent";
+import { FeedbackWidget } from "@/components/reader/FeedbackWidget";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -304,7 +305,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }}
             />
-            <ReadingProgress />
+            <ReadingProgress slug={slug} />
             <ViewTracker postSlug={slug} postId={post._id.toString()} />
 
             <BlogPostClient>
@@ -329,7 +330,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                     <div className="container mx-auto px-3 sm:px-4 lg:px-8 -mt-24 sm:-mt-32 relative z-10">
                         <div className="flex gap-6 sm:gap-8 lg:gap-12">
                             {/* Left Sidebar - Table of Contents (Desktop Only) */}
-                            <aside className="hidden xl:block w-64 shrink-0">
+                            <aside className="hidden xl:block w-64 shrink-0 hide-in-focus-mode">
                                 <div className="p-8 md:p-12 mb-8">
                                     <div className="space-y-6">
 
@@ -341,7 +342,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                             </aside>
 
                             {/* Main Content Area */}
-                            <div className="flex-1 max-w-4xl mx-auto xl:mx-0">
+                            <div className="flex-1 max-w-4xl mx-auto xl:mx-0 center-in-focus-mode">
                                 {/* Article Header */}
                                 <GlassCard className="p-4 sm:p-6 md:p-8 lg:p-12 mb-6 sm:mb-8">
                                     <div className="space-y-4 sm:space-y-6">
@@ -351,7 +352,10 @@ export default async function BlogPostPage({ params }: PageProps) {
                                                 {post.category}
                                             </span>
                                             {post.difficultyLevel && (
-                                                <span className="px-4 py-1.5 bg-muted text-muted-foreground text-sm font-medium rounded-full">
+                                                <span className={`px-4 py-1.5 text-sm font-semibold rounded-full ${post.difficultyLevel === "Beginner" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" :
+                                                    post.difficultyLevel === "Intermediate" ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" :
+                                                        "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                                                    }`}>
                                                     {post.difficultyLevel}
                                                 </span>
                                             )}
@@ -446,7 +450,11 @@ export default async function BlogPostPage({ params }: PageProps) {
                                 {/* Main Article Content */}
                                 <article>
                                     <GlassCard className="p-4 sm:p-6 md:p-8 lg:p-12">
-                                        <BlogContent content={post.content} series={seriesContext || undefined} />
+                                        <BlogContent content={post.content} postId={post._id.toString()} series={seriesContext || undefined} />
+
+                                        <hr className="my-8 border-border/50" />
+
+                                        <FeedbackWidget postId={post._id.toString()} />
 
                                         {/* Tags */}
                                         {post.tags && post.tags.length > 0 && (
@@ -514,7 +522,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
                                     {/* Related Articles */}
                                     {relatedPosts.length > 0 && (
-                                        <div className="mt-12">
+                                        <div className="mt-12 hide-in-focus-mode">
                                             <h2 className="text-2xl font-bold mb-6">Related Articles</h2>
                                             <div className="grid md:grid-cols-3 gap-4">
                                                 {relatedPosts.map((related: { _id: string; slug: string; title: string; excerpt: string; readingTime: number }) => (
@@ -538,7 +546,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                                 </article>
 
                                 {/* Comments Section */}
-                                <Comments postSlug={slug} />
+                                <div className="hide-in-focus-mode">
+                                    <Comments postSlug={slug} />
+                                </div>
                             </div>
                         </div>
                     </div>

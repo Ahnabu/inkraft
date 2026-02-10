@@ -171,3 +171,25 @@ select option {
     color: black;
   }
 }
+
+/* Focus Mode Styles */
+body.focus-mode .hide-in-focus-mode {
+  display: none !important;
+}
+
+body.focus-mode .center-in-focus-mode {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+body.focus-mode main {
+  padding-top: 2rem !important;
+  max-width: 800px !important;
+  /* Slightly narrower for better reading experience */
+  margin-inline: auto !important;
+}
+
+body.focus-mode p {
+  font-size: var(--focus-font-size, 18px) !important;
+  line-height: 1.8 !important;
+}

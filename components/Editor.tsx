@@ -45,12 +45,15 @@ import {
     Redo,
     GripHorizontal,
     Upload,
+    Maximize,
+    Minimize,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { countWords, calculateReadingTime } from "@/lib/readingTime";
 import { ImageUpload } from "@/components/ImageUpload";
 import { ImportModal } from "@/components/ImportModal";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface EditorProps {
     content: string;
@@ -63,6 +66,19 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
     const autoSaveInterval = useRef<NodeJS.Timeout | null>(null);
     const [showImageUpload, setShowImageUpload] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
+    const [isCalmMode, setIsCalmMode] = useState(false);
+
+    // Toggle body class for Calm Mode to hide other elements if needed, 
+    // though purely CSS on the editor container should suffice for covering them.
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape" && isCalmMode) {
+                setIsCalmMode(false);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isCalmMode]);
 
     const editor = useEditor({
         extensions: [
@@ -187,7 +203,7 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
         if (onAutoSave && editor) {
             autoSaveInterval.current = setInterval(() => {
                 onAutoSave();
-            }, 30000); // 30 seconds
+            }, 5000); // 5 seconds
 
             return () => {
                 if (autoSaveInterval.current) {
@@ -236,10 +252,16 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
     };
 
     return (
-        <div className="space-y-4">
+        <div className={cn(
+            "space-y-4 transition-all duration-300 ease-in-out",
+            isCalmMode && "fixed inset-0 z-[100] bg-background/95 backdrop-blur-sm p-4 md:p-8 lg:p-12 overflow-y-auto h-screen w-screen"
+        )}>
             {/* Toolbar - Draggable & Theme Aware */}
             <motion.div
-                className="sticky top-20 z-20 p-2 rounded-xl glass-card border border-border/50 shadow-lg flex flex-wrap items-center gap-1 backdrop-blur-md bg-white/80 dark:bg-black/80"
+                className={cn(
+                    "sticky top-20 z-20 p-2 rounded-xl glass-card border border-border/50 shadow-lg flex flex-wrap items-center gap-1 backdrop-blur-md bg-white/80 dark:bg-black/80",
+                    isCalmMode && "max-w-4xl mx-auto top-4"
+                )}
                 drag
                 dragMomentum={false}
                 whileDrag={{ scale: 1.02, cursor: "grabbing" }}
@@ -379,6 +401,19 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
                 >
                     <LinkIcon size={18} />
                 </button>
+
+                <div className="w-px h-6 bg-border mx-1" />
+
+                <button
+                    onClick={() => setIsCalmMode(!isCalmMode)}
+                    className={cn(
+                        "p-2 rounded-lg hover:bg-muted transition-colors",
+                        isCalmMode && "bg-primary text-white shadow-sm"
+                    )}
+                    title={isCalmMode ? "Exit Calm Mode (Esc)" : "Enter Calm Mode"}
+                >
+                    {isCalmMode ? <Minimize size={18} /> : <Maximize size={18} />}
+                </button>
                 <div className="w-px h-6 bg-border mx-1" />
                 <button
                     onClick={() => setShowImportModal(true)}
@@ -439,7 +474,10 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
             </FloatingMenu>
 
             {/* Editor Content */}
-            <div className="prose-editor glass-card rounded-lg border border-border/40 min-h-[500px]">
+            <div className={cn(
+                "prose-editor glass-card rounded-lg border border-border/40 min-h-[500px]",
+                isCalmMode && "max-w-4xl mx-auto shadow-none border-none bg-transparent min-h-[calc(100vh-100px)]",
+            )}>
                 <EditorContent editor={editor} />
             </div>
 

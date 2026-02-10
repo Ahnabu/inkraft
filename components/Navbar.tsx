@@ -10,18 +10,61 @@ import { UserNav } from "@/components/UserNav";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useState } from "react";
 import { useTheme } from "next-themes";
+import { useFocusMode } from "@/lib/context/FocusModeContext";
+import { Maximize2, Minimize2, Type, Minus, Plus } from "lucide-react";
 
 export function Navbar() {
     const pathname = usePathname();
     const { data: session } = useSession();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { setTheme, theme } = useTheme();
+    const { isFocusMode, toggleFocusMode, fontSize, setFocusFontSize } = useFocusMode();
 
     const navItems = [
         { name: "Home", href: "/" },
         { name: "Explore", href: "/explore" },
         { name: "About", href: "/about" },
     ];
+
+    if (isFocusMode) {
+        return (
+            <div className="fixed top-4 right-4 z-50 flex items-center gap-2 animate-in fade-in zoom-in duration-300">
+                {/* Font Size Controls */}
+                <div className="flex items-center gap-1 bg-background/50 backdrop-blur-md rounded-full border border-border shadow-sm p-1">
+                    <button
+                        onClick={() => setFocusFontSize(fontSize - 2)}
+                        className="p-2 rounded-full hover:bg-background transition-colors text-muted-foreground hover:text-foreground"
+                        title="Decrease font size"
+                        disabled={fontSize <= 14}
+                    >
+                        <Minus size={16} />
+                    </button>
+                    <div className="flex items-center gap-1.5 px-1 min-w-[3rem] justify-center">
+                        <Type size={16} className="text-muted-foreground" />
+                        <span className="text-sm font-medium">{fontSize}</span>
+                    </div>
+                    <button
+                        onClick={() => setFocusFontSize(fontSize + 2)}
+                        className="p-2 rounded-full hover:bg-background transition-colors text-muted-foreground hover:text-foreground"
+                        title="Increase font size"
+                        disabled={fontSize >= 32}
+                    >
+                        <Plus size={16} />
+                    </button>
+                </div>
+
+                <div className="h-6 w-px bg-border/50 mx-1" />
+
+                <button
+                    onClick={toggleFocusMode}
+                    className="p-3 bg-background/50 backdrop-blur-md rounded-full border border-border shadow-sm hover:bg-background transition-all group"
+                    title="Exit Focus Mode"
+                >
+                    <Minimize2 size={20} className="text-muted-foreground group-hover:text-foreground" />
+                </button>
+            </div>
+        );
+    }
 
     return (
         <header className="fixed top-2 sm:top-4 left-0 right-0 z-50 flex justify-center px-2 sm:px-4">
@@ -76,6 +119,13 @@ export function Navbar() {
                 {/* Desktop Auth / Action */}
                 <div className="hidden md:flex items-center gap-4">
                     <div className="flex items-center gap-2 mr-2 border-r border-border/50 pr-4">
+                        <button
+                            onClick={toggleFocusMode}
+                            className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground relative"
+                            title="Enter Focus Mode"
+                        >
+                            <Maximize2 size={20} />
+                        </button>
                         <button
                             onClick={() => theme === "dark" ? setTheme("light") : setTheme("dark")}
                             className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground relative"

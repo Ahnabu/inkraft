@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen, MessageSquarePlus } from "lucide-react";
+import { NotePopover } from "@/components/reader/NotePopover";
+import { NoteSidebar } from "@/components/reader/NoteSidebar";
+import { Button } from "@/components/ui/Button";
 
 interface SeriesPost {
     _id: string;
@@ -19,6 +22,7 @@ interface SeriesContext {
 
 interface BlogContentProps {
     content: string;
+    postId: string; // Added postId
     className?: string;
     series?: SeriesContext;
 }
@@ -86,80 +90,59 @@ function SeriesNavigation({ series }: { series: SeriesContext }) {
     );
 }
 
-export function BlogContent({ content, className = "", series }: BlogContentProps) {
+export function BlogContent({ content, postId, className = "", series }: BlogContentProps) {
+    const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null);
+    const [selectedParagraphId, setSelectedParagraphId] = useState<string>("");
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [refreshNotesTrigger, setRefreshNotesTrigger] = useState(0);
+    const contentRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
+        if (!contentRef.current) return;
+
         // Add copy button to code blocks
-        const codeBlocks = document.querySelectorAll(".blog-content pre");
-
+        const codeBlocks = contentRef.current.querySelectorAll("pre");
         codeBlocks.forEach((block) => {
-            // Skip if button already exists
             if (block.querySelector(".copy-button")) return;
-
+            // ... existing code block logic ...
             const button = document.createElement("button");
             button.className = "copy-button";
             button.innerHTML = `
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                 <span>Copy</span>
             `;
-
             button.addEventListener("click", async () => {
                 const code = block.querySelector("code");
                 if (code) {
                     await navigator.clipboard.writeText(code.textContent || "");
-                    button.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        <span>Copied!</span>
-                    `;
+                    button.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>`;
                     setTimeout(() => {
-                        button.innerHTML = `
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                            <span>Copy</span>
-                        `;
+                        button.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span>Copy</span>`;
                     }, 2000);
                 }
             });
-
-            const blockElement = block as HTMLElement;
-            blockElement.style.position = "relative";
+            block.style.position = "relative";
             block.appendChild(button);
         });
 
-        // Add anchor links to headings
-        const headings = document.querySelectorAll(".blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4, .blog-content h5, .blog-content h6");
-
+        // Add anchor links
+        const headings = contentRef.current.querySelectorAll("h1, h2, h3, h4, h5, h6");
         headings.forEach((heading) => {
             if (!heading.id) {
                 heading.id = heading.textContent?.toLowerCase().replace(/[^\w]+/g, '-') || '';
             }
-
-            // Skip if anchor already exists
             if (heading.querySelector(".heading-anchor")) return;
-
             const anchor = document.createElement("a");
             anchor.className = "heading-anchor";
             anchor.href = `#${heading.id}`;
-            anchor.innerHTML = `
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                </svg>
-            `;
-
-            const headingElement = heading as HTMLElement;
-            headingElement.style.position = "relative";
+            anchor.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`;
+            const hEl = heading as HTMLElement;
+            hEl.style.position = "relative";
             heading.appendChild(anchor);
         });
 
-        // Make external links open in new tab
-        const links = document.querySelectorAll(".blog-content a");
+        // External links
+        const links = contentRef.current.querySelectorAll("a");
         links.forEach((link) => {
             const href = link.getAttribute("href");
             if (href && (href.startsWith("http://") || href.startsWith("https://"))) {
@@ -168,8 +151,8 @@ export function BlogContent({ content, className = "", series }: BlogContentProp
             }
         });
 
-        // Add responsive wrapper to tables
-        const tables = document.querySelectorAll(".blog-content table");
+        // Tables
+        const tables = contentRef.current.querySelectorAll("table");
         tables.forEach((table) => {
             if (!table.parentElement?.classList.contains("table-wrapper")) {
                 const wrapper = document.createElement("div");
@@ -178,15 +161,123 @@ export function BlogContent({ content, className = "", series }: BlogContentProp
                 wrapper.appendChild(table);
             }
         });
+
+        // Inject IDs into paragraphs for Notes
+        const paragraphs = contentRef.current.querySelectorAll("p");
+        paragraphs.forEach((p, index) => {
+            if (!p.id) {
+                // Simple hash of content + index to be somewhat robust
+                const text = p.textContent?.substring(0, 20) || "";
+                const hash = text.split("").reduce((a, b) => {
+                    a = ((a << 5) - a) + b.charCodeAt(0);
+                    return a & a;
+                }, 0);
+                p.id = `p-${Math.abs(hash)}-${index}`;
+            }
+            p.style.position = "relative";
+        });
     }, [content]);
+
+    // Handle Text Selection
+    useEffect(() => {
+        const handleSelection = () => {
+            const selection = window.getSelection();
+            if (!selection || selection.isCollapsed) {
+                setSelectionRect(null);
+                return;
+            }
+
+            // Only show note input if selecting a reasonable amount of text
+            if (selection.toString().trim().length < 3) return;
+
+            const range = selection.getRangeAt(0);
+            const parentBlock = range.commonAncestorContainer.parentElement?.closest("p");
+
+            if (parentBlock && contentRef.current?.contains(parentBlock) && parentBlock.id) {
+                const rect = range.getBoundingClientRect();
+                setSelectionRect(rect);
+                setSelectedParagraphId(parentBlock.id);
+            } else {
+                setSelectionRect(null);
+            }
+        };
+
+        const container = contentRef.current;
+        if (container) {
+            container.addEventListener("mouseup", handleSelection);
+            container.addEventListener("keyup", handleSelection);
+        }
+
+        return () => {
+            if (container) {
+                container.removeEventListener("mouseup", handleSelection);
+                container.removeEventListener("keyup", handleSelection);
+            }
+        };
+    }, []);
+
+    const handleSaveNote = async (noteContent: string) => {
+        if (!postId) {
+            console.error("Missing postId");
+            return;
+        }
+
+        const res = await fetch("/api/notes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                postId,
+                paragraphId: selectedParagraphId,
+                content: noteContent,
+            }),
+        });
+
+        if (res.ok) {
+            setRefreshNotesTrigger((prev) => prev + 1);
+            window.getSelection()?.removeAllRanges();
+            setSelectionRect(null);
+        } else {
+            throw new Error("Failed to save");
+        }
+    };
 
     return (
         <>
             {series && <SeriesNavigation series={series} />}
-            <div
-                className={`blog-content prose dark:prose-invert max-w-none ${className}`}
-                dangerouslySetInnerHTML={{ __html: content }}
+            <div className="relative">
+                <div
+                    ref={contentRef}
+                    className={`blog-content prose dark:prose-invert max-w-none ${className}`}
+                    dangerouslySetInnerHTML={{ __html: content }}
+                />
+
+                <NotePopover
+                    paragraphId={selectedParagraphId}
+                    selectionRect={selectionRect}
+                    onClose={() => setSelectionRect(null)}
+                    onSave={handleSaveNote}
+                />
+            </div>
+
+            {/* Note Sidebar Toggle */}
+            <div className="fixed bottom-24 right-20 z-40 lg:bottom-6 lg:right-20">
+                <Button
+                    onClick={() => setIsSidebarOpen(true)}
+                    variant="outline"
+                    className="rounded-full w-12 h-12 p-0 shadow-lg bg-background border border-border"
+                    title="View Notes"
+                >
+                    <MessageSquarePlus size={20} className="text-muted-foreground" />
+                </Button>
+            </div>
+
+            <NoteSidebar
+                postId={postId}
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+                refreshTrigger={refreshNotesTrigger}
             />
+
             <style jsx global>{`
                 .copy-button {
                     position: absolute;

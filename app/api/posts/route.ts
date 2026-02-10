@@ -3,6 +3,7 @@ import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 import { NextResponse } from "next/server";
 import { checkBotId } from "botid/server";
+import { calculateReadingTime } from "@/lib/readingTime";
 
 export const dynamic = 'force-dynamic';
 

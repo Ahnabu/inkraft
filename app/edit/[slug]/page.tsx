@@ -10,6 +10,7 @@ import { DEFAULT_CATEGORIES } from "@/lib/categories";
 import { calculateReadingTime } from "@/lib/readingTime";
 import { Loader2, Save, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { useDraftRestoration } from "@/lib/hooks/useDraftRestoration";
 
 interface EditPostPageProps {
     params: Promise<{ slug: string }>;
@@ -67,7 +68,25 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
         }
 
         loadPost();
+        loadPost();
     }, [paramsPromise, router]);
+
+    // Draft Restoration
+    useDraftRestoration(originalSlug ? `inkraft-edit-${originalSlug}` : "", (draft: any) => {
+        // Only restore if the draft is different?
+        // For now, simple overwrite on restore
+        setTitle(draft.title || "");
+        setSubtitle(draft.subtitle || "");
+        setContent(draft.content || "");
+        setCoverImage(draft.coverImage || "");
+        setCategory(draft.category || "");
+        setTags(draft.tags || "");
+        setDifficultyLevel(draft.difficultyLevel || "");
+        // slug is usually fixed in edit, but if they changed it in draft:
+        if (draft.slug) setSlug(draft.slug);
+        setMetaTitle(draft.metaTitle || "");
+        setMetaDescription(draft.metaDescription || "");
+    });
 
     const handleAutoSave = useCallback(async () => {
         if (!originalSlug) return;
@@ -229,6 +248,57 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
 
                     {/* Post Settings */}
                     <GlassCard className="space-y-4">
+                        <h3 className="font-bold">Post Settings</h3>
+
+                        {/* Category */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Category *
+                            </label>
+                            <select
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                            >
+                                <option value="">Select a category</option>
+                                {DEFAULT_CATEGORIES.map((cat) => (
+                                    <option key={cat.slug} value={cat.slug}>
+                                        {cat.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Tags */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Tags (comma-separated)
+                            </label>
+                            <input
+                                type="text"
+                                value={tags}
+                                onChange={(e) => setTags(e.target.value)}
+                                placeholder="nextjs, typescript, tutorial"
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                            />
+                        </div>
+
+                        {/* Difficulty Level */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Difficulty Level
+                            </label>
+                            <select
+                                value={difficultyLevel}
+                                onChange={(e) => setDifficultyLevel(e.target.value as any)}
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                            >
+                                <option value="">Select difficulty</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
                         <h3 className="font-bold">Post Settings</h3>
 
                         {/* Category */}

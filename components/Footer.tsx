@@ -1,7 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { Github, Twitter, Linkedin, Facebook, Instagram } from "lucide-react";
+import { useFocusMode } from "@/lib/context/FocusModeContext";
 
 export function Footer() {
+    const { isFocusMode } = useFocusMode();
+
+    if (isFocusMode) return null;
+
     return (
         <footer className="border-t border-border/40 bg-background/50 backdrop-blur-sm mt-20">
             <div className="container mx-auto px-4 py-8 md:py-12">

@@ -11,6 +11,7 @@ import { calculateReadingTime } from "@/lib/readingTime";
 import { Loader2, Save } from "lucide-react";
 import { ImageUploadButton } from "@/components/ImageUploadButton";
 import { toast } from "sonner";
+import { useDraftRestoration } from "@/lib/hooks/useDraftRestoration";
 
 export default function NewPostPage() {
     const router = useRouter();
@@ -49,6 +50,21 @@ export default function NewPostPage() {
         };
         fetchPublications();
     }, []);
+
+    // Draft Restoration
+    useDraftRestoration("inkraft-draft", (draft: any) => {
+        setTitle(draft.title || "");
+        setSubtitle(draft.subtitle || "");
+        setContent(draft.content || "");
+        setCoverImage(draft.coverImage || "");
+        setCategory(draft.category || "");
+        setTags(draft.tags || "");
+        setDifficultyLevel(draft.difficultyLevel || "");
+        setSlug(draft.slug || "");
+        setMetaTitle(draft.metaTitle || "");
+        setMetaDescription(draft.metaDescription || "");
+        setPublication(draft.publication || "");
+    });
 
     const handleAutoSave = useCallback(async () => {
         // Save draft to localStorage
@@ -237,10 +253,10 @@ export default function NewPostPage() {
                             </label>
                             <select
                                 value={difficultyLevel}
-                                onChange={(e) => setDifficultyLevel(e.target.value as "Beginner" | "Intermediate" | "Advanced" | "")}
+                                onChange={(e) => setDifficultyLevel(e.target.value as any)}
                                 className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             >
-                                <option value="">Not specified</option>
+                                <option value="">Select difficulty</option>
                                 <option value="Beginner">Beginner</option>
                                 <option value="Intermediate">Intermediate</option>
                                 <option value="Advanced">Advanced</option>
@@ -324,7 +340,7 @@ export default function NewPostPage() {
                         </Button>
                     </GlassCard>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

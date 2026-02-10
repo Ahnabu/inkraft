@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
+import { calculateReadingTime } from "@/lib/readingTime";
 
 export const dynamic = 'force-dynamic';
 
@@ -54,10 +55,11 @@ export async function PATCH(
             category,
             tags,
             difficultyLevel,
-            readingTime,
             published,
             seo,
         } = body;
+
+        const readingTime = content ? calculateReadingTime(content) : undefined;
 
         // Find existing post
         const existingPost = await Post.findOne({ slug: params.slug });
