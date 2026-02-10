@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { followUser, unfollowUser } from "@/lib/actions";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface FollowButtonProps {
     targetUserId: string;
@@ -14,7 +16,16 @@ export default function FollowButton({ targetUserId, isFollowing: initialIsFollo
     const [isPending, startTransition] = useTransition();
     const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
 
+    const { data: session } = useSession();
+    const router = useRouter();
+
     const handleFollowToggle = () => {
+        if (!session) {
+            toast.error("Please login to follow authors");
+            router.push("/auth/signin");
+            return;
+        }
+
         const previousState = isFollowing;
         setIsFollowing(!previousState);
 
@@ -40,8 +51,8 @@ export default function FollowButton({ targetUserId, isFollowing: initialIsFollo
             onClick={handleFollowToggle}
             disabled={isPending}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isFollowing
-                    ? "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-input"
-                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                ? "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-input"
+                : "bg-primary text-primary-foreground hover:bg-primary/90"
                 }`}
         >
             {isPending ? (

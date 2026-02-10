@@ -31,6 +31,7 @@ export interface IPost extends Document {
         keywords?: string[];
     };
     editorsPick?: boolean;
+    publication?: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -144,6 +145,10 @@ const PostSchema: Schema<IPost> = new Schema(
         editorsPick: {
             type: Boolean,
             default: false,
+        },
+        publication: {
+            type: Schema.Types.ObjectId,
+            ref: "Publication",
         },
     },
     { timestamps: true }

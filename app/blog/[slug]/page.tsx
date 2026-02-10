@@ -436,6 +436,13 @@ export default async function BlogPostPage({ params }: PageProps) {
                                     </div>
                                 </GlassCard>
 
+                                {/* Mobile TOC */}
+                                <div className="xl:hidden mb-8">
+                                    <GlassCard className="p-6">
+                                        <TableOfContents />
+                                    </GlassCard>
+                                </div>
+
                                 {/* Main Article Content */}
                                 <article>
                                     <GlassCard className="p-4 sm:p-6 md:p-8 lg:p-12">
@@ -460,12 +467,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                                         )}
                                     </GlassCard>
 
-                                    {/* Mobile TOC */}
-                                    <div className="xl:hidden mt-8">
-                                        <GlassCard className="p-6">
-                                            <TableOfContents />
-                                        </GlassCard>
-                                    </div>
+
 
                                     {/* Author Bio */}
                                     {post.author?.bio && (
@@ -497,7 +499,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                                                                 {post.author.name}
                                                             </Link>
                                                         </h3>
-                                                        {session && session.user?.id !== post.author._id && (
+                                                        {session?.user?.id !== post.author._id && (
                                                             <FollowButton
                                                                 targetUserId={post.author._id}
                                                                 isFollowing={isFollowingAuthor}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Editor } from "@/components/Editor";
 import { SEOPanel } from "@/components/SEOPanel";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -30,6 +30,26 @@ export default function NewPostPage() {
     const [loading, setLoading] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
+    // Publication logic
+    const [publication, setPublication] = useState("");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [userPublications, setUserPublications] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchPublications = async () => {
+            try {
+                const res = await fetch("/api/publications");
+                if (res.ok) {
+                    const data = await res.json();
+                    setUserPublications(data.publications || []);
+                }
+            } catch (error) {
+                console.error("Failed to fetch publications", error);
+            }
+        };
+        fetchPublications();
+    }, []);
+
     const handleAutoSave = useCallback(async () => {
         // Save draft to localStorage
         const draft = {
@@ -43,11 +63,12 @@ export default function NewPostPage() {
             slug,
             metaTitle,
             metaDescription,
+            publication,
             savedAt: new Date().toISOString(),
         };
         localStorage.setItem("inkraft-draft", JSON.stringify(draft));
         setLastSaved(new Date());
-    }, [title, subtitle, content, coverImage, category, tags, difficultyLevel, slug, metaTitle, metaDescription]);
+    }, [title, subtitle, content, coverImage, category, tags, difficultyLevel, slug, metaTitle, metaDescription, publication]);
 
     const handlePublish = async (publishNow: boolean) => {
         if (!title || !content || !slug || !category) {
@@ -79,6 +100,7 @@ export default function NewPostPage() {
                     difficultyLevel: difficultyLevel || undefined,
                     readingTime,
                     published: publishNow,
+                    publication: publication || undefined,
                     seo: {
                         title: metaTitle || title,
                         description: metaDescription,
@@ -98,7 +120,7 @@ export default function NewPostPage() {
             toast.success(publishNow ? "Post published successfully!" : "Draft saved!", {
                 id: "publish-post",
             });
-            
+
             setTimeout(() => {
                 router.push(`/blog/${post.slug}`);
             }, 500);
@@ -223,6 +245,28 @@ export default function NewPostPage() {
                                 <option value="Intermediate">Intermediate</option>
                                 <option value="Advanced">Advanced</option>
                             </select>
+                        </div>
+
+                        {/* Publication Selector */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Publish to Publication
+                            </label>
+                            <select
+                                value={publication}
+                                onChange={(e) => setPublication(e.target.value)}
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                            >
+                                <option value="">None (Personal Blog)</option>
+                                {userPublications.map((pub) => (
+                                    <option key={pub._id} value={pub._id}>
+                                        {pub.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Hosting this story on a publication?
+                            </p>
                         </div>
 
                         {/* Cover Image */}

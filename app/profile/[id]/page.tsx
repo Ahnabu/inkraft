@@ -133,7 +133,7 @@ export default async function UserProfilePage({
                                     <p className="text-muted-foreground">{user.email}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    {!isOwnProfile && session && (
+                                    {!isOwnProfile && (
                                         <FollowButton targetUserId={id} isFollowing={isFollowing} />
                                     )}
                                     {isOwnProfile && (

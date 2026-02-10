@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     try {
         // Check for bot activity
         const verification = await checkBotId();
-        
+
         if (verification.isBot) {
             return new NextResponse("Bot detected. Access denied.", { status: 403 });
         }
@@ -38,7 +38,8 @@ export async function POST(req: Request) {
             difficultyLevel,
             readingTime,
             published,
-            seo
+            seo,
+            publication
         } = body;
 
         if (!title || !content || !slug || !category) {
@@ -68,6 +69,7 @@ export async function POST(req: Request) {
             publishedAt: published ? new Date() : undefined,
             lastUpdatedAt: new Date(),
             seo: seo || {},
+            publication: body.publication,
         });
 
         return NextResponse.json(post);
