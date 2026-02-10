@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { toast } from "sonner";
 import Link from "next/link";
+import { PostWorkflowModal } from "@/components/admin/PostWorkflowModal";
 
 interface User {
     _id: string;
@@ -19,7 +20,7 @@ interface User {
     createdAt: string;
 }
 
-interface Post {
+export interface Post {
     _id: string;
     title: string;
     slug: string;
@@ -29,6 +30,7 @@ interface Post {
     };
     category: string;
     published: boolean;
+    status?: string; // Add optional status field
     views?: number;
     upvotes?: number;
     commentCount?: number;
@@ -225,7 +227,21 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
         }
     };
 
-    const handlePostAction = async (postId: string, action: "publish" | "unpublish" | "delete") => {
+    const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+    const [isWorkflowOpen, setIsWorkflowOpen] = useState(false);
+
+    const openWorkflow = (post: Post) => {
+        setSelectedPost(post);
+        setIsWorkflowOpen(true);
+    };
+
+    const handlePostUpdate = (updatedPost: Post) => {
+        setPosts(posts.map(p => p._id === updatedPost._id ? updatedPost : p));
+        // Also update selectedPost to reflect changes
+        setSelectedPost(updatedPost);
+    };
+
+    const handlePostAction = async (postId: string, action: "delete") => {
         const loadingId = `post-${action}-${postId}`;
         toast.loading(`Processing...`, { id: loadingId });
 
@@ -245,24 +261,6 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
                     toast.success("Post deleted successfully", { id: loadingId });
                 } else {
                     throw new Error("Failed to delete post");
-                }
-            } else {
-                const updates = {
-                    published: action === "publish",
-                };
-
-                const response = await fetch(`/api/admin/posts/${postId}`, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(updates),
-                });
-
-                if (response.ok) {
-                    const updatedPost = await response.json();
-                    setPosts(posts.map(p => p._id === postId ? updatedPost : p));
-                    toast.success("Post updated successfully", { id: loadingId });
-                } else {
-                    throw new Error("Failed to update post");
                 }
             }
         } catch (error) {
@@ -572,42 +570,23 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
                                                         <div>Comments: {post.commentCount || 0}</div>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        {post.published ? (
-                                                            <span className="px-2 py-1 bg-green-500/20 text-green-500 rounded text-sm">
-                                                                Published
-                                                            </span>
-                                                        ) : (
-                                                            <span className="px-2 py-1 bg-yellow-500/20 text-yellow-500 rounded text-sm">
-                                                                Draft
-                                                            </span>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-6 py-4">
                                                         <div className="flex gap-2">
                                                             <Link href={`/blog/${post.slug}`} target="_blank">
                                                                 <Button size="sm" variant="ghost" title="View post">
                                                                     <Eye className="h-4 w-4" />
                                                                 </Button>
                                                             </Link>
-                                                            {post.published ? (
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="ghost"
-                                                                    onClick={() => handlePostAction(post._id, "unpublish")}
-                                                                    title="Unpublish post"
-                                                                >
-                                                                    <EyeOff className="h-4 w-4" />
-                                                                </Button>
-                                                            ) : (
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="ghost"
-                                                                    onClick={() => handlePostAction(post._id, "publish")}
-                                                                    title="Publish post"
-                                                                >
-                                                                    <Check className="h-4 w-4" />
-                                                                </Button>
-                                                            )}
+
+                                                            <Button
+                                                                size="sm"
+                                                                variant="ghost"
+                                                                onClick={() => openWorkflow(post)}
+                                                                title="Manage Workflow"
+                                                                className="text-primary hover:text-primary/90"
+                                                            >
+                                                                <Check className="h-4 w-4" />
+                                                            </Button>
+
                                                             <Button
                                                                 size="sm"
                                                                 variant="ghost"
@@ -631,196 +610,211 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: S
                                 )}
                             </GlassCard>
                         )}
+                        {/* ... Comments and Alerts tabs ... */}
+
 
                         {/* Comment Review Table */}
-                        {activeTab === "comments" && (
-                            <GlassCard className="overflow-hidden">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full">
-                                        <thead className="bg-muted/50">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                                    Comment
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                                    Author
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                                    Post
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                                    Status
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-border">
-                                            {comments.map((comment) => (
-                                                <tr key={comment._id} className="hover:bg-muted/30">
-                                                    <td className="px-6 py-4">
-                                                        <div className="max-w-md truncate">{comment.content || "[No content]"}</div>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <div>
-                                                            <div className="text-sm">{comment.author?.name || "Unknown"}</div>
-                                                            <div className="text-xs text-muted-foreground">{comment.author?.email || "N/A"}</div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        {comment.post?.slug ? (
-                                                            <Link href={`/blog/${comment.post.slug}`} className="text-primary hover:underline text-sm">
-                                                                {comment.post.title || "Untitled"}
-                                                            </Link>
-                                                        ) : (
-                                                            <span className="text-sm text-muted-foreground">Post deleted</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <span className={`px-2 py-1 rounded text-sm ${comment.moderationStatus === "pending"
-                                                            ? "bg-yellow-500/20 text-yellow-500"
-                                                            : comment.moderationStatus === "approved"
-                                                                ? "bg-green-500/20 text-green-500"
-                                                                : "bg-red-500/20 text-red-500"
-                                                            }`}>
-                                                            {comment.moderationStatus || "pending"}
-                                                        </span>
-                                                    </td>
+                        {
+                            activeTab === "comments" && (
+                                <GlassCard className="overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full">
+                                            <thead className="bg-muted/50">
+                                                <tr>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                        Comment
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                        Author
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                        Post
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                        Status
+                                                    </th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                {comments.length === 0 && (
-                                    <div className="text-center py-12 text-muted-foreground">
-                                        No comments found
+                                            </thead>
+                                            <tbody className="divide-y divide-border">
+                                                {comments.map((comment) => (
+                                                    <tr key={comment._id} className="hover:bg-muted/30">
+                                                        <td className="px-6 py-4">
+                                                            <div className="max-w-md truncate">{comment.content || "[No content]"}</div>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <div>
+                                                                <div className="text-sm">{comment.author?.name || "Unknown"}</div>
+                                                                <div className="text-xs text-muted-foreground">{comment.author?.email || "N/A"}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            {comment.post?.slug ? (
+                                                                <Link href={`/blog/${comment.post.slug}`} className="text-primary hover:underline text-sm">
+                                                                    {comment.post.title || "Untitled"}
+                                                                </Link>
+                                                            ) : (
+                                                                <span className="text-sm text-muted-foreground">Post deleted</span>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <span className={`px-2 py-1 rounded text-sm ${comment.moderationStatus === "pending"
+                                                                ? "bg-yellow-500/20 text-yellow-500"
+                                                                : comment.moderationStatus === "approved"
+                                                                    ? "bg-green-500/20 text-green-500"
+                                                                    : "bg-red-500/20 text-red-500"
+                                                                }`}>
+                                                                {comment.moderationStatus || "pending"}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
-                                )}
-                            </GlassCard>
-                        )}
+                                    {comments.length === 0 && (
+                                        <div className="text-center py-12 text-muted-foreground">
+                                            No comments found
+                                        </div>
+                                    )}
+                                </GlassCard>
+                            )
+                        }
 
                         {/* Alerts Table */}
-                        {activeTab === "alerts" && (
-                            <GlassCard className="overflow-hidden">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full">
-                                        <thead className="bg-muted/50">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                                    Severity
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                                    Alert Info
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                                    Target
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-border">
-                                            {alerts.map((alert) => (
-                                                <tr key={alert._id} className="hover:bg-muted/30">
-                                                    <td className="px-6 py-4">
-                                                        <span className={`px-2 py-1 rounded text-sm capitalize font-medium ${alert.severity === "critical" ? "bg-red-500/20 text-red-500" :
-                                                            alert.severity === "high" ? "bg-orange-500/20 text-orange-500" :
-                                                                alert.severity === "medium" ? "bg-yellow-500/20 text-yellow-500" :
-                                                                    "bg-blue-500/20 text-blue-500"
-                                                            }`}>
-                                                            {alert.severity}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <div>
-                                                            <div className="font-medium flex items-center gap-2">
-                                                                <AlertTriangle size={16} className="text-muted-foreground" />
-                                                                {alert.title}
-                                                            </div>
-                                                            <div className="text-sm text-muted-foreground mt-1">{alert.description}</div>
-                                                            <div className="text-xs text-muted-foreground mt-1">
-                                                                {new Date(alert.createdAt).toLocaleString()}
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        {alert.targetUser && (
-                                                            <div className="mb-2">
-                                                                <div className="text-xs font-semibold text-muted-foreground">User:</div>
-                                                                <div className="text-sm">{alert.targetUser.name}</div>
-                                                                <div className="text-xs text-muted-foreground">Trust: {alert.targetUser.trustScore.toFixed(2)}</div>
-                                                            </div>
-                                                        )}
-                                                        {alert.targetPost && (
+                        {
+                            activeTab === "alerts" && (
+                                <GlassCard className="overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full">
+                                            <thead className="bg-muted/50">
+                                                <tr>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                        Severity
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                        Alert Info
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                        Target
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                        Actions
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-border">
+                                                {alerts.map((alert) => (
+                                                    <tr key={alert._id} className="hover:bg-muted/30">
+                                                        <td className="px-6 py-4">
+                                                            <span className={`px-2 py-1 rounded text-sm capitalize font-medium ${alert.severity === "critical" ? "bg-red-500/20 text-red-500" :
+                                                                alert.severity === "high" ? "bg-orange-500/20 text-orange-500" :
+                                                                    alert.severity === "medium" ? "bg-yellow-500/20 text-yellow-500" :
+                                                                        "bg-blue-500/20 text-blue-500"
+                                                                }`}>
+                                                                {alert.severity}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4">
                                                             <div>
-                                                                <div className="text-xs font-semibold text-muted-foreground">Post:</div>
-                                                                <Link href={`/blog/${alert.targetPost.slug}`} target="_blank" className="text-sm hover:underline text-primary">
-                                                                    {alert.targetPost.title}
-                                                                </Link>
+                                                                <div className="font-medium flex items-center gap-2">
+                                                                    <AlertTriangle size={16} className="text-muted-foreground" />
+                                                                    {alert.title}
+                                                                </div>
+                                                                <div className="text-sm text-muted-foreground mt-1">{alert.description}</div>
+                                                                <div className="text-xs text-muted-foreground mt-1">
+                                                                    {new Date(alert.createdAt).toLocaleString()}
+                                                                </div>
                                                             </div>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex flex-wrap gap-2">
-                                                            <Button
-                                                                size="sm"
-                                                                variant="ghost"
-                                                                onClick={() => handleAlertAction(alert._id, "dismiss")}
-                                                                title="Dismiss Alert"
-                                                            >
-                                                                <Check className="h-4 w-4" />
-                                                            </Button>
-
+                                                        </td>
+                                                        <td className="px-6 py-4">
                                                             {alert.targetUser && (
-                                                                <>
-                                                                    <Button
-                                                                        size="sm"
-                                                                        variant="ghost"
-                                                                        onClick={() => handleAlertAction(alert._id, "ban_user")}
-                                                                        className="text-red-500 hover:text-red-600"
-                                                                        title="Ban User"
-                                                                    >
-                                                                        <Ban className="h-4 w-4" />
-                                                                    </Button>
-                                                                    <Button
-                                                                        size="sm"
-                                                                        variant="ghost"
-                                                                        onClick={() => handleAlertAction(alert._id, "freeze_trust")}
-                                                                        className="text-orange-500 hover:text-orange-600"
-                                                                        title="Freeze Trust Score"
-                                                                    >
-                                                                        <Lock className="h-4 w-4" />
-                                                                    </Button>
-                                                                </>
+                                                                <div className="mb-2">
+                                                                    <div className="text-xs font-semibold text-muted-foreground">User:</div>
+                                                                    <div className="text-sm">{alert.targetUser.name}</div>
+                                                                    <div className="text-xs text-muted-foreground">Trust: {alert.targetUser.trustScore.toFixed(2)}</div>
+                                                                </div>
                                                             )}
-
                                                             {alert.targetPost && (
+                                                                <div>
+                                                                    <div className="text-xs font-semibold text-muted-foreground">Post:</div>
+                                                                    <Link href={`/blog/${alert.targetPost.slug}`} target="_blank" className="text-sm hover:underline text-primary">
+                                                                        {alert.targetPost.title}
+                                                                    </Link>
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <div className="flex flex-wrap gap-2">
                                                                 <Button
                                                                     size="sm"
                                                                     variant="ghost"
-                                                                    onClick={() => handleAlertAction(alert._id, "nullify_votes")}
-                                                                    className="text-red-500 hover:text-red-600"
-                                                                    title="Nullify Votes"
+                                                                    onClick={() => handleAlertAction(alert._id, "dismiss")}
+                                                                    title="Dismiss Alert"
                                                                 >
-                                                                    <XCircle className="h-4 w-4" />
+                                                                    <Check className="h-4 w-4" />
                                                                 </Button>
-                                                            )}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                {alerts.length === 0 && (
-                                    <div className="text-center py-12 text-muted-foreground">
-                                        No active alerts found
+
+                                                                {alert.targetUser && (
+                                                                    <>
+                                                                        <Button
+                                                                            size="sm"
+                                                                            variant="ghost"
+                                                                            onClick={() => handleAlertAction(alert._id, "ban_user")}
+                                                                            className="text-red-500 hover:text-red-600"
+                                                                            title="Ban User"
+                                                                        >
+                                                                            <Ban className="h-4 w-4" />
+                                                                        </Button>
+                                                                        <Button
+                                                                            size="sm"
+                                                                            variant="ghost"
+                                                                            onClick={() => handleAlertAction(alert._id, "freeze_trust")}
+                                                                            className="text-orange-500 hover:text-orange-600"
+                                                                            title="Freeze Trust Score"
+                                                                        >
+                                                                            <Lock className="h-4 w-4" />
+                                                                        </Button>
+                                                                    </>
+                                                                )}
+
+                                                                {alert.targetPost && (
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="ghost"
+                                                                        onClick={() => handleAlertAction(alert._id, "nullify_votes")}
+                                                                        className="text-red-500 hover:text-red-600"
+                                                                        title="Nullify Votes"
+                                                                    >
+                                                                        <XCircle className="h-4 w-4" />
+                                                                    </Button>
+                                                                )}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
-                                )}
-                            </GlassCard>
-                        )}
+                                    {alerts.length === 0 && (
+                                        <div className="text-center py-12 text-muted-foreground">
+                                            No active alerts found
+                                        </div>
+                                    )}
+                                </GlassCard>
+                            )
+                        }
                     </>
                 )}
-            </div>
-        </div>
+            </div >
+
+            {selectedPost && (
+                <PostWorkflowModal
+                    isOpen={isWorkflowOpen}
+                    onClose={() => setIsWorkflowOpen(false)}
+                    post={selectedPost}
+                    onUpdate={handlePostUpdate}
+                />
+            )}
+        </div >
     );
 }

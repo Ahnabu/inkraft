@@ -25,7 +25,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         const { id } = await params;
         const body = await request.json();
 
-        const allowedUpdates = ["published"];
+        const allowedUpdates = ["published", "status", "difficultyLevel", "editorsPick"];
         const updates: Record<string, unknown> = {};
 
         for (const key of allowedUpdates) {
@@ -34,9 +34,20 @@ export async function PATCH(request: Request, { params }: RouteParams) {
             }
         }
 
-        // Update publishedAt if changing to published
-        if (body.published === true) {
-            updates.publishedAt = new Date();
+        // Handle status/published sync
+        if (body.status) {
+            if (body.status === "published") {
+                updates.published = true;
+                updates.publishedAt = new Date();
+            } else {
+                updates.published = false;
+            }
+        } else if (body.published !== undefined) {
+            // If only published boolean is sent (legacy or simple toggle)
+            updates.status = body.published ? "published" : "draft";
+            if (body.published) {
+                updates.publishedAt = new Date();
+            }
         }
 
         const post = await Post.findByIdAndUpdate(id, updates, {
