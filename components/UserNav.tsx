@@ -6,7 +6,9 @@ import {
     Settings,
     LogOut,
     LayoutDashboard,
-    Shield
+    Shield,
+    Clock,
+    Users
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
@@ -95,6 +97,24 @@ export function UserNav() {
                         >
                             <LayoutDashboard className="mr-2.5 h-4 w-4 text-muted-foreground" />
                             Dashboard
+                        </Link>
+
+                        <Link
+                            href="/history"
+                            className="relative flex cursor-pointer select-none items-center rounded-lg px-2.5 py-2 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            <Clock className="mr-2.5 h-4 w-4 text-muted-foreground" />
+                            Reading History
+                        </Link>
+
+                        <Link
+                            href="/following"
+                            className="relative flex cursor-pointer select-none items-center rounded-lg px-2.5 py-2 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            <Users className="mr-2.5 h-4 w-4 text-muted-foreground" />
+                            Following
                         </Link>
 
                         {/* Admin Link - Only visible for admins */}

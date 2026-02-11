@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Editor } from "@/components/Editor";
-import { SEOPanel } from "@/components/SEOPanel";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
@@ -34,8 +33,13 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
 
     // SEO fields
     const [slug, setSlug] = useState("");
-    const [metaTitle, setMetaTitle] = useState("");
-    const [metaDescription, setMetaDescription] = useState("");
+    const [seoData, setSeoData] = useState({
+        title: "",
+        description: "",
+        keywords: [] as string[],
+        canonical: "",
+        ogImage: "",
+    });
 
     // Load existing post data
     useEffect(() => {
@@ -57,8 +61,13 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                 setTags(post.tags?.join(", ") || "");
                 setDifficultyLevel(post.difficultyLevel || "");
                 setSlug(post.slug);
-                setMetaTitle(post.seo?.title || post.title);
-                setMetaDescription(post.seo?.description || "");
+                setSeoData({
+                    title: post.seo?.title || post.title,
+                    description: post.seo?.description || "",
+                    keywords: post.seo?.keywords || [],
+                    canonical: post.seo?.canonical || "",
+                    ogImage: post.seo?.ogImage || "",
+                });
 
                 setLoading(false);
             } catch (_error) {
@@ -84,8 +93,13 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
         setDifficultyLevel(draft.difficultyLevel || "");
         // slug is usually fixed in edit, but if they changed it in draft:
         if (draft.slug) setSlug(draft.slug);
-        setMetaTitle(draft.metaTitle || "");
-        setMetaDescription(draft.metaDescription || "");
+        setSeoData(draft.seoData || {
+            title: draft.metaTitle || "",
+            description: draft.metaDescription || "",
+            keywords: [],
+            canonical: "",
+            ogImage: ""
+        });
     });
 
     const handleAutoSave = useCallback(async () => {
@@ -101,13 +115,12 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
             tags,
             difficultyLevel,
             slug,
-            metaTitle,
-            metaDescription,
+            seoData,
             savedAt: new Date().toISOString(),
         };
         localStorage.setItem(`inkraft-edit-${originalSlug}`, JSON.stringify(draft));
         setLastSaved(new Date());
-    }, [title, subtitle, content, coverImage, category, tags, difficultyLevel, slug, metaTitle, metaDescription, originalSlug]);
+    }, [title, subtitle, content, coverImage, category, tags, difficultyLevel, slug, seoData, originalSlug]);
 
     const handleUpdate = async (publishNow: boolean) => {
         if (!title || !content || !slug || !category || !originalSlug) {
@@ -132,17 +145,14 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                     subtitle,
                     slug,
                     content,
-                    excerpt: metaDescription || content.substring(0, 300).replace(/<[^>]*>/g, ""),
+                    excerpt: seoData.description || content.substring(0, 300).replace(/<[^>]*>/g, ""),
                     coverImage,
                     category,
                     tags: tagsArray,
                     difficultyLevel: difficultyLevel || undefined,
                     readingTime,
                     published: publishNow,
-                    seo: {
-                        title: metaTitle || title,
-                        description: metaDescription,
-                    },
+                    seo: seoData,
                 }),
             });
 
@@ -230,25 +240,40 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                         onChange={setContent}
                         onAutoSave={handleAutoSave}
                         placeholder="Continue writing your story..."
+                        initialSeo={seoData}
+                        onSeoChange={(newSeo) => setSeoData({
+                            title: newSeo.title || "",
+                            description: newSeo.description || "",
+                            keywords: newSeo.keywords || [],
+                            canonical: newSeo.canonical || "",
+                            ogImage: newSeo.ogImage || "",
+                        })}
                     />
                 </div>
 
                 {/* Sidebar - 1/3 width */}
                 <div className="space-y-6">
                     {/* SEO Panel */}
-                    <SEOPanel
-                        title={title}
-                        slug={slug}
-                        metaTitle={metaTitle}
-                        metaDescription={metaDescription}
-                        onSlugChange={setSlug}
-                        onMetaTitleChange={setMetaTitle}
-                        onMetaDescriptionChange={setMetaDescription}
-                    />
-
                     {/* Post Settings */}
                     <GlassCard className="space-y-4">
                         <h3 className="font-bold">Post Settings</h3>
+
+                        {/* Slug */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                URL Slug
+                            </label>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">/blog/</span>
+                                <input
+                                    type="text"
+                                    value={slug}
+                                    onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-"))}
+                                    placeholder="article-slug"
+                                    className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                                />
+                            </div>
+                        </div>
 
                         {/* Category */}
                         <div>

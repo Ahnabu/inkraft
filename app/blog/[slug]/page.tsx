@@ -21,6 +21,7 @@ import { ViewTracker } from "@/components/ViewTracker";
 import { BlogPostClient } from "@/components/BlogPostClient";
 import { BlogContent } from "@/components/BlogContent";
 import { FeedbackWidget } from "@/components/reader/FeedbackWidget";
+import { SeriesNavigation } from "@/components/series/SeriesNavigation";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -95,51 +96,51 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const wordCount = post.content?.split(/\s+/).length || 0;
     const articleUrl = `${baseUrl}/blog/${slug}`;
 
+    const title = post.seo?.title || post.title;
+    const description = post.seo?.description || post.excerpt || post.content.substring(0, 160).replace(/<[^>]*>/g, "");
+    const ogImage = post.seo?.ogImage || post.coverImage || "/og-image.png";
+    const canonical = post.seo?.canonical || articleUrl;
+    const keywords = post.seo?.keywords?.length ? post.seo.keywords : (post.tags || []);
+
     return {
-        title: post.seo?.title || `${post.title} | Inkraft`,
-        description: post.seo?.description || post.excerpt,
-        keywords: post.seo?.keywords || post.tags,
-        authors: post.author?.name ? [{ name: post.author.name, url: `${baseUrl}/profile/${post.author._id}` }] : [],
-        creator: post.author?.name || "Inkraft",
-        publisher: "Inkraft",
+        title: {
+            absolute: title, // Override directory title template
+            default: title,
+            template: `%s | Inkraft`
+        },
+        description,
+        keywords,
         alternates: {
-            canonical: articleUrl,
+            canonical,
         },
         openGraph: {
-            title: post.seo?.title || post.title,
-            description: post.seo?.description || post.excerpt,
+            title,
+            description,
             type: "article",
             url: articleUrl,
-            publishedTime: post.publishedAt || post.createdAt,
-            modifiedTime: post.updatedAt,
-            authors: [post.author?.name || "Anonymous"],
-            tags: post.tags || [],
-            section: post.category,
-            images: post.coverImage ? [
+            siteName: "Inkraft",
+            images: [
                 {
-                    url: post.coverImage,
+                    url: ogImage,
                     width: 1200,
                     height: 630,
-                    alt: post.seo?.title || post.title,
-                    type: "image/jpeg",
-                }
-            ] : [
-                {
-                    url: `${baseUrl}/api/og?title=${encodeURIComponent(post.title)}`,
-                    width: 1200,
-                    height: 630,
-                    alt: post.title,
-                }
+                    alt: title,
+                },
             ],
+            publishedTime: post.publishedAt,
+            authors: [post.author?.name],
+            section: post.category,
+            tags: keywords,
         },
         twitter: {
             card: "summary_large_image",
-            title: post.seo?.title || post.title,
-            description: post.seo?.description || post.excerpt,
-            images: post.coverImage ? [post.coverImage] : [`${baseUrl}/api/og?title=${encodeURIComponent(post.title)}`],
-            creator: post.author?.name ? `@${post.author.name.replace(/\s+/g, '')}` : "@inkraft",
-            site: "@inkraft",
+            title,
+            description,
+            images: [ogImage],
+            creator: "@inkraft", // TODO: Make dynamic
         },
+        creator: post.author?.name || "Inkraft",
+        publisher: "Inkraft",
         robots: {
             index: true,
             follow: true,
@@ -305,7 +306,17 @@ export default async function BlogPostPage({ params }: PageProps) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }}
             />
-            <ReadingProgress slug={slug} />
+            <ReadingProgress
+                slug={slug}
+                title={post.title}
+                coverImage={post.coverImage}
+                category={post.category}
+                author={{
+                    name: post.author?.name || "Anonymous",
+                    image: post.author?.image
+                }}
+                readingTime={post.readingTime || 5}
+            />
             <ViewTracker postSlug={slug} postId={post._id.toString()} />
 
             <BlogPostClient>
@@ -343,6 +354,11 @@ export default async function BlogPostPage({ params }: PageProps) {
 
                             {/* Main Content Area */}
                             <div className="flex-1 max-w-4xl mx-auto xl:mx-0 center-in-focus-mode">
+                                {/* Series Navigation (Top) */}
+                                {seriesContext && (
+                                    <SeriesNavigation series={seriesContext} className="mb-6" />
+                                )}
+
                                 {/* Article Header */}
                                 <GlassCard className="p-4 sm:p-6 md:p-8 lg:p-12 mb-6 sm:mb-8">
                                     <div className="space-y-4 sm:space-y-6">
@@ -450,7 +466,18 @@ export default async function BlogPostPage({ params }: PageProps) {
                                 {/* Main Article Content */}
                                 <article>
                                     <GlassCard className="p-4 sm:p-6 md:p-8 lg:p-12">
-                                        <BlogContent content={post.content} postId={post._id.toString()} series={seriesContext || undefined} />
+                                        <BlogContent
+                                            content={post.content}
+                                            postId={post._id.toString()}
+                                            series={seriesContext || undefined}
+                                        />
+
+                                        {/* Series Navigation (Bottom) */}
+                                        {seriesContext && (
+                                            <div className="mt-8 border-t border-border/50 pt-8">
+                                                <SeriesNavigation series={seriesContext} />
+                                            </div>
+                                        )}
 
                                         <hr className="my-8 border-border/50" />
 

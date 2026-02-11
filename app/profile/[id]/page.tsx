@@ -189,41 +189,35 @@ export default async function UserProfilePage({
                             )}
 
                             {/* Stats */}
-                            <div className="flex items-center gap-6 text-sm">
+                            <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-muted-foreground border-t border-border pt-4 mt-4">
                                 <div className="flex items-center gap-2">
-                                    <FileText size={16} className="text-muted-foreground" />
-                                    <span className="font-semibold">{totalPostsCount}</span>
-                                    <span className="text-muted-foreground">
-                                        {totalPostsCount === 1 ? "Post" : "Posts"}
-                                    </span>
+                                    <FileText size={16} />
+                                    <span className="font-semibold text-foreground">{totalPostsCount}</span>
+                                    <span>{totalPostsCount === 1 ? "Post" : "Posts"}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Users size={16} className="text-muted-foreground" />
-                                    <span className="font-semibold">{followerCount}</span>
-                                    <span className="text-muted-foreground">Followers</span>
+                                    <Users size={16} />
+                                    <span className="font-semibold text-foreground">{followerCount}</span>
+                                    <span>Followers</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className="font-semibold">{followingCount}</span>
-                                    <span className="text-muted-foreground">Following</span>
+                                    <span className="font-semibold text-foreground">{followingCount}</span>
+                                    <span>Following</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Eye size={16} className="text-muted-foreground" />
-                                    <span className="font-semibold">{totalViews.toLocaleString()}</span>
-                                    <span className="text-muted-foreground">Views</span>
+                                    <Eye size={16} />
+                                    <span className="font-semibold text-foreground">{totalViews.toLocaleString()}</span>
+                                    <span>Views</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <ArrowUp size={16} className="text-muted-foreground" />
-                                    <span className="font-semibold">{Math.round(totalUpvotes)}</span>
-                                    <span className="text-muted-foreground">Upvotes</span>
+                                    <ArrowUp size={16} />
+                                    <span className="font-semibold text-foreground">{Math.round(totalUpvotes)}</span>
+                                    <span>Upvotes</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Calendar size={16} className="text-muted-foreground" />
-                                    <span className="text-muted-foreground">
-                                        Member since{" "}
-                                        {new Date(user.createdAt).toLocaleDateString("en-US", {
-                                            month: "short",
-                                            year: "numeric",
-                                        })}
+                                    <Calendar size={16} />
+                                    <span>
+                                        Joined {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
                                     </span>
                                 </div>
                             </div>

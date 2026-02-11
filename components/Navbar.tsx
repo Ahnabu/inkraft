@@ -77,7 +77,7 @@ export function Navbar() {
                         <div className="bg-primary text-white p-1.5 rounded-lg group-hover:rotate-12 transition-transform">
                             <PenTool size={20} />
                         </div>
-                        <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-cta bg-clip-text text-transparent">
+                        <span className="text-xl font-bold tracking-tight text-primary">
                             Inkraft
                         </span>
                     </Link>
@@ -119,13 +119,15 @@ export function Navbar() {
                 {/* Desktop Auth / Action */}
                 <div className="hidden md:flex items-center gap-4">
                     <div className="flex items-center gap-2 mr-2 border-r border-border/50 pr-4">
-                        <button
-                            onClick={toggleFocusMode}
-                            className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground relative"
-                            title="Enter Focus Mode"
-                        >
-                            <Maximize2 size={20} />
-                        </button>
+                        {pathname !== "/" && (
+                            <button
+                                onClick={toggleFocusMode}
+                                className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground relative"
+                                title="Enter Focus Mode"
+                            >
+                                <Maximize2 size={20} />
+                            </button>
+                        )}
                         <button
                             onClick={() => theme === "dark" ? setTheme("light") : setTheme("dark")}
                             className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground relative"

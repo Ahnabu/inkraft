@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, MessageSquare, ArrowUp, User, Eye, Flame, Award, TrendingUp, Info } from "lucide-react";
+import { Clock, MessageSquare, ArrowUp, User, Eye, Flame, Award, TrendingUp, Info, Sparkles } from "lucide-react";
 
 interface ArticleCardProps {
     post: {
@@ -227,6 +227,16 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
 
             {/* Content */}
             <div className="p-4 sm:p-5">
+                {post.rankingDetails && post.rankingDetails.type === 'personalized' && (
+                    <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                        <Sparkles size={12} className="text-amber-500" />
+                        <span className="text-amber-600 dark:text-amber-400">
+                            {post.rankingDetails.factors?.author_follow ? "From your network" :
+                                post.rankingDetails.factors?.category_follow ? "Recommended topic" :
+                                    "Suggested for you"}
+                        </span>
+                    </div>
+                )}
                 <h3 className="font-bold text-lg sm:text-xl mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                     {post.title}
                 </h3>

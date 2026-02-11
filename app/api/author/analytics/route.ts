@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import PostAnalytics from "@/models/PostAnalytics";
 import Post from "@/models/Post";
+import Subscriber from "@/models/Subscriber";
 import { auth } from "@/auth";
 import mongoose from "mongoose";
 
@@ -56,6 +57,9 @@ export async function GET(request: Request) {
       dailyViews,
       topPosts,
       avgEngagement,
+      totalSubscribers,
+      newSubscribers,
+      dailySubscribers
     ] = await Promise.all([
       // Total views
       PostAnalytics.countDocuments({
@@ -168,6 +172,32 @@ export async function GET(request: Request) {
           },
         },
       ]),
+
+      // Total Subscribers
+      Subscriber.countDocuments({}),
+
+      // New Subscribers (in period)
+      Subscriber.countDocuments({
+        subscribedAt: { $gte: startDate }
+      }),
+
+      // Daily Subscribers
+      Subscriber.aggregate([
+        {
+          $match: {
+            subscribedAt: { $gte: startDate },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: { format: "%Y-%m-%d", date: "$subscribedAt" },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]),
     ]);
 
     // Enrich top posts with title
@@ -189,6 +219,8 @@ export async function GET(request: Request) {
         uniqueVisitors,
         avgTimeOnPage: avgEngagement[0]?.avgTimeOnPage || 0,
         avgScrollDepth: avgEngagement[0]?.avgScrollDepth || 0,
+        totalSubscribers,
+        newSubscribers,
       },
       countries: countryStats.map((stat: { _id: string; count: number; countryCode: string }) => ({
         country: stat._id,
@@ -206,6 +238,10 @@ export async function GET(request: Request) {
       dailyViews: dailyViews.map((stat: { _id: string; views: number }) => ({
         date: stat._id,
         views: stat.views,
+      })),
+      dailySubscribers: dailySubscribers.map((stat: { _id: string; count: number }) => ({
+        date: stat._id,
+        subscribers: stat.count
       })),
       topPosts: enrichedTopPosts,
     });

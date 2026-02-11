@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Github, Twitter, Linkedin, Facebook, Instagram } from "lucide-react";
 import { useFocusMode } from "@/lib/context/FocusModeContext";
+import { NewsletterForm } from "@/components/NewsletterForm";
 
 export function Footer() {
     const { isFocusMode } = useFocusMode();
@@ -12,6 +13,11 @@ export function Footer() {
     return (
         <footer className="border-t border-border/40 bg-background/50 backdrop-blur-sm mt-20">
             <div className="container mx-auto px-4 py-8 md:py-12">
+                {/* Newsletter Section */}
+                <div className="mb-12 md:mb-16">
+                    <NewsletterForm />
+                </div>
+
                 {/* Main Footer Content */}
                 <div className="flex flex-col md:flex-row md:justify-between gap-8">
                     {/* Brand Section */}

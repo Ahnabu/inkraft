@@ -29,6 +29,9 @@ export interface IPost extends Document {
         title?: string;
         description?: string;
         keywords?: string[];
+        canonical?: string;
+        ogImage?: string;
+        structuredData?: Record<string, any>; // JSON-LD
     };
     editorsPick?: boolean;
     publication?: mongoose.Types.ObjectId;
@@ -141,6 +144,8 @@ const PostSchema: Schema<IPost> = new Schema(
             title: String,
             description: String,
             keywords: [String],
+            canonical: String,
+            ogImage: String,
         },
         editorsPick: {
             type: Boolean,

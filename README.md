@@ -20,7 +20,40 @@
 
 </div>
 
+</div>
+
 ---
+
+## 🚀 New Features (v0.2.0)
+
+### Phase 1: Reading Delight
+- **Focus Mode**: Distraction-free reading with a single click.
+- **Reading Progress**: Remembers exactly where you left off in every article.
+- **Smart Table of Contents**: Auto-generated, sticky navigation for long posts.
+- **Calm Editor**: A zen-like writing experience with no clutter.
+- **Draft Recovery**: Never lose your work with local draft saving.
+
+### Phase 2: Engagement
+- **Inline Notes**: Add private notes to any paragraph for deep study.
+- **Selection Sharing**: Highlight text to copy as clean Markdown or share quotes.
+- **Difficulty Badges**: Know if a post is Beginner, Intermediate, or Advanced.
+- **True Reading Time**: Accurate estimates including images and code blocks.
+- **Silent Feedback**: Let authors know if a post was helpful, clear, or needs more detail.
+
+### Phase 3: Discovery & Retention
+- **Personalized Feed**: Content tailored to your interests and reading habits.
+- **Reading History**: Easily find and resume posts you've previously read.
+- **Series Navigation**: Seamlessly binge-read multi-part article series.
+- **Author Following**: Build your network by following your favorite writers.
+
+### Phase 4: Content Amplification
+- **SEO Dashboard**: Real-time optimization tips and metadata management.
+- **Social Previews**: See exactly how your post will look on Twitter and LinkedIn.
+- **Newsletter**: Built-in subscription system to own your audience.
+- **Advanced Analytics**: Granular insights into views, engagement, and subscriber growth.
+
+---
+
 
 ## 📖 Overview
 

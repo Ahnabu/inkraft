@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export function useReadingProgress(slug: string) {
+export function useReadingProgress(slug: string, meta?: { title: string; coverImage?: string; category: string; author: { name: string; image?: string }; readingTime: number }) {
     const [readingProgress, setReadingProgress] = useState(0);
     const [hasRestored, setHasRestored] = useState(false);
 
@@ -41,6 +41,31 @@ export function useReadingProgress(slug: string) {
             timeoutId = setTimeout(() => {
                 if (scrollPercent > 0) {
                     localStorage.setItem(`reading_progress_${slug}`, scrollPercent.toString());
+
+                    // Save to history if meta is provided
+                    if (meta) {
+                        const historyItem = {
+                            slug,
+                            ...meta,
+                            viewedAt: new Date().toISOString(),
+                            progress: Math.round(scrollPercent),
+                        };
+
+                        try {
+                            const historyJson = localStorage.getItem("reading_history");
+                            const history = historyJson ? JSON.parse(historyJson) : [];
+
+                            // Remove existing entry for this slug to avoid duplicates and update position
+                            const filteredHistory = history.filter((item: any) => item.slug !== slug);
+
+                            // Add to top, limit to 50 items
+                            const newHistory = [historyItem, ...filteredHistory].slice(0, 50);
+
+                            localStorage.setItem("reading_history", JSON.stringify(newHistory));
+                        } catch (e) {
+                            console.error("Failed to save reading history", e);
+                        }
+                    }
                 }
             }, 500);
         };

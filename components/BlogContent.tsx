@@ -98,6 +98,12 @@ export function BlogContent({ content, postId, className = "", series }: BlogCon
     const contentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        const handleToggle = () => setIsSidebarOpen((prev) => !prev);
+        window.addEventListener('toggle-notes-sidebar', handleToggle);
+        return () => window.removeEventListener('toggle-notes-sidebar', handleToggle);
+    }, []);
+
+    useEffect(() => {
         if (!contentRef.current) return;
 
         // Add copy button to code blocks
@@ -259,17 +265,6 @@ export function BlogContent({ content, postId, className = "", series }: BlogCon
                 />
             </div>
 
-            {/* Note Sidebar Toggle */}
-            <div className="fixed bottom-24 right-20 z-40 lg:bottom-6 lg:right-20">
-                <Button
-                    onClick={() => setIsSidebarOpen(true)}
-                    variant="outline"
-                    className="rounded-full w-12 h-12 p-0 shadow-lg bg-background border border-border"
-                    title="View Notes"
-                >
-                    <MessageSquarePlus size={20} className="text-muted-foreground" />
-                </Button>
-            </div>
 
             <NoteSidebar
                 postId={postId}

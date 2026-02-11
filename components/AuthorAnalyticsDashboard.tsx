@@ -27,11 +27,14 @@ interface AuthorAnalyticsData {
     uniqueVisitors: number;
     avgTimeOnPage: number;
     avgScrollDepth: number;
+    totalSubscribers: number;
+    newSubscribers: number;
   };
   countries: Array<{ country: string; countryCode: string; views: number }>;
   devices: Array<{ device: string; views: number }>;
   browsers: Array<{ browser: string; views: number }>;
   dailyViews: Array<{ date: string; views: number }>;
+  dailySubscribers: Array<{ date: string; subscribers: number }>;
   topPosts: Array<{
     slug: string;
     title: string;
@@ -92,7 +95,7 @@ export function AuthorAnalyticsDashboard() {
     );
   }
 
-  const { summary, countries, devices, browsers, dailyViews, topPosts } = data;
+  const { summary, countries, devices, browsers, dailyViews, dailySubscribers, topPosts } = data;
 
   return (
     <div className="space-y-6">
@@ -100,7 +103,7 @@ export function AuthorAnalyticsDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">Your Analytics</h2>
-          <p className="text-muted-foreground mt-1">Track your content performance across all posts</p>
+          <p className="text-muted-foreground mt-1">Track content performance and audience growth</p>
         </div>
       </div>
 
@@ -110,11 +113,10 @@ export function AuthorAnalyticsDashboard() {
           <button
             key={d}
             onClick={() => setDays(d)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              days === d
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${days === d
                 ? "bg-primary text-white"
                 : "bg-muted hover:bg-muted/80"
-            }`}
+              }`}
           >
             Last {d} days
           </button>
@@ -122,23 +124,11 @@ export function AuthorAnalyticsDashboard() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <GlassCard className="p-6">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-primary/10 rounded-lg">
-              <FileText className="text-primary" size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total Posts</p>
-              <p className="text-2xl font-bold">{summary.totalPosts}</p>
-            </div>
-          </div>
-        </GlassCard>
-
-        <GlassCard className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-purple-500/10 rounded-lg">
-              <Eye className="text-purple-600" size={24} />
+              <Eye className="text-primary" size={24} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Views</p>
@@ -149,12 +139,15 @@ export function AuthorAnalyticsDashboard() {
 
         <GlassCard className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-cyan-500/10 rounded-lg">
-              <Users className="text-cyan-600" size={24} />
+            <div className="p-3 bg-purple-500/10 rounded-lg">
+              <Users className="text-purple-600" size={24} />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Unique Visitors</p>
-              <p className="text-2xl font-bold">{summary.uniqueVisitors.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Subscribers</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-2xl font-bold">{summary.totalSubscribers.toLocaleString()}</p>
+                <span className="text-xs text-green-500 font-medium">+{summary.newSubscribers} new</span>
+              </div>
             </div>
           </div>
         </GlassCard>
@@ -186,25 +179,47 @@ export function AuthorAnalyticsDashboard() {
         </GlassCard>
       </div>
 
-      {/* Daily Views Chart */}
-      <GlassCard className="p-6">
-        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-          <TrendingUp size={20} className="text-primary" />
-          Views Over Time
-        </h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={dailyViews}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
-            <YAxis stroke="hsl(var(--muted-foreground))" />
-            <Tooltip
-              contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
-            />
-            <Legend />
-            <Line type="monotone" dataKey="views" stroke="#4F46E5" strokeWidth={2} dot={{ r: 4 }} />
-          </LineChart>
-        </ResponsiveContainer>
-      </GlassCard>
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Daily Views Chart */}
+        <GlassCard className="p-6">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <TrendingUp size={20} className="text-primary" />
+            Views Over Time
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={dailyViews}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12 }} />
+              <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12 }} />
+              <Tooltip
+                contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+              />
+              <Line type="monotone" dataKey="views" stroke="#4F46E5" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </GlassCard>
+
+        {/* Daily Subscribers Chart */}
+        <GlassCard className="p-6">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <Users size={20} className="text-purple-600" />
+            Subscriber Growth
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={dailySubscribers}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+              <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12 }} />
+              <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12 }} allowDecimals={false} />
+              <Tooltip
+                contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+                cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
+              />
+              <Bar dataKey="subscribers" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </GlassCard>
+      </div>
 
       {/* Top Posts */}
       <GlassCard className="p-6">

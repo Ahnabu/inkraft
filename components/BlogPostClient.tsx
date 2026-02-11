@@ -1,68 +1,51 @@
 "use client";
 
 import { useState } from "react";
-import { Maximize2, Minimize2 } from "lucide-react";
+import { Maximize2, Minimize2, StickyNote } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useFocusMode } from "@/lib/context/FocusModeContext";
+import { cn } from "@/lib/utils";
 
 interface BlogPostClientProps {
     children: React.ReactNode;
 }
 
 export function BlogPostClient({ children }: BlogPostClientProps) {
-    const [isFullscreen, setIsFullscreen] = useState(false);
+    const { isFocusMode, toggleFocusMode } = useFocusMode();
 
     return (
         <>
-            {/* Fullscreen Toggle Button */}
-            <div className="fixed bottom-24 right-6 z-50 lg:bottom-6">
+            {/* Floating Actions */}
+            <div className="fixed bottom-24 right-6 z-50 lg:bottom-6 flex flex-col gap-4 print:hidden">
                 <Button
-                    onClick={() => setIsFullscreen(!isFullscreen)}
-                    variant="primary"
-                    className="rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-all"
-                    aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                    onClick={() => {
+                        const event = new CustomEvent('toggle-notes-sidebar');
+                        window.dispatchEvent(event);
+                    }}
+                    variant="default"
+                    className="rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-all bg-indigo-600 hover:bg-indigo-700 text-white border-none ring-2 ring-indigo-600/20"
+                    aria-label="Toggle notes"
                 >
-                    {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+                    <StickyNote size={20} />
+                </Button>
+
+                <Button
+                    onClick={toggleFocusMode}
+                    variant="primary"
+                    className={cn(
+                        "rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-all",
+                        isFocusMode ? "bg-muted text-foreground hover:bg-muted/80 ring-2 ring-primary" : ""
+                    )}
+                    aria-label={isFocusMode ? "Exit focus mode" : "Enter focus mode"}
+                >
+                    {isFocusMode ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
                 </Button>
             </div>
 
-            {/* Content Wrapper */}
-            <div className={isFullscreen ? "fullscreen-reading-mode" : ""}>
+            {/* Content Wrapper - Focus mode styling is handled globally by body class */}
+            <div className={cn("transition-all duration-500", isFocusMode ? "py-8" : "")}>
                 {children}
             </div>
-
-            {/* Fullscreen Styles */}
-            <style jsx global>{`
-                .fullscreen-reading-mode {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: var(--background);
-                    z-index: 40;
-                    overflow-y: auto;
-                    padding: 2rem;
-                }
-
-                .fullscreen-reading-mode .max-w-4xl {
-                    max-width: 800px;
-                }
-
-                .fullscreen-reading-mode .navbar-hide {
-                    display: none;
-                }
-
-                @media (max-width: 768px) {
-                    .fullscreen-reading-mode {
-                        padding: 1rem;
-                    }
-                }
-
-                /* Hide elements in fullscreen mode */
-                .fullscreen-reading-mode .hide-in-fullscreen {
-                    display: none !important;
-                }
-            `}</style>
         </>
     );
 }

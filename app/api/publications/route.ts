@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import Publication from "@/models/Publication";
 import PublicationMember from "@/models/PublicationMember";
-import { slugify } from "@/lib/utils";
+import { slugify } from "@/lib/formatters";
 
 // GET: List publications the user is a member of
 export async function GET() {

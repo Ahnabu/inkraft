@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArticleCard } from "@/components/ArticleCard";
 import { PostFeed } from "@/components/PostFeed";
 import { TrendingUp, Clock, Award, ArrowRight, Sparkles } from "lucide-react";
+import { FeedTabs } from "@/components/feed/FeedTabs";
 import { auth } from "@/auth";
 import { Metadata } from "next";
 
@@ -126,35 +127,10 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
           {/* Main Feed - 2/3 width */}
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <div className="flex items-center gap-4">
-                {session && (
-                  <Link
-                    href="/?feed=foryou"
-                    className={`flex items-center gap-2 text-xl sm:text-2xl font-bold transition-colors ${feedType === 'foryou' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                  >
-                    <Sparkles size={20} className={feedType === 'foryou' ? "text-primary sm:w-6 sm:h-6" : "sm:w-6 sm:h-6"} />
-                    For You
-                  </Link>
-                )}
-                <Link
-                  href="/?feed=latest"
-                  className={`flex items-center gap-2 text-xl sm:text-2xl font-bold transition-colors ${feedType === 'latest' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                >
-                  <Clock size={20} className={feedType === 'latest' ? "text-primary sm:w-6 sm:h-6" : "sm:w-6 sm:h-6"} />
-                  Latest
-                </Link>
-                {session && (
-                  <Link
-                    href="/?feed=following"
-                    className={`flex items-center gap-2 text-xl sm:text-2xl font-bold transition-colors ${feedType === 'following' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                  >
-                    Following
-                  </Link>
-                )}
-              </div>
+              <FeedTabs isLoggedIn={!!session?.user?.id} />
               <Link
                 href="/latest"
-                className="text-primary hover:underline flex items-center gap-1 text-sm sm:text-base"
+                className="text-primary hover:underline flex items-center gap-1 text-sm sm:text-base hidden sm:flex"
               >
                 <span className="hidden sm:inline">View all</span>
                 <span className="sm:hidden">All</span>

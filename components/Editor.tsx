@@ -47,7 +47,18 @@ import {
     Upload,
     Maximize,
     Minimize,
+    Settings,
 } from "lucide-react";
+import { SEOPanel } from "@/components/editor/SEOPanel";
+import { SocialPreview } from "@/components/editor/SocialPreview";
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useRef, useState } from "react";
 import { countWords, calculateReadingTime } from "@/lib/readingTime";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -55,18 +66,51 @@ import { ImportModal } from "@/components/ImportModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
+interface SeoData {
+    title?: string;
+    description?: string;
+    keywords?: string[];
+    canonical?: string;
+    ogImage?: string;
+}
+
 interface EditorProps {
     content: string;
     onChange: (content: string) => void;
     onAutoSave?: () => void;
     placeholder?: string;
+    initialSeo?: SeoData;
+    onSeoChange?: (seo: SeoData) => void;
 }
 
-export function Editor({ content, onChange, onAutoSave, placeholder = "Start writing your story..." }: EditorProps) {
+export function Editor({
+    content,
+    onChange,
+    onAutoSave,
+    placeholder = "Start writing your story...",
+    initialSeo,
+    onSeoChange
+}: EditorProps) {
     const autoSaveInterval = useRef<NodeJS.Timeout | null>(null);
     const [showImageUpload, setShowImageUpload] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
     const [isCalmMode, setIsCalmMode] = useState(false);
+
+    // SEO State
+    const [seoData, setSeoData] = useState<SeoData>({
+        title: initialSeo?.title || "",
+        description: initialSeo?.description || "",
+        keywords: initialSeo?.keywords || [],
+        canonical: initialSeo?.canonical || "",
+        ogImage: initialSeo?.ogImage || "",
+    });
+
+    // Notify parent of SEO changes
+    useEffect(() => {
+        if (onSeoChange) {
+            onSeoChange(seoData);
+        }
+    }, [seoData, onSeoChange]);
 
     // Toggle body class for Calm Mode to hide other elements if needed, 
     // though purely CSS on the editor container should suffice for covering them.
@@ -415,6 +459,45 @@ export function Editor({ content, onChange, onAutoSave, placeholder = "Start wri
                     {isCalmMode ? <Minimize size={18} /> : <Maximize size={18} />}
                 </button>
                 <div className="w-px h-6 bg-border mx-1" />
+                <div className="w-px h-6 bg-border mx-1" />
+
+                {/* SEO Settings */}
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <button
+                            className="p-2 rounded-lg hover:bg-muted transition-colors"
+                            title="Post Settings (SEO & Social)"
+                        >
+                            <Settings size={18} />
+                        </button>
+                    </SheetTrigger>
+                    <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+                        <SheetHeader>
+                            <SheetTitle>Post Settings</SheetTitle>
+                        </SheetHeader>
+                        <Tabs defaultValue="seo" className="mt-6">
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="seo">SEO & Metadata</TabsTrigger>
+                                <TabsTrigger value="social">Social Preview</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="seo" className="mt-4">
+                                <SEOPanel
+                                    initialData={seoData}
+                                    onChange={setSeoData}
+                                />
+                            </TabsContent>
+                            <TabsContent value="social" className="mt-4">
+                                <SocialPreview
+                                    data={{
+                                        ...seoData,
+                                        // authorName: "You", // TODO: Pass user info
+                                    }}
+                                />
+                            </TabsContent>
+                        </Tabs>
+                    </SheetContent>
+                </Sheet>
+
                 <button
                     onClick={() => setShowImportModal(true)}
                     className="p-2 rounded-lg hover:bg-muted transition-colors"

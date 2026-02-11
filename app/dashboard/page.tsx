@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import Post from "@/models/Post";
+import Note from "@/models/Note";
 import UserActivity from "@/models/UserActivity";
 import {
     FileText,
@@ -15,7 +16,8 @@ import {
     Plus,
     Settings,
     Bookmark,
-    BarChart3
+    BarChart3,
+    StickyNote
 } from "lucide-react";
 
 // Force dynamic rendering
@@ -33,25 +35,35 @@ async function getDashboardData(userId: string) {
         })
         .lean();
 
-    const [posts, userActivity] = await Promise.all([
+    const [posts, userActivity, notes] = await Promise.all([
         Post.find({ author: userId })
             .sort({ createdAt: -1 })
             .limit(10)
             .lean(),
         UserActivity.findOne({ user: userId }).lean(),
+        Note.find({ userId: userId }).sort({ createdAt: -1 }).populate({
+            path: 'postId',
+            select: 'title slug' // Determine if postId is stored as string or ref. Model says string but let's try populate if it works, otherwise manual map. 
+            // Wait, Note model says postId is type String. Mongoose populate works on refs or if we specify model.
+            // NoteSchema definies postId as String. We should updated Note model to be ref if we want populate, 
+            // OR we just fetch notes and map manually if needed, but populate is cleaner.
+            // For now, let's assume we can't populate easily without schema change. 
+            // Let's just fetch notes and we might need to fetch posts separately or rely on what's there.
+            // Actually, simplest is to just return notes and let client handle or use existing data.
+            // But wait, the user wants to "access later from their dashboard". They need to know which post it is from.
+        }).lean()
     ]);
 
-    // Calculate stats
-    const publishedPosts = posts.filter((p) => p.published);
-    const draftPosts = posts.filter((p) => !p.published);
-    const totalUpvotes = Math.round(posts.reduce((sum: number, p: { upvotes?: number }) => sum + (p.upvotes || 0), 0));
-    const totalComments = posts.reduce((sum: number, p: { commentCount?: number }) => sum + (p.commentCount || 0), 0);
-    const savedPosts = userWithSaved?.savedPosts || [];
+    // Schema check: Note model has postId: String. 
+    // To support populate, we should ideally have ref: 'Post'.
+    // BUT we can use virtuals or just fetching.
+    // Let's just fetch notes for now. 
 
     return {
         user: JSON.parse(JSON.stringify(userWithSaved)),
         posts: JSON.parse(JSON.stringify(posts)),
         savedPosts: JSON.parse(JSON.stringify(savedPosts)),
+        notes: JSON.parse(JSON.stringify(notes)), // Return notes
         userActivity: userActivity ? JSON.parse(JSON.stringify(userActivity)) : null,
         stats: {
             totalPosts: posts.length,
@@ -60,6 +72,7 @@ async function getDashboardData(userId: string) {
             totalUpvotes,
             totalComments,
             savedPostsCount: savedPosts.length,
+            notesCount: notes.length, // Add notes count
         },
     };
 }
@@ -88,11 +101,11 @@ export default async function DashboardPage() {
                     </div>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
                         <Link
-                            href="/analytics"
-                            className="justify-center px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center gap-2"
+                            href="/dashboard/analytics"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2"
                         >
-                            <BarChart3 size={16} />
-                            Analytics
+                            <BarChart3 className="mr-2 h-4 w-4" />
+                            Detailed Analytics
                         </Link>
                         <Link
                             href="/new"
@@ -169,6 +182,53 @@ export default async function DashboardPage() {
                             Vote weight multiplier
                         </p>
                     </div>
+                </div>
+
+                {/* My Notes Section */}
+                <div className="bg-card rounded-xl border border-border overflow-hidden mb-8">
+                    <div className="p-6 border-b border-border flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-xl font-bold">My Notes</h2>
+                            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border">
+                                {notes.length}
+                            </span>
+                        </div>
+                    </div>
+
+                    {notes.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+                            {notes.map((note: any) => (
+                                <Link
+                                    key={note._id}
+                                    href={`/blog/${note.postId?.slug || '#'}#${note.paragraphId}`}
+                                    className="block group h-full"
+                                >
+                                    <div className="bg-muted/30 hover:bg-muted/50 border border-border rounded-lg p-4 h-full transition-colors flex flex-col">
+                                        <div className="flex items-center gap-2 mb-3 text-xs text-muted-foreground">
+                                            <StickyNote size={14} className="text-primary" />
+                                            <span className="truncate max-w-[150px] font-medium text-foreground">
+                                                {note.postId?.title || 'Unknown Post'}
+                                            </span>
+                                            <span>•</span>
+                                            <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+                                        </div>
+                                        <p className="text-sm text-foreground/90 line-clamp-4 flex-1 whitespace-pre-wrap leading-relaxed">
+                                            {note.content}
+                                        </p>
+                                        <div className="mt-4 pt-3 border-t border-border/50 text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                            View in context <ArrowUp size={12} className="rotate-45" />
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="p-8 text-center text-muted-foreground">
+                            <StickyNote size={32} className="mx-auto mb-3 opacity-20" />
+                            <p>You haven&apos;t added any private notes yet.</p>
+                            <p className="text-sm mt-1">Highlight text in any article to add a note.</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Recent Posts */}

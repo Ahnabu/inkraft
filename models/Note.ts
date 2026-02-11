@@ -2,8 +2,8 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface INote extends Document {
     userId: string;
-    postId: string;
-    paragraphId: string;
+    postId: string | Schema.Types.ObjectId;
+    paragraphId?: string;
     content: string;
     createdAt: Date;
     updatedAt: Date;
@@ -17,13 +17,14 @@ const NoteSchema = new Schema<INote>(
             index: true,
         },
         postId: {
-            type: String, // Storing as string to match Post ID usage, could be ObjectId if we want ref
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Post",
             required: true,
             index: true,
         },
         paragraphId: {
             type: String,
-            required: true,
+            required: false,
         },
         content: {
             type: String,

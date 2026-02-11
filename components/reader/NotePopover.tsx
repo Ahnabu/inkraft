@@ -74,13 +74,14 @@ export function NotePopover({ paragraphId, selectionRect, onClose, onSave }: Not
 
     return (
         <div
-            className="absolute z-50 flex flex-col gap-2 p-2 bg-card border border-border rounded-lg shadow-xl animate-in fade-in zoom-in duration-200"
+            className="absolute z-[60] flex flex-col gap-2 p-3 bg-card border border-border rounded-xl shadow-2xl animate-in fade-in zoom-in duration-200 ring-1 ring-black/5"
             style={{
                 top,
                 left,
                 transform: "translateX(-50%)",
-                width: mode === "menu" ? "auto" : "16rem"
+                width: mode === "menu" ? "auto" : "min(90vw, 20rem)"
             }}
+            onMouseDown={(e) => e.stopPropagation()}
         >
             {mode === "menu" ? (
                 <div className="flex items-center gap-1">
@@ -116,8 +117,9 @@ export function NotePopover({ paragraphId, selectionRect, onClose, onSave }: Not
                         ref={inputRef}
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
-                        placeholder="Type your thought..."
-                        className="w-full h-20 p-2 text-sm bg-muted/50 rounded-md border-none focus:ring-1 focus:ring-primary resize-none"
+                        onMouseDown={(e) => e.stopPropagation()}
+                        placeholder="Type your private note here..."
+                        className="w-full h-24 p-3 text-sm bg-muted/50 hover:bg-muted/80 transition-colors rounded-lg border-none focus:ring-2 focus:ring-primary/50 resize-none outline-none"
                     />
                     <div className="flex gap-2">
                         <Button
