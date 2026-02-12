@@ -198,6 +198,10 @@ export function Navbar() {
                             </div>
                         )}
                         <div className="flex items-center justify-between px-4 py-2 border-t border-border mt-2">
+                            <span className="text-sm font-medium text-muted-foreground">Language</span>
+                            <LanguageSwitcher />
+                        </div>
+                        <div className="flex items-center justify-between px-4 py-2 border-t border-border mt-2">
                             <span className="text-sm font-medium text-muted-foreground">Theme</span>
                             <button
                                 onClick={() => theme === "dark" ? setTheme("light") : setTheme("dark")}
