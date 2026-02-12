@@ -52,7 +52,7 @@ export function LanguageSwitcher() {
                     />
 
                     {/* Dropdown */}
-                    <div className="absolute right-0 mt-2 w-56 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="absolute right-0 mt-2 w-56 bg-muted/30 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-3 border-b border-border/50">
                             <div className="text-xs font-semibold text-foreground flex items-center gap-2">
                                 <Globe size={14} className="text-primary" />
@@ -65,8 +65,8 @@ export function LanguageSwitcher() {
                                     key={lang.code}
                                     onClick={() => handleLanguageChange(lang.code)}
                                     className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${currentLocale === lang.code
-                                            ? "bg-gradient-to-r from-primary/20 to-primary/10 text-primary font-semibold shadow-sm border border-primary/20"
-                                            : "hover:bg-muted text-foreground hover:translate-x-0.5"
+                                        ? "bg-gradient-to-r from-primary/20 to-primary/10 text-primary font-semibold shadow-sm border border-primary/20"
+                                        : "hover:bg-muted text-foreground hover:translate-x-0.5"
                                         }`}
                                 >
                                     <span className="flex items-center gap-3">

@@ -51,8 +51,7 @@ import {
 } from "lucide-react";
 import { SEOPanel } from "@/components/editor/SEOPanel";
 import { SocialPreview } from "@/components/editor/SocialPreview";
-// AI feature disabled for production builds - enable locally if you have OPENAI_API_KEY
-// import { AIBubbleMenu } from "@/components/editor/AIBubbleMenu";
+import { AIBubbleMenu } from "@/components/editor/AIBubbleMenu";
 import {
     Sheet,
     SheetContent,
@@ -558,8 +557,7 @@ export function Editor({
                 </button>
             </FloatingMenu>
 
-            {/* AI feature disabled for production - to enable: rename AIBubbleMenu.tsx.disabled and uncomment this line */}
-            {/* {editor && <AIBubbleMenu editor={editor} />} */}
+            {editor && <AIBubbleMenu editor={editor} />}
             {/* Editor Content */}
             <div className={cn(
                 "prose-editor glass-card rounded-lg border border-border/40 min-h-[500px]",

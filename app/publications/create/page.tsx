@@ -97,7 +97,7 @@ export default function CreatePublicationPage() {
                         </label>
                         <div className="flex items-center">
                             <span className="px-3 py-2 bg-muted border border-r-0 border-input rounded-l-md text-muted-foreground text-sm">
-                                inkraft.com/publication/
+                                inkraftblog.vercel.app/publication/
                             </span>
                             <input
                                 {...register("slug")}

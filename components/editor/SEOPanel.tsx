@@ -152,7 +152,7 @@ export function SEOPanel({ initialData, onChange }: SEOPanelProps) {
                         <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[10px] text-gray-500">I</div>
                         <div className="flex flex-col">
                             <span className="text-xs text-foreground font-medium">Inkraft</span>
-                            <span className="text-[10px] text-muted-foreground">inkraft.com › blog › ...</span>
+                            <span className="text-[10px] text-muted-foreground">inkraftblog.vercel.app › blog › ...</span>
                         </div>
                     </div>
                     <div className="text-lg text-blue-600 dark:text-blue-400 font-medium hover:underline cursor-pointer truncate">

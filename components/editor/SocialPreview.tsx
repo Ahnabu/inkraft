@@ -22,7 +22,7 @@ export function SocialPreview({ data }: SocialPreviewProps) {
     const title = data.title || "Your Post Title";
     const description = data.description || "This is a preview of how your post description will appear on social media platforms.";
     const image = data.ogImage || data.coverImage || "/placeholder-social.jpg";
-    const domain = "inkraft.com";
+    const domain = "inkraftblog.vercel.app";
 
     return (
         <div className="space-y-6">
@@ -30,8 +30,8 @@ export function SocialPreview({ data }: SocialPreviewProps) {
                 <button
                     onClick={() => setPlatform("twitter")}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${platform === "twitter"
-                            ? "bg-blue-500/10 text-blue-500"
-                            : "text-muted-foreground hover:bg-muted"
+                        ? "bg-blue-500/10 text-blue-500"
+                        : "text-muted-foreground hover:bg-muted"
                         }`}
                 >
                     <Twitter size={14} />
@@ -40,8 +40,8 @@ export function SocialPreview({ data }: SocialPreviewProps) {
                 <button
                     onClick={() => setPlatform("linkedin")}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${platform === "linkedin"
-                            ? "bg-blue-700/10 text-blue-700"
-                            : "text-muted-foreground hover:bg-muted"
+                        ? "bg-blue-700/10 text-blue-700"
+                        : "text-muted-foreground hover:bg-muted"
                         }`}
                 >
                     <Linkedin size={14} />
