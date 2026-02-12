@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useTheme } from "next-themes";
 import { useFocusMode } from "@/lib/context/FocusModeContext";
 import { Maximize2, Minimize2, Type, Minus, Plus } from "lucide-react";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export function Navbar() {
     const pathname = usePathname();
@@ -119,6 +120,7 @@ export function Navbar() {
                 {/* Desktop Auth / Action */}
                 <div className="hidden md:flex items-center gap-4">
                     <div className="flex items-center gap-2 mr-2 border-r border-border/50 pr-4">
+                        <LanguageSwitcher />
                         {pathname !== "/" && (
                             <button
                                 onClick={toggleFocusMode}

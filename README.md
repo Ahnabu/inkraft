@@ -52,6 +52,19 @@
 - **Newsletter**: Built-in subscription system to own your audience.
 - **Advanced Analytics**: Granular insights into views, engagement, and subscriber growth.
 
+### Phase 5: Power Features ⚡
+- **AI Writing Assistant**: Powered by OpenAI - get suggestions, improve tone, expand content with text selection.
+- **Export Posts**: Download your content as PDF, Markdown, or JSON for portability and backup.
+- **Keyboard Shortcuts**: Navigate faster with `g+h` (home), `/` (search), `f` (focus mode), `Shift+?` (shortcuts modal).
+- **Bangla Typography**: Full support for বাংলা text with Noto Sans Bengali font family.
+
+### Phase 5.1: Comprehensive i18n 🌐
+- **UI Translation**: Complete interface in English and বাংলা (Bangla) - switch with one click.
+- **Multi-language Posts**: Write each post in multiple languages with dedicated translation fields.
+- **Language Switcher**: Beautiful globe icon in navbar for instant language switching.
+- **SEO Optimized**: Proper `hreflang` tags, language-specific metadata, and separate URLs per language.
+- **Smart Fallback**: Posts without translation gracefully show in original language with notice.
+
 ---
 
 
@@ -506,6 +519,9 @@ GMAIL_APP_PASSWORD=your-gmail-app-password
 
 # Analytics Salt (For IP hashing)
 IP_SALT=your-random-salt-string
+
+# OpenAI (For AI Writing Assistant)
+OPENAI_API_KEY=sk-your-openai-api-key-here
 ```
 
 > **📧 Gmail Setup**: See [GMAIL_SETUP_GUIDE.md](GMAIL_SETUP_GUIDE.md) for detailed instructions on generating Gmail App Password.

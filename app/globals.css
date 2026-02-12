@@ -21,6 +21,8 @@
   /* Typography - Optimal reading */
   --font-heading: var(--font-dm-sans);
   --font-body: var(--font-dm-sans);
+  --font-bangla: var(--font-bangla);
+  /* Bangla typography support */
 
   /* Reading experience */
   --line-height-body: 1.6;
@@ -82,7 +84,7 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-body);
+  font-family: var(--font-body), var(--font-bangla), sans-serif;
   line-height: var(--line-height-body);
   overflow-x: hidden;
 }

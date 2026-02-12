@@ -1,0 +1,11 @@
+{
+  "HomePage": {
+    "title": "Bienvenido a Inkraft",
+    "subtitle": "Plataforma de Blog Tecnológico Premium"
+  },
+  "Navigation": {
+    "home": "Inicio",
+    "explore": "Explorar",
+    "about": "Sobre nosotros"
+  }
+}

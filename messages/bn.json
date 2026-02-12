@@ -1,0 +1,71 @@
+{
+    "Navigation": {
+        "home": "হোম",
+        "explore": "অন্বেষণ করুন",
+        "about": "সম্পর্কে",
+        "signIn": "সাইন ইন",
+        "getStarted": "শুরু করুন",
+        "profile": "প্রোফাইল",
+        "dashboard": "ড্যাশবোর্ড",
+        "settings": "সেটিংস",
+        "logout": "লগ আউট"
+    },
+    "Common": {
+        "save": "সংরক্ষণ করুন",
+        "cancel": "বাতিল করুন",
+        "delete": "মুছুন",
+        "edit": "সম্পাদনা করুন",
+        "publish": "প্রকাশ করুন",
+        "draft": "খসড়া",
+        "search": "অনুসন্ধান করুন",
+        "loading": "লোড হচ্ছে...",
+        "error": "ত্রুটি",
+        "success": "সফল"
+    },
+    "Editor": {
+        "title": "শিরোনাম",
+        "content": "বিষয়বস্তু",
+        "excerpt": "সারাংশ",
+        "category": "বিভাগ",
+        "tags": "ট্যাগ",
+        "coverImage": "কভার ছবি",
+        "publishPost": "পোস্ট প্রকাশ করুন",
+        "saveDraft": "খসড়া সংরক্ষণ করুন",
+        "preview": "প্রিভিউ",
+        "settings": "সেটিংস",
+        "languageTabs": {
+            "english": "English",
+            "bangla": "বাংলা",
+            "addTranslation": "{language} অনুবাদ যুক্ত করুন",
+            "missingTranslation": "এখনও কোনও {language} বিষয়বস্তু নেই",
+            "switchLanguage": "{language} এ স্যুইচ করুন"
+        },
+        "guidelines": {
+            "title": "বহুভাষিক প্রকাশনা গাইড",
+            "step1": "আপনার প্রাথমিক ভাষায় পোস্ট লিখুন",
+            "step2": "অনুবাদ যুক্ত করতে ভাষা ট্যাবে ক্লিক করুন",
+            "step3": "প্রতিটি ভাষার জন্য শিরোনাম, সারাংশ এবং বিষয়বস্তু পূরণ করুন",
+            "step4": "প্রকাশ করুন - সমস্ত অনুবাদ একসাথে সংরক্ষণ করা হবে",
+            "tip": "অনুবাদ ঐচ্ছিক। অনুবাদ ছাড়া পোস্টগুলি মূল ভাষায় প্রদর্শিত হবে।"
+        }
+    },
+    "Post": {
+        "readMore": "আরও পড়ুন",
+        "readingTime": "{minutes} মিনিট পড়া",
+        "publishedOn": "{date} তে প্রকাশিত",
+        "author": "{name} দ্বারা",
+        "share": "শেয়ার করুন",
+        "export": "এক্সপোর্ট করুন",
+        "availableIn": "এতে উপলব্ধ:",
+        "translationMissing": "এই পোস্টটি এখনও {language} এ উপলব্ধ নয়। {fallback} সংস্করণ দেখানো হচ্ছে।",
+        "viewIn": "{language} এ দেখুন"
+    },
+    "LanguageSwitcher": {
+        "switchLanguage": "ভাষা পরিবর্তন করুন",
+        "currentLanguage": "বর্তমান: {language}"
+    },
+    "SEO": {
+        "defaultDescription": "প্রযুক্তি, প্রোগ্রামিং এবং উদ্ভাবনের উপর উচ্চ-মানের নিবন্ধ পড়ুন",
+        "postMetaTemplate": "{title} - {category} | Inkraft"
+    }
+}

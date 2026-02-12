@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -8,10 +8,17 @@ import { SyntaxHighlighting } from "@/components/SyntaxHighlighting";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
+import { KeyboardShortcutsModal } from "@/components/ui/KeyboardShortcutsModal";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
+
+const notoSansBengali = Noto_Sans_Bengali({
+  variable: "--font-bangla",
+  subsets: ["bengali"],
   weight: ["400", "500", "700"],
 });
 
@@ -133,13 +140,19 @@ const jsonLd = {
   }
 };
 
-export default function RootLayout({
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <meta name="google-site-verification" content="jMiToSCrGKGdzXOOrfgEHRCQTDORKrsaT3xPjHBRHQw" />
         {/* Bing/Edge verification - submit at bing.com/webmasters */}
@@ -158,20 +171,23 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico?v=2" />
       </head>
       <body
-        className={`${dmSans.variable} antialiased bg-background text-text font-body min-h-screen flex flex-col overflow-x-hidden`}
+        className={`${dmSans.variable} ${notoSansBengali.variable} antialiased bg-background text-text font-body min-h-screen flex flex-col overflow-x-hidden`}
       >
-        <Providers>
-          <SyntaxHighlighting />
-          <Toaster position="top-right" richColors />
-          <div className="flex-1 flex flex-col relative z-0">
-            <Navbar />
-            <main className="flex-1 pt-24 pb-12 px-4 container mx-auto relative z-10">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <Analytics />
-        </Providers>
+        <NextIntlClientProvider messages={messages}>
+          <Providers>
+            <SyntaxHighlighting />
+            <Toaster position="top-right" richColors />
+            <KeyboardShortcutsModal />
+            <div className="flex-1 flex flex-col relative z-0">
+              <Navbar />
+              <main className="flex-1 pt-24 pb-12 px-4 container mx-auto relative z-10">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <Analytics />
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

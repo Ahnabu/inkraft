@@ -1,0 +1,71 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "explore": "Explore",
+    "about": "About",
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "profile": "Profile",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "Common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "publish": "Publish",
+    "draft": "Draft",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "Editor": {
+    "title": "Title",
+    "content": "Content",
+    "excerpt": "Excerpt",
+    "category": "Category",
+    "tags": "Tags",
+    "coverImage": "Cover Image",
+    "publishPost": "Publish Post",
+    "saveDraft": "Save Draft",
+    "preview": "Preview",
+    "settings": "Settings",
+    "languageTabs": {
+      "english": "English",
+      "bangla": "বাংলা",
+      "addTranslation": "Add {language} Translation",
+      "missingTranslation": "No {language} content yet",
+      "switchLanguage": "Switch to {language}"
+    },
+    "guidelines": {
+      "title": "Multi-language Publishing Guide",
+      "step1": "Write your post in your primary language",
+      "step2": "Click the language tab to add translations",
+      "step3": "Fill in title, excerpt, and content for each language",
+      "step4": "Publish - all translations will be saved together",
+      "tip": "Translations are optional. Posts without translation will show in the original language."
+    }
+  },
+  "Post": {
+    "readMore": "Read More",
+    "readingTime": "{minutes} min read",
+    "publishedOn": "Published on {date}",
+    "author": "By {name}",
+    "share": "Share",
+    "export": "Export",
+    "availableIn": "Available in:",
+    "translationMissing": "This post is not yet available in {language}. Showing {fallback} version.",
+    "viewIn": "View in {language}"
+  },
+  "LanguageSwitcher": {
+    "switchLanguage": "Switch Language",
+    "currentLanguage": "Current: {language}"
+  },
+  "SEO": {
+    "defaultDescription": "Read high-quality articles on technology, programming, and innovation",
+    "postMetaTemplate": "{title} - {category} | Inkraft"
+  }
+}

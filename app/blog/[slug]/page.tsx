@@ -22,6 +22,7 @@ import { BlogPostClient } from "@/components/BlogPostClient";
 import { BlogContent } from "@/components/BlogContent";
 import { FeedbackWidget } from "@/components/reader/FeedbackWidget";
 import { SeriesNavigation } from "@/components/series/SeriesNavigation";
+import { BlogPostExporter } from "@/components/BlogPostExporter";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -448,10 +449,13 @@ export default async function BlogPostPage({ params }: PageProps) {
                                         {/* Share and Save Actions */}
                                         <div className="pt-4 flex items-center justify-between border-t border-border mt-6">
                                             <ShareButtons title={post.title} url={articleUrl} />
-                                            <SaveButton
-                                                postSlug={slug}
-                                                initialSaved={isSaved}
-                                            />
+                                            <div className="flex items-center gap-2">
+                                                <BlogPostExporter post={post} />
+                                                <SaveButton
+                                                    postSlug={slug}
+                                                    initialSaved={isSaved}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </GlassCard>
