@@ -22,5 +22,5 @@ export async function POST(req: Request) {
         prompt: `Context: ${context || "None"}\n\nTask: ${prompt}`,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
 }

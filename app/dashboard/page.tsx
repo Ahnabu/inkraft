@@ -59,6 +59,12 @@ async function getDashboardData(userId: string) {
     // BUT we can use virtuals or just fetching.
     // Let's just fetch notes for now. 
 
+    const savedPosts = userWithSaved?.savedPosts || [];
+    const publishedPosts = posts.filter((p: any) => p.published);
+    const draftPosts = posts.filter((p: any) => !p.published);
+    const totalUpvotes = posts.reduce((sum: number, p: any) => sum + (p.upvotes || 0), 0);
+    const totalComments = posts.reduce((sum: number, p: any) => sum + (p.commentCount || 0), 0);
+
     return {
         user: JSON.parse(JSON.stringify(userWithSaved)),
         posts: JSON.parse(JSON.stringify(posts)),
@@ -84,7 +90,7 @@ export default async function DashboardPage() {
         redirect("/auth/signin");
     }
 
-    const { user, posts, savedPosts, stats } = await getDashboardData(
+    const { user, posts, savedPosts, notes, stats } = await getDashboardData(
         session.user.id
     );
 

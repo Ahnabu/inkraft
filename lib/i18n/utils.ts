@@ -11,6 +11,7 @@ export interface PostTranslation {
 }
 
 export interface PostWithTranslations {
+    slug: string;
     locale: Locale;
     title: string;
     excerpt?: string;

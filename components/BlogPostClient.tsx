@@ -22,7 +22,7 @@ export function BlogPostClient({ children }: BlogPostClientProps) {
                         const event = new CustomEvent('toggle-notes-sidebar');
                         window.dispatchEvent(event);
                     }}
-                    variant="default"
+                    variant="ghost"
                     className="rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-all bg-indigo-600 hover:bg-indigo-700 text-white border-none ring-2 ring-indigo-600/20"
                     aria-label="Toggle notes"
                 >
