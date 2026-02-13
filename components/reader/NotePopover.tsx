@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { MessageSquarePlus, X, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface NotePopoverProps {
     paragraphId: string;
@@ -13,6 +14,8 @@ interface NotePopoverProps {
 }
 
 export function NotePopover({ paragraphId, selectionRect, onClose, onSave }: NotePopoverProps) {
+    const t = useTranslations("Notes");
+    const tCommon = useTranslations("Common");
     const [note, setNote] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -40,21 +43,24 @@ export function NotePopover({ paragraphId, selectionRect, onClose, onSave }: Not
     const top = selectionRect.top + window.scrollY - (mode === "menu" ? 50 : 100); // Adjust position based on height
     const left = selectionRect.left + window.scrollX + selectionRect.width / 2;
 
-    const handleCopy = () => {
+    const handleCopy = async () => {
         const selection = window.getSelection();
-        if (selection) {
-            // We need to get the HTML content. 
-            // Since we are in the browser, we can use a temporary element or the helper.
-            // But we can't import the helper easily if it uses 'turndown' which might be heavy?
-            // Actually, we can import it.
-            import("@/lib/utils/serialization").then(({ htmlToMarkdown, getSelectionHtml }) => {
-                const html = getSelectionHtml();
+        if (selection && selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            const div = document.createElement('div');
+            div.appendChild(range.cloneContents());
+            const html = div.innerHTML;
+
+            try {
+                const { htmlToMarkdown } = await import("@/lib/htmlToMarkdown");
                 const markdown = htmlToMarkdown(html);
-                navigator.clipboard.writeText(markdown).then(() => {
-                    toast.success("Copied as Markdown");
-                    onClose();
-                });
-            });
+                await navigator.clipboard.writeText(markdown);
+                toast.success(t("copied"));
+                onClose();
+            } catch (error) {
+                console.error("Failed to copy markdown", error);
+                toast.error(t("copyFailed"));
+            }
         }
     };
 
@@ -92,7 +98,7 @@ export function NotePopover({ paragraphId, selectionRect, onClose, onSave }: Not
                         className="h-8 px-2 text-xs flex items-center gap-1.5"
                     >
                         <MessageSquarePlus size={14} />
-                        Add Note
+                        {t("addNote")}
                     </Button>
                     <div className="w-px h-4 bg-border" />
                     <Button
@@ -102,13 +108,13 @@ export function NotePopover({ paragraphId, selectionRect, onClose, onSave }: Not
                         className="h-8 px-2 text-xs flex items-center gap-1.5"
                     >
                         <Copy size={14} />
-                        Copy MD
+                        {t("copyMarkdown")}
                     </Button>
                 </div>
             ) : (
                 <>
                     <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-semibold text-muted-foreground">Add Private Note</span>
+                        <span className="text-xs font-semibold text-muted-foreground">{t("addPrivateNote")}</span>
                         <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
                             <X size={14} />
                         </button>
@@ -118,7 +124,7 @@ export function NotePopover({ paragraphId, selectionRect, onClose, onSave }: Not
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
                         onMouseDown={(e) => e.stopPropagation()}
-                        placeholder="Type your private note here..."
+                        placeholder={t("typePlaceholder")}
                         className="w-full h-24 p-3 text-sm bg-muted/50 hover:bg-muted/80 transition-colors rounded-lg border-none focus:ring-2 focus:ring-primary/50 resize-none outline-none"
                     />
                     <div className="flex gap-2">
@@ -128,7 +134,7 @@ export function NotePopover({ paragraphId, selectionRect, onClose, onSave }: Not
                             onClick={() => setMode("menu")}
                             className="flex-1 text-xs"
                         >
-                            Back
+                            {tCommon("back")}
                         </Button>
                         <Button
                             size="sm"
@@ -136,7 +142,7 @@ export function NotePopover({ paragraphId, selectionRect, onClose, onSave }: Not
                             disabled={saving || !note.trim()}
                             className="flex-1 text-xs"
                         >
-                            {saving ? "Saving..." : "Save"}
+                            {saving ? tCommon("saving") : tCommon("save")}
                         </Button>
                     </div>
                 </>

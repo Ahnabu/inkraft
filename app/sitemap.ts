@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
+import Digest from "@/models/Digest";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
 import { getBaseUrl } from "@/lib/utils";
 
@@ -45,5 +46,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 1.0,
     }));
 
-    return [...staticRoutes, ...categoryRoutes, ...blogRoutes];
+    // Dynamic digests
+    const digests = await Digest.find({ published: true })
+        .select("slug updatedAt publishedAt")
+        .sort({ publishedAt: -1 })
+        .lean();
+
+    const digestRoutes = digests.map((digest) => ({
+        url: `${baseUrl}/digest/${digest.slug}`,
+        lastModified: new Date(digest.updatedAt || digest.publishedAt),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+    }));
+
+    // Add main digest page to static routes if not there, or appended here
+    const digestIndex = {
+        url: `${baseUrl}/digest`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+    };
+
+    return [...staticRoutes, ...categoryRoutes, ...blogRoutes, digestIndex, ...digestRoutes];
 }

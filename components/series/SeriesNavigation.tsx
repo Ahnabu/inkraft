@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, BookOpen, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface SeriesPost {
     _id: string;
@@ -21,6 +22,7 @@ interface SeriesNavigationProps {
 }
 
 export function SeriesNavigation({ series, className }: SeriesNavigationProps) {
+    const t = useTranslations("Series");
     const { title, slug, posts, currentIndex } = series;
     const totalParts = posts.length;
     const partNumber = currentIndex + 1;
@@ -38,7 +40,7 @@ export function SeriesNavigation({ series, className }: SeriesNavigationProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2 flex-wrap">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Series</span>
+                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("label")}</span>
                         <Link
                             href={`/series/${slug}`}
                             className="font-semibold text-foreground hover:text-primary transition-colors truncate"
@@ -48,7 +50,7 @@ export function SeriesNavigation({ series, className }: SeriesNavigationProps) {
                     </div>
                 </div>
                 <div className="text-xs font-medium bg-muted px-2 py-0.5 rounded-full whitespace-nowrap">
-                    Part {partNumber} of {totalParts}
+                    {t("partOf", { current: partNumber, total: totalParts })}
                 </div>
             </div>
 
@@ -61,7 +63,7 @@ export function SeriesNavigation({ series, className }: SeriesNavigationProps) {
                     >
                         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1 group-hover:text-primary transition-colors">
                             <ChevronLeft size={14} />
-                            <span>Previous: Part {currentIndex}</span>
+                            <span>{t("previousPart", { part: currentIndex })}</span>
                         </div>
                         <span className="text-sm font-medium line-clamp-1 group-hover:underline decoration-primary/50 underline-offset-4">
                             {prevPost.title}
@@ -69,8 +71,8 @@ export function SeriesNavigation({ series, className }: SeriesNavigationProps) {
                     </Link>
                 ) : (
                     <div className="p-3 rounded-lg border border-border/30 bg-muted/20 opacity-50 cursor-not-allowed">
-                        <span className="text-xs text-muted-foreground block mb-1">Previous</span>
-                        <span className="text-sm font-medium text-muted-foreground">Start of Series</span>
+                        <span className="text-xs text-muted-foreground block mb-1">{t("previous")}</span>
+                        <span className="text-sm font-medium text-muted-foreground">{t("start")}</span>
                     </div>
                 )}
 
@@ -80,7 +82,7 @@ export function SeriesNavigation({ series, className }: SeriesNavigationProps) {
                         className="group flex flex-col items-end p-3 rounded-lg border border-border/50 hover:bg-muted/50 transition-all text-right"
                     >
                         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1 group-hover:text-primary transition-colors">
-                            <span>Next: Part {currentIndex + 2}</span>
+                            <span>{t("nextPart", { part: currentIndex + 2 })}</span>
                             <ChevronRight size={14} />
                         </div>
                         <span className="text-sm font-medium line-clamp-1 group-hover:underline decoration-primary/50 underline-offset-4">
@@ -89,8 +91,8 @@ export function SeriesNavigation({ series, className }: SeriesNavigationProps) {
                     </Link>
                 ) : (
                     <div className="flex flex-col items-end p-3 rounded-lg border border-border/30 bg-muted/20 opacity-50 cursor-not-allowed text-right">
-                        <span className="text-xs text-muted-foreground block mb-1">Next</span>
-                        <span className="text-sm font-medium text-muted-foreground">Conclusion</span>
+                        <span className="text-xs text-muted-foreground block mb-1">{t("next")}</span>
+                        <span className="text-sm font-medium text-muted-foreground">{t("end")}</span>
                     </div>
                 )}
             </div>

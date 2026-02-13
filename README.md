@@ -29,15 +29,15 @@
 ### Phase 1: Reading Delight
 - **Focus Mode**: Distraction-free reading with a single click.
 - **Reading Progress**: Remembers exactly where you left off in every article.
-- **Smart Table of Contents**: Auto-generated, sticky navigation for long posts.
 - **Calm Editor**: A zen-like writing experience with no clutter.
 - **Draft Recovery**: Never lose your work with local draft saving.
 
 ### Phase 2: Engagement
+- **Reputation Badges**: Trust scores (Newcomer, Contributor, Trusted, Expert) visible on profiles and comments.
 - **Inline Notes**: Add private notes to any paragraph for deep study.
-- **Selection Sharing**: Highlight text to copy as clean Markdown or share quotes.
+- **Copy as Markdown**: Select text to instantly copy as clean formatted Markdown.
 - **Difficulty Badges**: Know if a post is Beginner, Intermediate, or Advanced.
-- **True Reading Time**: Accurate estimates including images and code blocks.
+- **Smart TOC**: Auto-generated sticky table of contents with mobile slide-up navigation.
 - **Silent Feedback**: Let authors know if a post was helpful, clear, or needs more detail.
 
 ### Phase 3: Discovery & Retention
@@ -1316,18 +1316,18 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 **Coming Soon:**
 - [ ] Email notifications for comments
 - [ ] Advanced search with Algolia
-- [ ] Multi-language support (i18n)
 - [ ] Newsletter integration
 - [ ] Monetization features (paid posts)
 - [ ] Mobile app (React Native)
-- [ ] AI writing assistant
 - [ ] Advanced analytics (cohort analysis)
 
-**In Progress:**
+**In Progress / Completed:**
 - [x] Geographic analytics ✅
 - [x] SEO optimization ✅
 - [x] Responsive design ✅
 - [x] Admin panel ✅
+- [x] AI writing assistant ✅
+- [x] Multi-language support (i18n) (Partial)
 
 ---
 

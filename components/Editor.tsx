@@ -48,10 +48,12 @@ import {
     Maximize,
     Minimize,
     Settings,
+    Sparkles,
 } from "lucide-react";
 import { SEOPanel } from "@/components/editor/SEOPanel";
 import { SocialPreview } from "@/components/editor/SocialPreview";
 import { AIBubbleMenu } from "@/components/editor/AIBubbleMenu";
+import { AIAssistant } from "@/components/editor/AIAssistant";
 import {
     Sheet,
     SheetContent,
@@ -90,12 +92,14 @@ export function Editor({
     onAutoSave,
     placeholder = "Start writing your story...",
     initialSeo,
-    onSeoChange
-}: EditorProps) {
+    onSeoChange,
+    postId
+}: EditorProps & { postId?: string }) {
     const autoSaveInterval = useRef<NodeJS.Timeout | null>(null);
     const [showImageUpload, setShowImageUpload] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
     const [isCalmMode, setIsCalmMode] = useState(false);
+    const [showAIAssistant, setShowAIAssistant] = useState(false);
 
     // SEO State
     const [seoData, setSeoData] = useState<SeoData>({
@@ -124,6 +128,10 @@ export function Editor({
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isCalmMode]);
+
+    // AI Assistant
+    // We need to pass the editor instance to the assistant
+    // The editor instance is available in the render scope via the `editor` constant below
 
     const editor = useEditor({
         extensions: [
@@ -462,6 +470,19 @@ export function Editor({
                 <div className="w-px h-6 bg-border mx-1" />
                 <div className="w-px h-6 bg-border mx-1" />
 
+                <button
+                    onClick={() => setShowAIAssistant(!showAIAssistant)}
+                    className={cn(
+                        "p-2 rounded-lg hover:bg-muted transition-colors text-purple-600 dark:text-purple-400",
+                        showAIAssistant && "bg-purple-100 dark:bg-purple-900/30"
+                    )}
+                    title="AI Assistant"
+                >
+                    <Sparkles size={18} />
+                </button>
+
+                <div className="w-px h-6 bg-border mx-1" />
+
                 {/* SEO Settings */}
                 <Sheet>
                     <SheetTrigger asChild>
@@ -533,6 +554,12 @@ export function Editor({
                 >
                     <LinkIcon size={16} />
                 </button>
+                <button
+                    onClick={() => setShowAIAssistant(true)}
+                    className="p-1.5 rounded hover:bg-muted transition-colors text-purple-600 dark:text-purple-400"
+                >
+                    <Sparkles size={16} />
+                </button>
             </BubbleMenu>
 
             {/* Floating Menu - appears on empty lines */}
@@ -557,7 +584,13 @@ export function Editor({
                 </button>
             </FloatingMenu>
 
-            {editor && <AIBubbleMenu editor={editor} />}
+            <AIAssistant
+                editor={editor}
+                isOpen={showAIAssistant}
+                onClose={() => setShowAIAssistant(false)}
+                postId={postId || "new-post"} // Fallback for new posts (quota will track "new-post" temporarily)
+            />
+
             {/* Editor Content */}
             <div className={cn(
                 "prose-editor glass-card rounded-lg border border-border/40 min-h-[500px]",

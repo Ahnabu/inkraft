@@ -89,6 +89,12 @@ body {
   overflow-x: hidden;
 }
 
+/* Optimize typography for Bangla */
+html[lang="bn"] body {
+  font-family: var(--font-bangla), var(--font-body), sans-serif;
+  line-height: 1.8;
+}
+
 /* Responsive Typography */
 @layer base {
   h1 {

@@ -53,6 +53,9 @@ export async function POST(req: Request) {
             return new NextResponse("Slug already exists", { status: 409 });
         }
 
+        // Calculate reading time server-side
+        const calculatedReadingTime = calculateReadingTime(content);
+
         // Create post
         const post = await Post.create({
             title,
@@ -64,7 +67,7 @@ export async function POST(req: Request) {
             category,
             tags: tags || [],
             difficultyLevel,
-            readingTime: readingTime || 5,
+            readingTime: calculatedReadingTime,
             published,
             author: authorId as string,
             publishedAt: published ? new Date() : undefined,

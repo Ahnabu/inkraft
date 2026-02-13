@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Clock, MessageSquare, ArrowUp, User, Eye, Flame, Award, TrendingUp, Info, Sparkles } from "lucide-react";
+import { DifficultyBadge } from "@/components/DifficultyBadge";
 
 interface ArticleCardProps {
     post: {
@@ -13,6 +14,7 @@ interface ArticleCardProps {
         excerpt: string;
         coverImage?: string;
         category: string;
+        difficultyLevel?: "Beginner" | "Intermediate" | "Advanced";
         author: {
             _id: string;
             name: string;
@@ -142,10 +144,11 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="px-2 py-0.5 bg-muted text-foreground text-xs font-medium rounded">
                             {post.category}
                         </span>
+                        {post.difficultyLevel && <DifficultyBadge level={post.difficultyLevel} size="sm" />}
                     </div>
                     <h3 className="font-bold text-base sm:text-lg line-clamp-2 sm:line-clamp-1 group-hover:text-primary transition-colors">
                         {post.title}
@@ -208,6 +211,7 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                         <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
                             {post.category}
                         </span>
+                        {post.difficultyLevel && <DifficultyBadge level={post.difficultyLevel} size="sm" />}
                         {post.editorsPick && (
                             <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-amber-500 text-white text-xs font-semibold rounded-full flex items-center gap-1">
                                 <Award size={12} />

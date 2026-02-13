@@ -20,11 +20,84 @@
     "search": "Search",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "back": "Back",
+    "saving": "Saving...",
+    "validationError": "Please fill in all required fields"
+  },
+  "Notes": {
+    "addNote": "Add Note",
+    "copyMarkdown": "Copy MD",
+    "addPrivateNote": "Add Private Note",
+    "typePlaceholder": "Type your private note here...",
+    "myNotes": "My Notes",
+    "generalNotePlaceholder": "Add a general note for this post...",
+    "loadingNotes": "Loading notes...",
+    "noNotes": "No notes yet.",
+    "highlightTip": "Highlight text to add a private note.",
+    "contextualNote": "Contextual Note",
+    "generalNote": "General Note",
+    "privateDisclaimer": "Notes are private and visible only to you.",
+    "copied": "Copied as Markdown",
+    "copyFailed": "Failed to copy",
+    "noteDeleted": "Note deleted",
+    "deleteFailed": "Failed to delete note",
+    "noteAdded": "Note added",
+    "addFailed": "Failed to add note",
+    "noteUpdated": "Note updated",
+    "updateFailed": "Failed to update note"
+  },
+  "Follow": {
+    "follow": "Follow",
+    "following": "Following",
+    "loginRequired": "Please login to follow authors",
+    "followed": "Followed successfully",
+    "unfollowed": "Unfollowed successfully",
+    "error": "Something went wrong"
+  },
+  "Series": {
+    "label": "Series",
+    "partOf": "Part {current} of {total}",
+    "previousPart": "Previous: Part {part}",
+    "nextPart": "Next: Part {part}",
+    "previous": "Previous",
+    "next": "Next",
+    "start": "Start of Series",
+    "end": "Conclusion"
+  },
+  "Draft": {
+    "found": "Unsaved draft found",
+    "lastSaved": "Last saved: {date}",
+    "restore": "Restore",
+    "restored": "Draft restored!",
+    "save": "Save as Draft",
+    "saved": "Draft saved!"
   },
   "Editor": {
     "title": "Title",
     "content": "Content",
+    "newArticleTitle": "Write a New Article",
+    "newArticleSubtitle": "Share your knowledge with the Inkraft community",
+    "titlePlaceholder": "Article Title",
+    "subtitlePlaceholder": "Subtitle (optional)",
+    "contentPlaceholder": "Start writing your story...",
+    "settingsTitle": "Post Settings",
+    "slugLabel": "URL Slug",
+    "categoryLabel": "Category",
+    "selectCategory": "Select a category",
+    "tagsLabel": "Tags (comma-separated)",
+    "difficultyLabel": "Difficulty Level",
+    "selectDifficulty": "Select difficulty",
+    "publishToLabel": "Publish to Publication",
+    "noPublication": "None (Personal Blog)",
+    "publicationHelp": "Hosting this story on a publication?",
+    "coverImageLabel": "Cover Image",
+    "coverImagePlaceholder": "https://... or upload below",
+    "or": "or",
+    "publishing": "Publishing...",
+    "publishNow": "Publish Now",
+    "saving": "Saving...",
+    "publishSuccess": "Post published successfully!",
     "excerpt": "Excerpt",
     "category": "Category",
     "tags": "Tags",
@@ -64,8 +137,74 @@
     "switchLanguage": "Switch Language",
     "currentLanguage": "Current: {language}"
   },
+  "difficulty": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "tooltip": "{level} level content",
+    "selectLevel": "Select difficulty level",
+    "optional": "Optional - helps readers choose content"
+  },
+  "resumeReading": {
+    "title": "Continue reading?",
+    "description": "You were {progress} through this article",
+    "resume": "Resume reading",
+    "dismiss": "Start over"
+  },
+  "focusMode": {
+    "title": "Reading Preferences",
+    "close": "Close controls",
+    "fontSizeLabel": "Font Size",
+    "lineHeightLabel": "Line Spacing",
+    "themeLabel": "Theme",
+    "fontSize": {
+      "small": "S",
+      "medium": "M",
+      "large": "L",
+      "xlarge": "XL"
+    },
+    "lineHeight": {
+      "compact": "Compact",
+      "normal": "Normal",
+      "relaxed": "Relaxed"
+    },
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "sepia": "Sepia"
+    }
+  },
+  "reputation": {
+    "newcomer": "New Author",
+    "contributor": "Contributor",
+    "trusted": "Trusted Author",
+    "expert": "Expert",
+    "tooltip": "Based on community trust score"
+  },
+  "SilentFeedback": {
+    "title": "Was this article helpful?",
+    "subtitle": "Your feedback helps us improve our content.",
+    "helpful": "Helpful",
+    "clear": "Clear",
+    "moreDetail": "Need More Detail",
+    "thankYou": "Thank you for your feedback!",
+    "alreadySubmitted": "You already submitted feedback for this post.",
+    "error": "Failed to submit feedback. Please try again.",
+    "feedbackSaved": "Feedback saved anonymously."
+  },
   "SEO": {
     "defaultDescription": "Read high-quality articles on technology, programming, and innovation",
     "postMetaTemplate": "{title} - {category} | Inkraft"
+  },
+  "Digest": {
+    "title": "Weekly Digests",
+    "subtitle": "Hand-picked stories and highlights from our editors.",
+    "readDigest": "Read Digest",
+    "editorsPicks": "Editor's Picks",
+    "weeklyStories": "This Week's Stories",
+    "publishedOn": "Published on {date}",
+    "backToDigests": "Back to Digests",
+    "noDigests": "No digests published yet. Check back soon!",
+    "moreStories": "+ {count} more stories"
   }
 }

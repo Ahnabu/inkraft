@@ -41,7 +41,7 @@ export async function GET(
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .populate("author", "name image")
+            .populate("author", "name image trustScore")
             .lean();
 
         // Fetch replies for each top-level comment (depth 1)
@@ -53,7 +53,7 @@ export async function GET(
                     moderationStatus: { $ne: "rejected" },
                 })
                     .sort({ createdAt: 1 })
-                    .populate("author", "name image")
+                    .populate("author", "name image trustScore")
                     .lean();
 
                 return {
@@ -238,7 +238,7 @@ export async function POST(
 
         // Populate author for response
         const populatedComment = await Comment.findById(comment._id)
-            .populate("author", "name image")
+            .populate("author", "name image trustScore")
             .lean();
 
         return NextResponse.json({
@@ -367,7 +367,7 @@ export async function PUT(
         await comment.save();
 
         const populatedComment = await Comment.findById(comment._id)
-            .populate("author", "name image")
+            .populate("author", "name image trustScore")
             .lean();
 
         return NextResponse.json({

@@ -21,6 +21,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
     const [saving, setSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
     const [originalSlug, setOriginalSlug] = useState("");
+    const [postId, setPostId] = useState("");
 
     // Post fields
     const [title, setTitle] = useState("");
@@ -53,6 +54,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
 
                 const post = await response.json();
 
+                setPostId(post._id);
                 setTitle(post.title);
                 setSubtitle(post.subtitle || "");
                 setContent(post.content);
@@ -248,6 +250,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                             canonical: newSeo.canonical || "",
                             ogImage: newSeo.ogImage || "",
                         })}
+                        postId={postId}
                     />
                 </div>
 

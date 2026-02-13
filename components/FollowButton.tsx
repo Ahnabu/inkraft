@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface FollowButtonProps {
     targetUserId: string;
@@ -13,6 +14,7 @@ interface FollowButtonProps {
 }
 
 export default function FollowButton({ targetUserId, isFollowing: initialIsFollowing }: FollowButtonProps) {
+    const t = useTranslations("Follow");
     const [isPending, startTransition] = useTransition();
     const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
 
@@ -21,7 +23,7 @@ export default function FollowButton({ targetUserId, isFollowing: initialIsFollo
 
     const handleFollowToggle = () => {
         if (!session) {
-            toast.error("Please login to follow authors");
+            toast.error(t("loginRequired"));
             router.push("/auth/signin");
             return;
         }
@@ -33,14 +35,14 @@ export default function FollowButton({ targetUserId, isFollowing: initialIsFollo
             try {
                 if (previousState) {
                     await unfollowUser(targetUserId);
-                    toast.success("Unfollowed successfully");
+                    toast.success(t("unfollowed"));
                 } else {
                     await followUser(targetUserId);
-                    toast.success("Followed successfully");
+                    toast.success(t("followed"));
                 }
             } catch (error) {
                 setIsFollowing(previousState);
-                toast.error("Something went wrong");
+                toast.error(t("error"));
                 console.error(error);
             }
         });
@@ -58,9 +60,9 @@ export default function FollowButton({ targetUserId, isFollowing: initialIsFollo
             {isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
             ) : isFollowing ? (
-                "Following"
+                t("following")
             ) : (
-                "Follow"
+                t("follow")
             )}
         </button>
     );

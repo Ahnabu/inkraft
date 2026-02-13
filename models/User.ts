@@ -22,6 +22,8 @@ export interface IUser extends Document {
     following: mongoose.Types.ObjectId[];
     followedCategories: string[];
     isSavedPostsPublic: boolean;
+    aiAllowance: number;
+    aiUsedPostIds: string[];
     trustFrozen?: boolean;
     trustFrozenAt?: Date;
     trustFrozenBy?: string;
@@ -107,6 +109,13 @@ const UserSchema: Schema<IUser> = new Schema(
             type: Boolean,
             default: false,
         },
+        aiAllowance: {
+            type: Number,
+            default: 5,
+        },
+        aiUsedPostIds: [{
+            type: String,
+        }],
     },
     { timestamps: true }
 );

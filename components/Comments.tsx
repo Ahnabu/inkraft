@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { MessageSquare, Send, Loader2, User, Reply, AlertCircle, Trash2, MoreVertical, Pencil, ShieldAlert } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { canUseFeature } from "@/lib/trust";
+import { ReputationBadge } from "@/components/ReputationBadge";
 import { GlassCard } from "./ui/GlassCard";
 import { Button } from "./ui/Button";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ interface Comment {
         _id: string;
         name: string;
         image?: string;
+        trustScore?: number;
     };
     createdAt: string;
     edited?: boolean;
@@ -185,6 +187,9 @@ export function Comments({ postSlug }: CommentsProps) {
                             >
                                 {comment.author?.name || "Anonymous"}
                             </Link>
+                            {comment.author?.trustScore && (
+                                <ReputationBadge score={comment.author.trustScore} size="sm" showLabel={false} />
+                            )}
                             <span className="text-xs text-muted-foreground">
                                 {new Date(comment.createdAt).toLocaleDateString("en-US", {
                                     year: "numeric",

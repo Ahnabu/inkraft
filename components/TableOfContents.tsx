@@ -1,55 +1,8 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-
-interface Heading {
-    id: string;
-    text: string;
-    level: number;
-}
+import { useHeadings } from "@/lib/hooks/useHeadings";
 
 export function TableOfContents() {
-    const [headings, setHeadings] = useState<Heading[]>([]);
-    const [activeId, setActiveId] = useState<string>("");
-
-    useEffect(() => {
-        // Parse headings from the article content
-        const elements = Array.from(document.querySelectorAll("article h2, article h3"));
-        const headingsData = elements.map((elem, index) => {
-            // Ensure element has an ID
-            if (!elem.id) {
-                elem.id = `heading-${index}`;
-            }
-            return {
-                id: elem.id,
-                text: elem.textContent || "",
-                level: Number(elem.tagName.substring(1))
-            };
-        });
-
-        // Update headings state with parsed data
-        // This is synchronizing with external DOM state after mount which is intentional
-        // We move the update outside the conditional to avoid the eslint error
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setHeadings(headingsData);
-
-        // Scroll spy
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        setActiveId(entry.target.id);
-                    }
-                });
-            },
-            { rootMargin: "0px 0px -80% 0px" }
-        );
-
-        elements.forEach((elem) => observer.observe(elem));
-
-        return () => observer.disconnect();
-    }, []);
+    const { headings, activeId, setActiveId } = useHeadings();
 
     if (headings.length === 0) return null;
 

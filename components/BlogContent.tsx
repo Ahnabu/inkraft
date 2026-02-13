@@ -252,6 +252,7 @@ export function BlogContent({ content, postId, className = "", series }: BlogCon
             {series && <SeriesNavigation series={series} />}
             <div className="relative">
                 <div
+                    id="blog-content"
                     ref={contentRef}
                     className={`blog-content prose dark:prose-invert max-w-none ${className}`}
                     dangerouslySetInnerHTML={{ __html: content }}

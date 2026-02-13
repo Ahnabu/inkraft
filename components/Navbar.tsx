@@ -19,7 +19,22 @@ export function Navbar() {
     const { data: session } = useSession();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { setTheme, theme } = useTheme();
-    const { isFocusMode, toggleFocusMode, fontSize, setFocusFontSize } = useFocusMode();
+    const { isFocusMode, toggleFocusMode, fontSize, setFontSize } = useFocusMode();
+
+    const fontSizes = ["small", "medium", "large", "xlarge"] as const;
+    const currentSizeIndex = fontSizes.indexOf(fontSize as any);
+
+    const decreaseFontSize = () => {
+        if (currentSizeIndex > 0) {
+            setFontSize(fontSizes[currentSizeIndex - 1]);
+        }
+    };
+
+    const increaseFontSize = () => {
+        if (currentSizeIndex < fontSizes.length - 1) {
+            setFontSize(fontSizes[currentSizeIndex + 1]);
+        }
+    };
 
     const navItems = [
         { name: "Home", href: "/" },
@@ -33,22 +48,22 @@ export function Navbar() {
                 {/* Font Size Controls */}
                 <div className="flex items-center gap-1 bg-background/50 backdrop-blur-md rounded-full border border-border shadow-sm p-1">
                     <button
-                        onClick={() => setFocusFontSize(fontSize - 2)}
-                        className="p-2 rounded-full hover:bg-background transition-colors text-muted-foreground hover:text-foreground"
+                        onClick={decreaseFontSize}
+                        className="p-2 rounded-full hover:bg-background transition-colors text-muted-foreground hover:text-foreground disabled:opacity-50"
                         title="Decrease font size"
-                        disabled={fontSize <= 14}
+                        disabled={currentSizeIndex <= 0}
                     >
                         <Minus size={16} />
                     </button>
                     <div className="flex items-center gap-1.5 px-1 min-w-[3rem] justify-center">
                         <Type size={16} className="text-muted-foreground" />
-                        <span className="text-sm font-medium">{fontSize}</span>
+                        <span className="text-sm font-medium capitalize">{fontSize}</span>
                     </div>
                     <button
-                        onClick={() => setFocusFontSize(fontSize + 2)}
-                        className="p-2 rounded-full hover:bg-background transition-colors text-muted-foreground hover:text-foreground"
+                        onClick={increaseFontSize}
+                        className="p-2 rounded-full hover:bg-background transition-colors text-muted-foreground hover:text-foreground disabled:opacity-50"
                         title="Increase font size"
-                        disabled={fontSize >= 32}
+                        disabled={currentSizeIndex >= fontSizes.length - 1}
                     >
                         <Plus size={16} />
                     </button>

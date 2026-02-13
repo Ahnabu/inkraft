@@ -1,40 +1,50 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { headers } from "next/headers";
+import crypto from "crypto";
 import dbConnect from "@/lib/mongodb";
-import Feedback from "@/lib/models/Feedback";
-import Post from "@/models/Post";
+import Feedback from "@/models/Feedback";
+import mongoose from "mongoose";
 
 export async function POST(req: Request) {
     try {
-        const session = await auth();
         await dbConnect();
 
         const body = await req.json();
         const { postId, type } = body;
 
-        if (!postId || !type) {
-            return new NextResponse("Missing required fields", { status: 400 });
+        if (!postId || !["helpful", "clear", "more_detail"].includes(type)) {
+            return new NextResponse("Invalid request", { status: 400 });
         }
 
-        const userId = session?.user?.id;
-        // Simple session ID handling for anonymous users could be done via cookies,
-        // but for this implementation we'll require login or just track by userId if available.
-        // If not logged in, we'll just skip saving for now to prevent spam, or we could generate a temp ID.
-        // Let's require login for quality for now, or use a client-generated ID if we really want anaon.
-        // The implementation plan implies "Quality signal", so requiring auth is safer.
+        // Generate IP hash for rate limiting / uniqueness
+        const headersList = await headers();
+        const ip = headersList.get("x-forwarded-for") || "unknown";
+        const ipHash = crypto
+            .createHash("sha256")
+            .update(ip + (process.env.IP_SALT || "salt"))
+            .digest("hex");
 
-        if (!userId) {
-            return new NextResponse("Unauthorized", { status: 401 });
+        // Check for existing feedback from this IP
+        const existing = await Feedback.findOne({
+            post: postId,
+            type,
+            ipHash
+        });
+
+        if (existing) {
+            // If already exists, we could toggle it off if we wanted, 
+            // but for simple feedback, let's just return success (idempotent) or 409.
+            // Let's return success to not confuse the UI if they click again.
+            return NextResponse.json({ success: true, message: "Feedback already received" });
         }
 
-        // Upsert feedback
-        const feedback = await Feedback.findOneAndUpdate(
-            { postId, userId },
-            { type },
-            { upsert: true, new: true }
-        );
+        await Feedback.create({
+            post: postId,
+            type,
+            ipHash
+        });
 
-        return NextResponse.json(feedback);
+        return NextResponse.json({ success: true });
 
     } catch (error) {
         console.error("[FEEDBACK_POST]", error);
@@ -53,31 +63,26 @@ export async function GET(req: Request) {
 
         await dbConnect();
 
-        // Aggregate counts
-        const stats = await Feedback.aggregate([
-            { $match: { postId: new mongoose.Types.ObjectId(postId) } },
-            { $group: { _id: "$type", count: { $sum: 1 } } }
-        ]);
+        // Check if current user (via IP) has given feedback
+        const headersList = await headers();
+        const ip = headersList.get("x-forwarded-for") || "unknown";
+        const ipHash = crypto
+            .createHash("sha256")
+            .update(ip + (process.env.IP_SALT || "salt"))
+            .digest("hex");
 
-        const result = {
-            helpful: 0,
-            clear: 0,
-            "needs-more": 0
-        };
+        const userFeedback = await Feedback.find({
+            post: postId,
+            ipHash
+        }).select("type").lean();
 
-        stats.forEach((stat: { _id: "helpful" | "clear" | "needs-more", count: number }) => {
-            result[stat._id] = stat.count;
+        // Since we are anonymous, "stats" might be overkill to return to public API 
+        // if we want to keep it "Silent". 
+        // But maybe the user wants to see their own state.
+
+        return NextResponse.json({
+            userFeedback: userFeedback.map((f: any) => f.type)
         });
-
-        // Check if current user has given feedback
-        const session = await auth();
-        let userFeedback = null;
-        if (session?.user?.id) {
-            const fb = await Feedback.findOne({ postId, userId: session.user.id });
-            if (fb) userFeedback = fb.type;
-        }
-
-        return NextResponse.json({ stats: result, userFeedback });
 
     } catch (error) {
         console.error("[FEEDBACK_GET]", error);
@@ -85,4 +90,3 @@ export async function GET(req: Request) {
     }
 }
 
-import mongoose from "mongoose";

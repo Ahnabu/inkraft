@@ -4,27 +4,27 @@ import { useState, useEffect } from "react";
 
 export function useReadingProgress(slug: string, meta?: { title: string; coverImage?: string; category: string; author: { name: string; image?: string }; readingTime: number }) {
     const [readingProgress, setReadingProgress] = useState(0);
-    const [hasRestored, setHasRestored] = useState(false);
+    const [savedProgress, setSavedProgress] = useState<number | null>(null);
+
+    // Function to manually resume reading at saved position
+    const resumeScroll = () => {
+        if (savedProgress && savedProgress > 0) {
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const targetScroll = (savedProgress / 100) * docHeight;
+            if (targetScroll > 0) {
+                window.scrollTo({ top: targetScroll, behavior: "smooth" });
+            }
+        }
+    };
 
     useEffect(() => {
         if (!slug) return;
 
-        // Restore scroll position
+        // Check for saved progress but DON'T auto-scroll
         const saved = localStorage.getItem(`reading_progress_${slug}`);
-        if (saved && !hasRestored) {
+        if (saved) {
             const percentage = parseFloat(saved);
-            if (percentage > 0) {
-                // Small delay to allow content to load
-                setTimeout(() => {
-                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-                    const targetScroll = (percentage / 100) * docHeight;
-                    if (targetScroll > 0) {
-                        window.scrollTo({ top: targetScroll, behavior: "smooth" });
-                        // Show a toast or indicator? Maybe later.
-                    }
-                }, 500);
-                setHasRestored(true);
-            }
+            setSavedProgress(percentage);
         }
 
         // Debounce save function
@@ -77,7 +77,7 @@ export function useReadingProgress(slug: string, meta?: { title: string; coverIm
             window.removeEventListener("scroll", updateProgress);
             clearTimeout(timeoutId);
         };
-    }, [slug, hasRestored]);
+    }, [slug]);
 
-    return readingProgress;
+    return { progress: readingProgress, savedProgress, resumeScroll };
 }

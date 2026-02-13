@@ -11,8 +11,12 @@ import { Loader2, Save } from "lucide-react";
 import { ImageUploadButton } from "@/components/ImageUploadButton";
 import { toast } from "sonner";
 import { useDraftRestoration } from "@/lib/hooks/useDraftRestoration";
+import { useTranslations } from "next-intl";
 
 export default function NewPostPage() {
+    const t = useTranslations("Editor");
+    const tDraft = useTranslations("Draft");
+    const tCommon = useTranslations("Common");
     const router = useRouter();
     const [title, setTitle] = useState("");
     const [subtitle, setSubtitle] = useState("");
@@ -34,6 +38,14 @@ export default function NewPostPage() {
 
     const [loading, setLoading] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const [draftId, setDraftId] = useState("");
+
+    useEffect(() => {
+        // Generate a stable ID for this draft session if not restoring
+        // We can reuse the localStorage key logic or just create a random one
+        // Ideally we persist this draftId in the saved draft
+        setDraftId(`draft-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+    }, []);
 
     // Publication logic
     const [publication, setPublication] = useState("");
@@ -73,6 +85,7 @@ export default function NewPostPage() {
             ogImage: ""
         });
         setPublication(draft.publication || "");
+        if (draft.draftId) setDraftId(draft.draftId);
     });
 
     const handleAutoSave = useCallback(async () => {
@@ -89,6 +102,7 @@ export default function NewPostPage() {
             seoData,
             publication,
             savedAt: new Date().toISOString(),
+            draftId,
         };
         localStorage.setItem("inkraft-draft", JSON.stringify(draft));
         setLastSaved(new Date());
@@ -96,12 +110,12 @@ export default function NewPostPage() {
 
     const handlePublish = async (publishNow: boolean) => {
         if (!title || !content || !slug || !category) {
-            toast.error("Please fill in title, content, slug, and category");
+            toast.error(tCommon("validationError") || "Please fill in title, content, slug, and category");
             return;
         }
 
         setLoading(true);
-        toast.loading(publishNow ? "Publishing your post..." : "Saving as draft...", {
+        toast.loading(publishNow ? t("publishing") : t("saving"), {
             id: "publish-post",
         });
 
@@ -138,7 +152,7 @@ export default function NewPostPage() {
             localStorage.removeItem("inkraft-draft");
 
             const post = await response.json();
-            toast.success(publishNow ? "Post published successfully!" : "Draft saved!", {
+            toast.success(publishNow ? t("publishSuccess") : tDraft("saved"), {
                 id: "publish-post",
             });
 
@@ -158,15 +172,15 @@ export default function NewPostPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold">Write a New Article</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold">{t("newArticleTitle")}</h1>
                     <p className="text-muted-foreground mt-1 text-sm md:text-base">
-                        Share your knowledge with the Inkraft community
+                        {t("newArticleSubtitle")}
                     </p>
                 </div>
                 {lastSaved && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full self-start md:self-auto">
                         <Save size={14} />
-                        <span>Saved {lastSaved.toLocaleTimeString()}</span>
+                        <span>{tDraft("lastSaved", { date: lastSaved.toLocaleTimeString() })}</span>
                     </div>
                 )}
             </div>
@@ -180,14 +194,14 @@ export default function NewPostPage() {
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Article Title"
+                            placeholder={t("titlePlaceholder")}
                             className="w-full text-2xl md:text-4xl font-bold bg-transparent border-none focus:outline-none placeholder:text-muted-foreground"
                         />
                         <input
                             type="text"
                             value={subtitle}
                             onChange={(e) => setSubtitle(e.target.value)}
-                            placeholder="Subtitle (optional)"
+                            placeholder={t("subtitlePlaceholder")}
                             className="w-full text-xl text-muted-foreground bg-transparent border-none focus:outline-none placeholder:text-muted-foreground"
                         />
                     </GlassCard>
@@ -197,7 +211,7 @@ export default function NewPostPage() {
                         content={content}
                         onChange={setContent}
                         onAutoSave={handleAutoSave}
-                        placeholder="Start writing your story..."
+                        placeholder={t("contentPlaceholder")}
                         initialSeo={seoData}
                         onSeoChange={(newSeo) => setSeoData({
                             title: newSeo.title || "",
@@ -206,6 +220,7 @@ export default function NewPostPage() {
                             canonical: newSeo.canonical || "",
                             ogImage: newSeo.ogImage || "",
                         })}
+                        postId={draftId}
                     />
                 </div>
 
@@ -214,12 +229,12 @@ export default function NewPostPage() {
                     {/* SEO Panel */}
                     {/* Post Settings */}
                     <GlassCard className="space-y-4">
-                        <h3 className="font-bold">Post Settings</h3>
+                        <h3 className="font-bold">{t("settingsTitle")}</h3>
 
                         {/* Slug */}
                         <div>
                             <label className="block text-sm font-medium mb-2">
-                                URL Slug
+                                {t("slugLabel")}
                             </label>
                             <div className="flex items-center gap-2">
                                 <span className="text-sm text-muted-foreground">/blog/</span>
@@ -236,14 +251,14 @@ export default function NewPostPage() {
                         {/* Category */}
                         <div>
                             <label className="block text-sm font-medium mb-2">
-                                Category *
+                                {t("categoryLabel")} *
                             </label>
                             <select
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
                                 className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             >
-                                <option value="">Select a category</option>
+                                <option value="">{t("selectCategory")}</option>
                                 {DEFAULT_CATEGORIES.map((cat) => (
                                     <option key={cat.slug} value={cat.slug}>
                                         {cat.name}
@@ -255,7 +270,7 @@ export default function NewPostPage() {
                         {/* Tags */}
                         <div>
                             <label className="block text-sm font-medium mb-2">
-                                Tags (comma-separated)
+                                {t("tagsLabel")}
                             </label>
                             <input
                                 type="text"
@@ -269,14 +284,14 @@ export default function NewPostPage() {
                         {/* Difficulty Level */}
                         <div>
                             <label className="block text-sm font-medium mb-2">
-                                Difficulty Level
+                                {t("difficultyLabel")}
                             </label>
                             <select
                                 value={difficultyLevel}
                                 onChange={(e) => setDifficultyLevel(e.target.value as any)}
                                 className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             >
-                                <option value="">Select difficulty</option>
+                                <option value="">{t("selectDifficulty")}</option>
                                 <option value="Beginner">Beginner</option>
                                 <option value="Intermediate">Intermediate</option>
                                 <option value="Advanced">Advanced</option>
@@ -286,14 +301,14 @@ export default function NewPostPage() {
                         {/* Publication Selector */}
                         <div>
                             <label className="block text-sm font-medium mb-2">
-                                Publish to Publication
+                                {t("publishToLabel")}
                             </label>
                             <select
                                 value={publication}
                                 onChange={(e) => setPublication(e.target.value)}
                                 className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             >
-                                <option value="">None (Personal Blog)</option>
+                                <option value="">{t("noPublication")}</option>
                                 {userPublications.map((pub) => (
                                     <option key={pub._id} value={pub._id}>
                                         {pub.name}
@@ -301,26 +316,26 @@ export default function NewPostPage() {
                                 ))}
                             </select>
                             <p className="text-xs text-muted-foreground mt-1">
-                                Hosting this story on a publication?
+                                {t("publicationHelp")}
                             </p>
                         </div>
 
                         {/* Cover Image */}
                         <div>
                             <label className="block text-sm font-medium mb-2">
-                                Cover Image
+                                {t("coverImageLabel")}
                             </label>
                             <div className="space-y-2">
                                 <input
                                     type="url"
                                     value={coverImage}
                                     onChange={(e) => setCoverImage(e.target.value)}
-                                    placeholder="https://... or upload below"
+                                    placeholder={t("coverImagePlaceholder")}
                                     className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                                 />
                                 <div className="flex items-center gap-2">
                                     <div className="flex-1 border-t border-border"></div>
-                                    <span className="text-xs text-muted-foreground">or</span>
+                                    <span className="text-xs text-muted-foreground">{t("or")}</span>
                                     <div className="flex-1 border-t border-border"></div>
                                 </div>
                                 <ImageUploadButton onUploadComplete={setCoverImage} />
@@ -344,10 +359,10 @@ export default function NewPostPage() {
                             {loading ? (
                                 <>
                                     <Loader2 className="animate-spin mr-2" size={16} />
-                                    Publishing...
+                                    {t("publishing")}
                                 </>
                             ) : (
-                                "Publish Now"
+                                t("publishNow")
                             )}
                         </Button>
                         <Button
@@ -356,7 +371,7 @@ export default function NewPostPage() {
                             variant="outline"
                             className="w-full"
                         >
-                            Save as Draft
+                            {tDraft("save")}
                         </Button>
                     </GlassCard>
                 </div>

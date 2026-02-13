@@ -20,6 +20,7 @@ import {
     Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ReputationBadge } from "@/components/ReputationBadge";
 
 async function getUserProfile(userId: string, tab: string = "published", currentUserId?: string) {
     await dbConnect();
@@ -129,7 +130,12 @@ export default async function UserProfilePage({
                         <div className="flex-1">
                             <div className="flex items-start justify-between gap-4 mb-3">
                                 <div>
-                                    <h1 className="text-3xl font-bold mb-1">{user.name}</h1>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h1 className="text-3xl font-bold">{user.name}</h1>
+                                        {user.trustScore && (
+                                            <ReputationBadge score={user.trustScore} />
+                                        )}
+                                    </div>
                                     <p className="text-muted-foreground">{user.email}</p>
                                 </div>
                                 <div className="flex items-center gap-2">

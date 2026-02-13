@@ -23,6 +23,9 @@ import { BlogContent } from "@/components/BlogContent";
 import { FeedbackWidget } from "@/components/reader/FeedbackWidget";
 import { SeriesNavigation } from "@/components/series/SeriesNavigation";
 import { BlogPostExporter } from "@/components/BlogPostExporter";
+import { ReputationBadge } from "@/components/ReputationBadge";
+import { MobileTOC } from "@/components/MobileTOC";
+import { SilentFeedback } from "@/components/SilentFeedback";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -31,7 +34,7 @@ interface PageProps {
 async function getPost(slug: string) {
     await dbConnect();
     const post = await Post.findOne({ slug, published: true })
-        .populate("author", "name image bio")
+        .populate("author", "name image bio trustScore")
         .lean();
 
     if (!post) return null;
@@ -352,6 +355,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                                     <TableOfContents />
                                 </div>
                             </aside>
+                            <MobileTOC />
 
                             {/* Main Content Area */}
                             <div className="flex-1 max-w-4xl mx-auto xl:mx-0 center-in-focus-mode">
@@ -416,6 +420,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                                                     >
                                                         {post.author?.name || "Anonymous"}
                                                     </Link>
+                                                    {post.author?.trustScore && (
+                                                        <ReputationBadge score={post.author.trustScore} size="sm" className="mt-1" />
+                                                    )}
                                                     <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
                                                         <Calendar size={12} className="sm:w-3.5 sm:h-3.5" />
                                                         <span className="text-xs sm:text-sm">
@@ -508,6 +515,11 @@ export default async function BlogPostPage({ params }: PageProps) {
 
 
 
+                                    {/* Silent Feedback */}
+                                    <div className="mt-12 mb-8 hide-in-focus-mode">
+                                        <SilentFeedback postId={post._id.toString()} />
+                                    </div>
+
                                     {/* Author Bio */}
                                     {post.author?.bio && (
                                         <GlassCard className="p-6 mt-8">
@@ -529,7 +541,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                                                 </Link>
                                                 <div className="flex-1">
                                                     <div className="flex items-center justify-between gap-4 mb-2">
-                                                        <h3 className="text-xl font-bold">
+                                                        <h3 className="text-xl font-bold flex items-center gap-2">
                                                             About{" "}
                                                             <Link
                                                                 href={`/profile/${post.author._id}`}
@@ -537,6 +549,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                                                             >
                                                                 {post.author.name}
                                                             </Link>
+                                                            {post.author?.trustScore && (
+                                                                <ReputationBadge score={post.author.trustScore} size="sm" />
+                                                            )}
                                                         </h3>
                                                         {session?.user?.id !== post.author._id && (
                                                             <FollowButton

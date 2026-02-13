@@ -20,11 +20,84 @@
         "search": "অনুসন্ধান করুন",
         "loading": "লোড হচ্ছে...",
         "error": "ত্রুটি",
-        "success": "সফল"
+        "success": "সফল",
+        "back": "ফিরে যান",
+        "saving": "সংরক্ষণ করা হচ্ছে...",
+        "validationError": "অনুগ্রহ করে সব প্রয়োজনীয় ঘর পূরণ করুন"
+    },
+    "Notes": {
+        "addNote": "নোট যোগ করুন",
+        "copyMarkdown": "MD কপি করুন",
+        "addPrivateNote": "ব্যক্তিগত নোট যোগ করুন",
+        "typePlaceholder": "আপনার ব্যক্তিগত নোট এখানে লিখুন...",
+        "myNotes": "আমার নোট",
+        "generalNotePlaceholder": "এই পোস্টের জন্য একটি সাধারণ নোট যোগ করুন...",
+        "loadingNotes": "নোট লোড হচ্ছে...",
+        "noNotes": "এখনও কোন নোট নেই।",
+        "highlightTip": "একটি ব্যক্তিগত নোট যোগ করতে টেক্সট হাইলাইট করুন।",
+        "contextualNote": "প্রাসঙ্গিক নোট",
+        "generalNote": "সাধারণ নোট",
+        "privateDisclaimer": "নোটগুলি ব্যক্তিগত এবং শুধুমাত্র আপনার কাছে দৃশ্যমান।",
+        "copied": "মার্কডাউন হিসাবে কপি করা হয়েছে",
+        "copyFailed": "কপি করতে ব্যর্থ হয়েছে",
+        "noteDeleted": "নোট মুছে ফেলা হয়েছে",
+        "deleteFailed": "নোট মুছতে ব্যর্থ হয়েছে",
+        "noteAdded": "নোট যোগ করা হয়েছে",
+        "addFailed": "নোট যোগ করতে ব্যর্থ হয়েছে",
+        "noteUpdated": "নোট আপডেট করা হয়েছে",
+        "updateFailed": "নোট আপডেট করতে ব্যর্থ হয়েছে"
+    },
+    "Follow": {
+        "follow": "অনুসরণ করুন",
+        "following": "অনুসরণ করছেন",
+        "loginRequired": "অনুসরণ করতে লগ ইন করুন",
+        "followed": "সফলভাবে অনুসরণ করা হয়েছে",
+        "unfollowed": "আনফলো করা হয়েছে",
+        "error": "কিছু ভুল হয়েছে"
+    },
+    "Series": {
+        "label": "সিরিজ",
+        "partOf": "পর্ব {current} / {total}",
+        "previousPart": "পূর্ববর্তী: পর্ব {part}",
+        "nextPart": "পরবর্তী: পর্ব {part}",
+        "previous": "পূর্ববর্তী",
+        "next": "পরবর্তী",
+        "start": "সিরিজের শুরু",
+        "end": "উপসংহার"
+    },
+    "Draft": {
+        "found": "অসংরক্ষিত ড্রাফ্ট পাওয়া গেছে",
+        "lastSaved": "সর্বশেষ সংরক্ষিত: {date}",
+        "restore": "পুনরুদ্ধার করুন",
+        "restored": "ড্রাফ্ট পুনরুদ্ধার করা হয়েছে!",
+        "save": "ড্রাফ্ট হিসেবে সংরক্ষণ করুন",
+        "saved": "ড্রাফ্ট সংরক্ষিত!"
     },
     "Editor": {
         "title": "শিরোনাম",
         "content": "বিষয়বস্তু",
+        "newArticleTitle": "নতুন আর্টিকেল লিখুন",
+        "newArticleSubtitle": "ইনক্রাফ্ট কমিউনিটির সাথে আপনার জ্ঞান শেয়ার করুন",
+        "titlePlaceholder": "আর্টিকেলের শিরোনাম",
+        "subtitlePlaceholder": "সাবটাইটেল (ঐচ্ছিক)",
+        "contentPlaceholder": "আপনার গল্প লেখা শুরু করুন...",
+        "settingsTitle": "পোস্ট সেটিংস",
+        "slugLabel": "URL স্লাগ",
+        "categoryLabel": "ক্যাটাগরি",
+        "selectCategory": "একটি ক্যাটাগরি নির্বাচন করুন",
+        "tagsLabel": "ট্যাগ (কমা দিয়ে আলাদা করুন)",
+        "difficultyLabel": "কঠিনতার স্তর",
+        "selectDifficulty": "কঠিনতা নির্বাচন করুন",
+        "publishToLabel": "পাবলিকেশনে প্রকাশ করুন",
+        "noPublication": "কোনোটি না (ব্যক্তিগত ব্লগ)",
+        "publicationHelp": "এই গল্পটি কি কোনো পাবলিকেশনে হোস্ট করছেন?",
+        "coverImageLabel": "কভার ছবি",
+        "coverImagePlaceholder": "https://... অথবা নিচে আপলোড করুন",
+        "or": "অথবা",
+        "publishing": "প্রকাশ করা হচ্ছে...",
+        "publishNow": "এখনই প্রকাশ করুন",
+        "saving": "সংরক্ষণ করা হচ্ছে...",
+        "publishSuccess": "পোস্ট সফলভাবে প্রকাশিত হয়েছে!",
         "excerpt": "সারাংশ",
         "category": "বিভাগ",
         "tags": "ট্যাগ",
@@ -64,8 +137,74 @@
         "switchLanguage": "ভাষা পরিবর্তন করুন",
         "currentLanguage": "বর্তমান: {language}"
     },
+    "difficulty": {
+        "beginner": "শিক্ষানবিস",
+        "intermediate": "মধ্যবর্তী",
+        "advanced": "উন্নত",
+        "tooltip": "{level} স্তরের বিষয়বস্তু",
+        "selectLevel": "অসুবিধা স্তর নির্বাচন করুন",
+        "optional": "ঐচ্ছিক - পাঠকদের বিষয়বস্তু বেছে নিতে সাহায্য করে"
+    },
+    "resumeReading": {
+        "title": "পড়া চালিয়ে যাবেন?",
+        "description": "আপনি এই নিবন্ধের {progress} পড়েছেন",
+        "resume": "পড়া চালিয়ে যান",
+        "dismiss": "নতুন করে শুরু করুন"
+    },
+    "focusMode": {
+        "title": "পড়ার পছন্দ",
+        "close": "নিয়ন্ত্রণ বন্ধ করুন",
+        "fontSizeLabel": "ফন্ট আকার",
+        "lineHeightLabel": "লাইন ব্যবধান",
+        "themeLabel": "থিম",
+        "fontSize": {
+            "small": "S",
+            "medium": "M",
+            "large": "L",
+            "xlarge": "XL"
+        },
+        "lineHeight": {
+            "compact": "সংক্ষিপ্ত",
+            "normal": "সাধারণ",
+            "relaxed": "শিথিল"
+        },
+        "theme": {
+            "light": "আলো",
+            "dark": "অন্ধকার",
+            "sepia": "সেপিয়া"
+        }
+    },
+    "reputation": {
+        "newcomer": "নতুন লেখক",
+        "contributor": "অবদানকারী",
+        "trusted": "বিশ্বস্ত লেখক",
+        "expert": "বিশেষজ্ঞ",
+        "tooltip": "কমিউনিটি ট্রাস্ট স্কোরের উপর ভিত্তি করে"
+    },
+    "SilentFeedback": {
+        "title": "এই নিবন্ধটি কি সহায়ক ছিল?",
+        "subtitle": "আপনার মতামত আমাদের বিষয়বস্তু উন্নত করতে সাহায্য করে।",
+        "helpful": "সহায়ক",
+        "clear": "স্পষ্ট",
+        "moreDetail": "আরও বিস্তারিত প্রয়োজন",
+        "thankYou": "আপনার মতামতের জন্য ধন্যবাদ!",
+        "alreadySubmitted": "আপনি ইতিমধ্যে এই পোস্টের জন্য মতামত জমা দিয়েছেন।",
+        "error": "মতামত জমা দিতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
+        "feedbackSaved": "মতামত বেনামে সংরক্ষিত হয়েছে।"
+    },
     "SEO": {
         "defaultDescription": "প্রযুক্তি, প্রোগ্রামিং এবং উদ্ভাবনের উপর উচ্চ-মানের নিবন্ধ পড়ুন",
         "postMetaTemplate": "{title} - {category} | Inkraft"
+    },
+    "Digest": {
+        "title": "সাপ্তাহিক ডাইজেস্ট",
+        "subtitle": "আমাদের সম্পাদকদের দ্বারা নির্বাচিত গল্প এবং হাইলাইট।",
+        "readDigest": "ডাইজেস্ট পড়ুন",
+        "editorsPicks": "সম্পাদকের পছন্দ",
+        "weeklyStories": "এই সপ্তাহের গল্প",
+        "publishedOn": "{date}-এ প্রকাশিত",
+        "backToDigests": "ডাইজেস্টে ফিরে যান",
+        "noDigests": "এখনও কোনও ডাইজেস্ট প্রকাশিত হয়নি। শীঘ্রই আবার চেক করুন!",
+        "moreStories": "+ আরও {count} টি গল্প"
     }
 }
