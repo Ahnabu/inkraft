@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Editor } from "@/components/Editor";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
 import { calculateReadingTime } from "@/lib/readingTime";
 import { Loader2, Save } from "lucide-react";
@@ -12,12 +12,21 @@ import { ImageUploadButton } from "@/components/ImageUploadButton";
 import { toast } from "sonner";
 import { useDraftRestoration } from "@/lib/hooks/useDraftRestoration";
 import { useTranslations } from "next-intl";
+import { Suspense } from "react";
 
-export default function NewPostPage() {
+function NewPostContent() {
     const t = useTranslations("Editor");
     const tDraft = useTranslations("Draft");
     const tCommon = useTranslations("Common");
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // Initialize from URL params
+    const initialLocale = searchParams.get("locale") || "en";
+    const translationId = searchParams.get("translationId") || "";
+
+    const [locale, setLocale] = useState(initialLocale);
+
     const [title, setTitle] = useState("");
     const [subtitle, setSubtitle] = useState("");
     const [content, setContent] = useState("");
@@ -140,6 +149,8 @@ export default function NewPostPage() {
                     published: publishNow,
                     publication: publication || undefined,
                     seo: seoData,
+                    locale,
+                    translationId: translationId || undefined,
                 }),
             });
 
@@ -320,6 +331,21 @@ export default function NewPostPage() {
                             </p>
                         </div>
 
+                        {/* Language Selector */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Language
+                            </label>
+                            <select
+                                value={locale}
+                                onChange={(e) => setLocale(e.target.value)}
+                                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                            >
+                                <option value="en">English 🇬🇧</option>
+                                <option value="bn">Bangla 🇧🇩</option>
+                            </select>
+                        </div>
+
                         {/* Cover Image */}
                         <div>
                             <label className="block text-sm font-medium mb-2">
@@ -377,5 +403,13 @@ export default function NewPostPage() {
                 </div>
             </div >
         </div >
+    );
+}
+
+export default function NewPostPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 className="animate-spin" /></div>}>
+            <NewPostContent />
+        </Suspense>
     );
 }

@@ -74,6 +74,8 @@ export async function POST(req: Request) {
             lastUpdatedAt: new Date(),
             seo: seo || {},
             publication: body.publication,
+            locale: body.locale || 'en',
+            translationId: body.translationId || crypto.randomUUID(),
         });
 
         return NextResponse.json(post);

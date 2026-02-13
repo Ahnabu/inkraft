@@ -42,6 +42,12 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
         ogImage: "",
     });
 
+    // i18n fields
+    const [locale, setLocale] = useState("en");
+    const [translationId, setTranslationId] = useState("");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [relatedTranslations, setRelatedTranslations] = useState<any[]>([]);
+
     // Load existing post data
     useEffect(() => {
         async function loadPost() {
@@ -63,6 +69,10 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                 setTags(post.tags?.join(", ") || "");
                 setDifficultyLevel(post.difficultyLevel || "");
                 setSlug(post.slug);
+                setLocale(post.locale || "en");
+                setTranslationId(post.translationId || "");
+                setRelatedTranslations(post.relatedTranslations || []);
+
                 setSeoData({
                     title: post.seo?.title || post.title,
                     description: post.seo?.description || "",
@@ -155,6 +165,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                     readingTime,
                     published: publishNow,
                     seo: seoData,
+                    locale,
                 }),
             });
 
@@ -275,6 +286,50 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                                     placeholder="article-slug"
                                     className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                                 />
+                            </div>
+                        </div>
+
+                        {/* Language & Translations */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Language
+                            </label>
+                            <div className="flex flex-col gap-2">
+                                <div className="flex items-center justify-between p-2 rounded-lg border border-border bg-card">
+                                    <span className="flex items-center gap-2">
+                                        {locale === "en" ? "🇬🇧 English" : "🇧🇩 Bangla"}
+                                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">Current</span>
+                                    </span>
+                                </div>
+
+                                {/* Other Languages */}
+                                {["en", "bn"].filter(l => l !== locale).map(lang => {
+                                    const existing = relatedTranslations.find(t => t.locale === lang);
+                                    return (
+                                        <Button
+                                            key={lang}
+                                            variant="outline"
+                                            className="justify-between w-full"
+                                            onClick={() => {
+                                                if (existing) {
+                                                    router.push(`/edit/${existing.slug}`);
+                                                } else {
+                                                    // Create new translation
+                                                    router.push(`/new?locale=${lang}&translationId=${translationId}`);
+                                                }
+                                            }}
+                                        >
+                                            <span className="flex items-center gap-2">
+                                                {lang === "en" ? "🇬🇧 English" : "🇧🇩 Bangla"}
+                                            </span>
+                                            {existing ? (
+                                                <span className="text-xs text-muted-foreground">Edit</span>
+                                            ) : (
+                                                <span className="text-xs text-primary">+ Add</span>
+                                            )}
+                                        </Button>
+                                    );
+                                })}
                             </div>
                         </div>
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Globe, Check } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useLanguage } from "@/context/LanguageContext";
 
 const languages = [
     { code: "en", name: "English", nativeName: "English", flag: "🇬🇧" },
@@ -12,16 +13,22 @@ const languages = [
 export function LanguageSwitcher() {
     const [isOpen, setIsOpen] = useState(false);
     const t = useTranslations("LanguageSwitcher");
+    const { alternateLinks } = useLanguage();
 
     const currentLocale = typeof document !== "undefined"
         ? document.documentElement.lang
         : "en";
 
     const handleLanguageChange = async (langCode: string) => {
-        // Set cookie
-        document.cookie = `NEXT_LOCALE=${langCode}; path=/; max-age=31536000`;
+        // If we have an alternate link for this language, configure cookie and navigate
+        if (alternateLinks[langCode]) {
+            document.cookie = `NEXT_LOCALE=${langCode}; path=/; max-age=31536000`;
+            window.location.href = alternateLinks[langCode];
+            return;
+        }
 
-        // Reload page to apply new locale
+        // Default behavior: Set cookie and reload current page
+        document.cookie = `NEXT_LOCALE=${langCode}; path=/; max-age=31536000`;
         window.location.reload();
     };
 

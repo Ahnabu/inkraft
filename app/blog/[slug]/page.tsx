@@ -26,6 +26,8 @@ import { BlogPostExporter } from "@/components/BlogPostExporter";
 import { ReputationBadge } from "@/components/ReputationBadge";
 import { MobileTOC } from "@/components/MobileTOC";
 import { SilentFeedback } from "@/components/SilentFeedback";
+import { TranslationLinker } from "@/components/TranslationLinker";
+import { TranslationFallback } from "@/components/TranslationFallback";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -106,6 +108,37 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const canonical = post.seo?.canonical || articleUrl;
     const keywords = post.seo?.keywords?.length ? post.seo.keywords : (post.tags || []);
 
+    // Fetch related translations for hreflang
+    const alternates: Metadata['alternates'] = {
+        canonical,
+        languages: {},
+    };
+
+    // Add self referencing hreflang
+    if (post.locale) {
+        alternates.languages = {
+            [post.locale]: articleUrl,
+        };
+    }
+
+    if (post.translationId) {
+        await dbConnect();
+        const translations = await Post.find({
+            translationId: post.translationId,
+            published: true,
+            _id: { $ne: post._id }
+        }).select("locale slug").lean();
+
+        if (translations.length > 0) {
+            translations.forEach((t: { locale: string; slug: string }) => {
+                if (t.locale && alternates.languages) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (alternates.languages as any)[t.locale] = `${baseUrl}/blog/${t.slug}`;
+                }
+            });
+        }
+    }
+
     return {
         title: {
             absolute: title, // Override directory title template
@@ -114,9 +147,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
         description,
         keywords,
-        alternates: {
-            canonical,
-        },
+        alternates,
         openGraph: {
             title,
             description,
@@ -228,6 +259,29 @@ export default async function BlogPostPage({ params }: PageProps) {
         ],
     };
 
+    // Prepare alternate links for LanguageSwitcher
+    const alternateLinks: Record<string, string> = {
+        [post.locale || "en"]: `/blog/${post.slug}`,
+    };
+
+    // Check if we have related translations (we need to fetch them if not already in post object)
+    // Since getPost doesn't fetch relatedTranslations by default in its current form (it uses lean()), 
+    // we might need to fetch them here or update getPost.
+    // Let's update getPost to include them or fetch separately.
+
+    // Just for now, let's fetch them separately to be safe and clear
+    if (post.translationId) {
+        const translations = await Post.find({
+            translationId: post.translationId,
+            _id: { $ne: post._id },
+            published: true
+        }).select("locale slug").lean();
+
+        translations.forEach((t: any) => {
+            if (t.locale) alternateLinks[t.locale] = `/blog/${t.slug}`;
+        });
+    }
+
     const articleStructuredData = {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
@@ -302,6 +356,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
     return (
         <>
+            <TranslationLinker links={alternateLinks} />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
@@ -367,6 +422,10 @@ export default async function BlogPostPage({ params }: PageProps) {
                                 {/* Article Header */}
                                 <GlassCard className="p-4 sm:p-6 md:p-8 lg:p-12 mb-6 sm:mb-8">
                                     <div className="space-y-4 sm:space-y-6">
+                                        <TranslationFallback
+                                            postLocale={post.locale || 'en'}
+                                            alternates={alternateLinks}
+                                        />
                                         {/* Category Badge */}
                                         <div className="flex items-center gap-2">
                                             <span className="px-4 py-1.5 bg-primary/10 text-primary text-sm font-semibold rounded-full">

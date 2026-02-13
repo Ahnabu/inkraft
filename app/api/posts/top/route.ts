@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic';
 let topPostsCache: {
     data: Array<Record<string, unknown>>;
     timestamp: number;
+    locale?: string;
 } | null = null;
 
 const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
@@ -19,13 +20,19 @@ export async function GET(req: Request) {
         const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "10");
         const category = searchParams.get("category");
+        const locale = searchParams.get("locale");
         const skip = (page - 1) * limit;
 
         await dbConnect();
 
         // Check cache
         const now = Date.now();
-        if (topPostsCache && now - topPostsCache.timestamp < CACHE_DURATION && !category) {
+        if (
+            topPostsCache &&
+            now - topPostsCache.timestamp < CACHE_DURATION &&
+            !category &&
+            topPostsCache.locale === locale
+        ) {
             // Return cached data with pagination
             const paginatedData = topPostsCache.data.slice(skip, skip + limit);
             return NextResponse.json({
@@ -43,6 +50,9 @@ export async function GET(req: Request) {
         const query: Record<string, unknown> = { published: true };
         if (category) {
             query.category = category;
+        }
+        if (locale) {
+            query.locale = locale;
         }
 
         // Fetch all published posts
@@ -87,6 +97,7 @@ export async function GET(req: Request) {
             topPostsCache = {
                 data: sortedPosts,
                 timestamp: now,
+                locale: locale || undefined,
             };
         }
 

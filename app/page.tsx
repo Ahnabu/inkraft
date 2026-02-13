@@ -25,9 +25,13 @@ export const metadata: Metadata = {
 
 export const revalidate = 900; // Revalidate page every 15 minutes
 
-async function getFeaturedPost() {
+import { getLocale } from "next-intl/server";
+
+// ... imports
+
+async function getFeaturedPost(locale: string) {
   try {
-    const posts = await fetchTopPosts(1);
+    const posts = await fetchTopPosts(1, 1, undefined, locale);
     return posts[0] || null;
   } catch (error) {
     console.error("Failed to fetch featured post:", error);
@@ -35,29 +39,29 @@ async function getFeaturedPost() {
   }
 }
 
-async function getTrendingPosts() {
+async function getTrendingPosts(locale: string) {
   try {
-    return await fetchTrendingPosts(3);
+    return await fetchTrendingPosts(3, 1, locale);
   } catch (error) {
     console.error("Failed to fetch trending posts:", error);
     return [];
   }
 }
 
-async function getLatestPosts() {
+async function getLatestPosts(locale: string) {
   try {
-    return await fetchLatestPosts(6);
+    return await fetchLatestPosts(6, 1, undefined, locale);
   } catch (error) {
     console.error("Failed to fetch latest posts:", error);
     return [];
   }
 }
 
-async function getTopPosts() {
+async function getTopPosts(locale: string) {
   try {
     // Fetch top 5, but we might overlap with featured, so maybe fetch more?
     // Using simple logic for now matching previous API
-    return await fetchTopPosts(5);
+    return await fetchTopPosts(5, 1, undefined, locale);
   } catch (error) {
     console.error("Failed to fetch top posts:", error);
     return [];
@@ -66,11 +70,13 @@ async function getTopPosts() {
 
 export default async function HomePage(props: { searchParams?: Promise<{ feed?: string }> }) {
   const session = await auth();
+  const locale = await getLocale();
+
   const [featuredPost, trendingPosts, latestPosts, topPosts] = await Promise.all([
-    getFeaturedPost(),
-    getTrendingPosts(),
-    getLatestPosts(),
-    getTopPosts(),
+    getFeaturedPost(locale),
+    getTrendingPosts(locale),
+    getLatestPosts(locale),
+    getTopPosts(locale),
   ]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,9 +87,9 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
   let mainPosts = latestPosts;
   if (session?.user?.id) {
     if (feedType === "foryou") {
-      mainPosts = await fetchPersonalizedFeed(session.user.id);
+      mainPosts = await fetchPersonalizedFeed(session.user.id, 20, 1, locale);
     } else if (feedType === "following") {
-      mainPosts = await fetchFollowedPosts(session.user.id);
+      mainPosts = await fetchFollowedPosts(session.user.id, 20, 1, locale);
     }
   }
 

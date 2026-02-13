@@ -624,7 +624,7 @@ This section shows everything already implemented so you know what's available a
 
 ---
 
-### Phase 5.1: Comprehensive i18n ✅
+### Phase 5.1: Comprehensive i18n ✅ (v0.2.1)
 
 #### UI Translation
 - English and বাংলা interfaces

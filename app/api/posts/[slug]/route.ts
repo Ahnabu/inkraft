@@ -23,7 +23,19 @@ export async function GET(
             return new NextResponse("Post not found", { status: 404 });
         }
 
-        return NextResponse.json(JSON.parse(JSON.stringify(post)));
+        // Find related translations
+        let relatedTranslations: { locale: string; slug: string; title: string }[] = [];
+        if (post.translationId) {
+            relatedTranslations = await Post.find({
+                translationId: post.translationId,
+                _id: { $ne: post._id }
+            }).select("locale slug title").lean();
+        }
+
+        return NextResponse.json({
+            ...JSON.parse(JSON.stringify(post)),
+            relatedTranslations
+        });
     } catch (error: unknown) {
         console.error("[POST_GET]", error);
         return new NextResponse("Internal Error", { status: 500 });
@@ -57,6 +69,7 @@ export async function PATCH(
             difficultyLevel,
             published,
             seo,
+            locale,
         } = body;
 
         const readingTime = content ? calculateReadingTime(content) : undefined;
@@ -93,6 +106,7 @@ export async function PATCH(
                 publishedAt: published && !existingPost.published ? new Date() : existingPost.publishedAt,
                 lastUpdatedAt: new Date(),
                 seo: seo || existingPost.seo,
+                locale: locale || existingPost.locale,
             },
             { new: true }
         )

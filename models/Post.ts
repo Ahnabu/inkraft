@@ -36,18 +36,7 @@ export interface IPost extends Document {
     editorsPick?: boolean;
     publication?: mongoose.Types.ObjectId;
     locale: string; // Primary language: 'en' or 'bn'
-    translations?: {
-        en?: {
-            title?: string;
-            excerpt?: string;
-            content?: string;
-        };
-        bn?: {
-            title?: string;
-            excerpt?: string;
-            content?: string;
-        };
-    };
+    translationId?: string; // Links translations together
     createdAt: Date;
     updatedAt: Date;
 }
@@ -173,18 +162,11 @@ const PostSchema: Schema<IPost> = new Schema(
             enum: ["en", "bn"],
             default: "en",
             required: true,
+            index: true,
         },
-        translations: {
-            en: {
-                title: String,
-                excerpt: String,
-                content: String,
-            },
-            bn: {
-                title: String,
-                excerpt: String,
-                content: String,
-            },
+        translationId: {
+            type: String, // UUID sharing between translations
+            index: true,
         },
     },
     { timestamps: true }

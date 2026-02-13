@@ -9,6 +9,7 @@ let latestPostsCache: {
     data: Array<Record<string, unknown>>;
     timestamp: number;
     category?: string;
+    locale?: string;
 } | null = null;
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -19,6 +20,7 @@ export async function GET(req: Request) {
         const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "20");
         const category = searchParams.get("category");
+        const locale = searchParams.get("locale");
         const skip = (page - 1) * limit;
 
         await dbConnect();
@@ -28,7 +30,8 @@ export async function GET(req: Request) {
         if (
             latestPostsCache &&
             now - latestPostsCache.timestamp < CACHE_DURATION &&
-            latestPostsCache.category === category
+            latestPostsCache.category === category &&
+            latestPostsCache.locale === locale
         ) {
             const paginatedData = latestPostsCache.data.slice(skip, skip + limit);
             return NextResponse.json({
@@ -46,6 +49,9 @@ export async function GET(req: Request) {
         const query: Record<string, unknown> = { published: true };
         if (category) {
             query.category = category;
+        }
+        if (locale) {
+            query.locale = locale;
         }
 
         // Fetch posts sorted by publish date
@@ -71,6 +77,7 @@ export async function GET(req: Request) {
             data: formattedPosts,
             timestamp: now,
             category: category || undefined,
+            locale: locale || undefined,
         };
 
         // Paginate

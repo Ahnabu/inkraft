@@ -58,12 +58,17 @@
 - **Keyboard Shortcuts**: Navigate faster with `g+h` (home), `/` (search), `f` (focus mode), `Shift+?` (shortcuts modal).
 - **Bangla Typography**: Full support for বাংলা text with Noto Sans Bengali font family.
 
-### Phase 5.1: Comprehensive i18n 🌐
+### Phase 5.1: Comprehensive i18n 🌐 (v0.2.1)
 - **UI Translation**: Complete interface in English and বাংলা (Bangla) - switch with one click.
 - **Multi-language Posts**: Write each post in multiple languages with dedicated translation fields.
 - **Language Switcher**: Beautiful globe icon in navbar for instant language switching.
 - **SEO Optimized**: Proper `hreflang` tags, language-specific metadata, and separate URLs per language.
 - **Smart Fallback**: Posts without translation gracefully show in original language with notice.
+
+### Phase 6: Upcoming 🔮
+- **PWA Support**: Install Inkraft as a native app on mobile and desktop.
+- **Podcast Support**: Audio player for blog posts (Text-to-Speech).
+- **Monetization**: Creator tipping and premium subscriptions.
 
 ---
 
@@ -364,6 +369,7 @@ Inkraft turns readers into a community:
 - **Rich Text**: TipTap (ProseMirror)
 - **Animations**: Framer Motion ready
 - **Icons**: Lucide React
+- **Internationalization**: next-intl
 
 ### Backend
 - **Runtime**: Node.js 20.x / Edge Runtime

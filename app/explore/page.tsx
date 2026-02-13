@@ -6,6 +6,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { Search, Filter, TrendingUp, Clock, Star, ArrowUp, ArrowDown, User } from "lucide-react";
 import { cn, getBaseUrl } from "@/lib/utils";
+import { useLocale } from "next-intl";
 
 interface PostType {
     _id: string;
@@ -51,6 +52,8 @@ export default function ExplorePage() {
     const [posts, setPosts] = useState<PostType[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const locale = useLocale();
+
     const fetchPosts = useCallback(async () => {
         setLoading(true);
         try {
@@ -59,6 +62,9 @@ export default function ExplorePage() {
 
             if (selectedCategory !== "all") {
                 params.append("category", selectedCategory);
+            }
+            if (locale) {
+                params.append("locale", locale);
             }
 
             if (params.toString()) {
@@ -120,7 +126,7 @@ export default function ExplorePage() {
         const excerpt = typeof post.excerpt === 'string' ? post.excerpt : '';
         const content = typeof post.content === 'string' ? post.content : '';
         const authorName = typeof post.author === 'object' && post.author !== null && 'name' in post.author && typeof post.author.name === 'string' ? post.author.name : '';
-        
+
         const matchesTitle = title.toLowerCase().includes(query);
         const matchesExcerpt = excerpt.toLowerCase().includes(query);
         const matchesContent = content.toLowerCase().includes(query);
@@ -240,69 +246,70 @@ export default function ExplorePage() {
                             {filteredPosts.map((post) => {
                                 const postId = typeof post._id === 'string' ? post._id : String(post._id || Math.random());
                                 return (
-                                <GlassCard key={postId} className="p-6 hover:shadow-lg transition-all group">
-                                    <div className="flex gap-6">
-                                        {/* Main Content */}
-                                        <div className="flex-1">
-                                            <Link href={`/blog/${post.slug}`}>
-                                                <div className="flex items-center gap-2 mb-3">
-                                                    <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                                                        {post.category}
-                                                    </span>
-                                                    <span className="text-xs text-muted-foreground">
-                                                        {post.readingTime} min read
-                                                    </span>
-                                                </div>
-                                                <h2 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-primary transition-colors">
-                                                    {post.title}
-                                                </h2>
-                                                <p className="text-muted-foreground mb-4 line-clamp-2">
-                                                    {post.excerpt}
-                                                </p>
-                                            </Link>
+                                    <GlassCard key={postId} className="p-6 hover:shadow-lg transition-all group">
+                                        <div className="flex gap-6">
+                                            {/* Main Content */}
+                                            <div className="flex-1">
+                                                <Link href={`/blog/${post.slug}`}>
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                                                            {post.category}
+                                                        </span>
+                                                        <span className="text-xs text-muted-foreground">
+                                                            {post.readingTime} min read
+                                                        </span>
+                                                    </div>
+                                                    <h2 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-primary transition-colors">
+                                                        {post.title}
+                                                    </h2>
+                                                    <p className="text-muted-foreground mb-4 line-clamp-2">
+                                                        {post.excerpt}
+                                                    </p>
+                                                </Link>
 
-                                            {/* Author Info */}
-                                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                                <div className="flex items-center gap-2">
-                                                    {post.author?.image ? (
-                                                        <img
-                                                            src={post.author.image}
-                                                            alt={post.author.name}
-                                                            className="w-6 h-6 rounded-full"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                                            <User size={14} className="text-primary" />
-                                                        </div>
-                                                    )}
-                                                    <span className="font-medium">{post.author?.name || "Anonymous"}</span>
+                                                {/* Author Info */}
+                                                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                                    <div className="flex items-center gap-2">
+                                                        {post.author?.image ? (
+                                                            <img
+                                                                src={post.author.image}
+                                                                alt={post.author.name}
+                                                                className="w-6 h-6 rounded-full"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                                                <User size={14} className="text-primary" />
+                                                            </div>
+                                                        )}
+                                                        <span className="font-medium">{post.author?.name || "Anonymous"}</span>
+                                                    </div>
+                                                    <span>•</span>
+                                                    <span>{new Date(post.publishedAt || post.createdAt || Date.now()).toLocaleDateString()}</span>
                                                 </div>
-                                                <span>•</span>
-                                                <span>{new Date(post.publishedAt || post.createdAt || Date.now()).toLocaleDateString()}</span>
+                                            </div>
+
+                                            {/* Voting Section */}
+                                            <div className="flex flex-col items-center gap-2 min-w-[60px]">
+                                                <button
+                                                    onClick={() => handleVote(post.slug, "up")}
+                                                    className="p-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors"
+                                                    aria-label="Upvote"
+                                                >
+                                                    <ArrowUp size={20} />
+                                                </button>
+                                                <span className="font-bold text-lg">{Math.round((post.upvotes || 0) - (post.downvotes || 0))}</span>
+                                                <button
+                                                    onClick={() => handleVote(post.slug, "down")}
+                                                    className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors"
+                                                    aria-label="Downvote"
+                                                >
+                                                    <ArrowDown size={20} />
+                                                </button>
                                             </div>
                                         </div>
-
-                                        {/* Voting Section */}
-                                        <div className="flex flex-col items-center gap-2 min-w-[60px]">
-                                            <button
-                                                onClick={() => handleVote(post.slug, "up")}
-                                                className="p-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors"
-                                                aria-label="Upvote"
-                                            >
-                                                <ArrowUp size={20} />
-                                            </button>
-                                            <span className="font-bold text-lg">{Math.round((post.upvotes || 0) - (post.downvotes || 0))}</span>
-                                            <button
-                                                onClick={() => handleVote(post.slug, "down")}
-                                                className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors"
-                                                aria-label="Downvote"
-                                            >
-                                                <ArrowDown size={20} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </GlassCard>
-                            )})}
+                                    </GlassCard>
+                                )
+                            })}
                         </div>
                     )}
                 </div>

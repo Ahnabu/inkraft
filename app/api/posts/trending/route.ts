@@ -11,6 +11,7 @@ export const dynamic = 'force-dynamic';
 let trendingPostsCache: {
     data: Array<Record<string, unknown>>;
     timestamp: number;
+    locale?: string;
 } | null = null;
 
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
@@ -20,13 +21,18 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url, "http://localhost");
         const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "10");
+        const locale = searchParams.get("locale");
         const skip = (page - 1) * limit;
 
         await dbConnect();
 
         // Check cache
         const now = Date.now();
-        if (trendingPostsCache && now - trendingPostsCache.timestamp < CACHE_DURATION) {
+        if (
+            trendingPostsCache &&
+            now - trendingPostsCache.timestamp < CACHE_DURATION &&
+            trendingPostsCache.locale === locale
+        ) {
             const paginatedData = trendingPostsCache.data.slice(skip, skip + limit);
             return NextResponse.json({
                 posts: paginatedData,
@@ -41,10 +47,13 @@ export async function GET(req: Request) {
 
         // Fetch posts from last 7 days
         const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-        const posts = await Post.find({
+        const query: any = {
             published: true,
             publishedAt: { $gte: sevenDaysAgo },
-        })
+        };
+        if (locale) query.locale = locale;
+
+        const posts = await Post.find(query)
             .populate("author", "name image")
             .lean();
 
@@ -113,6 +122,7 @@ export async function GET(req: Request) {
         trendingPostsCache = {
             data: trendingPosts,
             timestamp: now,
+            locale: locale || undefined,
         };
 
         // Paginate

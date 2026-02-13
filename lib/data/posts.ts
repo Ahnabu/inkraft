@@ -6,12 +6,13 @@ import Vote from "@/models/Vote";
 import Comment from "@/models/Comment";
 import { calculateEngagementScore, calculateTrendingScore } from "@/lib/engagement";
 
-export async function fetchLatestPosts(limit = 20, page = 1, category?: string) {
+export async function fetchLatestPosts(limit = 20, page = 1, category?: string, locale?: string) {
     await dbConnect();
     const skip = (page - 1) * limit;
 
     const query: Record<string, unknown> = { published: true };
     if (category) query.category = category;
+    if (locale) query.locale = locale;
 
     const posts = await Post.find(query)
         .sort({ publishedAt: -1 })
@@ -39,10 +40,11 @@ export async function fetchLatestPosts(limit = 20, page = 1, category?: string) 
     });
 }
 
-export async function fetchTopPosts(limit = 10, page = 1, category?: string) {
+export async function fetchTopPosts(limit = 10, page = 1, category?: string, locale?: string) {
     await dbConnect();
     const query: Record<string, unknown> = { published: true };
     if (category) query.category = category;
+    if (locale) query.locale = locale;
 
     // For performance, we might want to query all and sort in memory if dataset is small,
     // or rely on a pre-computed score field in DB (ideal).
@@ -86,14 +88,17 @@ export async function fetchTopPosts(limit = 10, page = 1, category?: string) {
     return sortedPosts.slice(skip, skip + limit);
 }
 
-export async function fetchTrendingPosts(limit = 10, page = 1) {
+export async function fetchTrendingPosts(limit = 10, page = 1, locale?: string) {
     await dbConnect();
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    const posts = await Post.find({
+    const matchQuery: any = {
         published: true,
         publishedAt: { $gte: sevenDaysAgo },
-    })
+    };
+    if (locale) matchQuery.locale = locale;
+
+    const posts = await Post.find(matchQuery)
         .populate("author", "name image")
         .lean();
 
@@ -165,7 +170,7 @@ export async function fetchTrendingPosts(limit = 10, page = 1) {
     return trendingPosts.slice(skip, skip + limit);
 }
 
-export async function fetchFollowedPosts(userId: string, limit = 20, page = 1) {
+export async function fetchFollowedPosts(userId: string, limit = 20, page = 1, locale?: string) {
     await dbConnect();
     const user = await User.findById(userId).select("following");
 
@@ -174,10 +179,13 @@ export async function fetchFollowedPosts(userId: string, limit = 20, page = 1) {
     }
 
     const skip = (page - 1) * limit;
-    const posts = await Post.find({
+    const query: any = {
         author: { $in: user.following },
         published: true,
-    })
+    };
+    if (locale) query.locale = locale;
+
+    const posts = await Post.find(query)
         .sort({ publishedAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -207,7 +215,7 @@ export async function fetchFollowedPosts(userId: string, limit = 20, page = 1) {
  * Personalized "For You" feed based on user preferences.
  * Scoring formula: authorFollow(+10) + categoryFollow(+5) + engagement + freshness
  */
-export async function fetchPersonalizedFeed(userId: string, limit = 20, page = 1) {
+export async function fetchPersonalizedFeed(userId: string, limit = 20, page = 1, locale?: string) {
     await dbConnect();
 
     // Get user preferences
@@ -217,15 +225,18 @@ export async function fetchPersonalizedFeed(userId: string, limit = 20, page = 1
 
     // If user has no preferences, fall back to trending/latest
     if (followedAuthors.length === 0 && followedCategories.length === 0) {
-        return fetchLatestPosts(limit, page);
+        return fetchLatestPosts(limit, page, undefined, locale); // Pass locale
     }
 
     // Get recent posts (last 30 days) - wider pool for personalization
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const posts = await Post.find({
+    const query: any = {
         published: true,
         publishedAt: { $gte: thirtyDaysAgo },
-    })
+    };
+    if (locale) query.locale = locale;
+
+    const posts = await Post.find(query)
         .populate("author", "name image")
         .lean();
 
