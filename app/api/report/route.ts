@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         await dbConnect();
 
         // Validate target exists
-        let target;
+        let target: any;
         let targetOwnerId;
         let alertTitle = "";
         let alertDescription = "";

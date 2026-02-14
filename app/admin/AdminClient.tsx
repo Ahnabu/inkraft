@@ -60,7 +60,7 @@ interface Stats {
 
 interface Alert {
     _id: string;
-    type: "vote_spike" | "spam_velocity" | "low_trust_engagement" | "repeated_reports" | "suspicious_activity" | "user_report";
+    type: "vote_spike" | "spam_velocity" | "low_trust_engagement" | "repeated_reports" | "suspicious_activity" | "user_report" | "category_request";
     severity: "low" | "medium" | "high" | "critical";
     title: string;
     description: string;
