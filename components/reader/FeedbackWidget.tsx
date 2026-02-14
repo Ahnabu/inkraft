@@ -29,14 +29,17 @@ export function FeedbackWidget({ postId }: FeedbackWidgetProps) {
                 const res = await fetch(`/api/feedback?postId=${postId}`);
                 if (res.ok) {
                     const data = await res.json();
-                    setStats(data.stats);
-                    if (data.userFeedback) {
+                    if (data?.stats) {
+                        setStats(data.stats);
+                    }
+                    if (data?.userFeedback) {
                         setSelected(data.userFeedback);
                         setHasVoted(true);
                     }
                 }
             } catch (error) {
                 console.error("Failed to load feedback", error);
+                // Keep default stats on error
             }
         };
         fetchFeedback();
@@ -48,7 +51,7 @@ export function FeedbackWidget({ postId }: FeedbackWidgetProps) {
         setLoading(true);
         // Optimistic update
         setSelected(type);
-        setStats(prev => ({ ...prev, [type]: prev[type] + 1 }));
+        setStats(prev => ({ ...prev, [type]: (prev?.[type] || 0) + 1 }));
         setHasVoted(true);
 
         try {
@@ -66,7 +69,7 @@ export function FeedbackWidget({ postId }: FeedbackWidgetProps) {
             console.error(error);
             toast.error("Something went wrong");
             // Revert optimistic update
-            setStats(prev => ({ ...prev, [type]: prev[type] - 1 }));
+            setStats(prev => ({ ...prev, [type]: Math.max((prev?.[type] || 0) - 1, 0) }));
             setSelected(null);
             setHasVoted(false);
         } finally {
@@ -92,7 +95,7 @@ export function FeedbackWidget({ postId }: FeedbackWidgetProps) {
                 >
                     <ThumbsUp size={16} className={selected === "helpful" ? "fill-current" : ""} />
                     <span>Helpful</span>
-                    {stats.helpful > 0 && <span className="ml-1 text-xs opacity-70">({stats.helpful})</span>}
+                    {(stats?.helpful || 0) > 0 && <span className="ml-1 text-xs opacity-70">({stats.helpful})</span>}
                 </Button>
 
                 <Button
@@ -109,7 +112,7 @@ export function FeedbackWidget({ postId }: FeedbackWidgetProps) {
                 >
                     <CheckCircle size={16} className={selected === "clear" ? "fill-current" : ""} />
                     <span>Clear</span>
-                    {stats.clear > 0 && <span className="ml-1 text-xs opacity-70">({stats.clear})</span>}
+                    {(stats?.clear || 0) > 0 && <span className="ml-1 text-xs opacity-70">({stats.clear})</span>}
                 </Button>
 
                 <Button
@@ -126,7 +129,7 @@ export function FeedbackWidget({ postId }: FeedbackWidgetProps) {
                 >
                     <HelpCircle size={16} className={selected === "needs-more" ? "fill-current" : ""} />
                     <span>Needs More</span>
-                    {stats["needs-more"] > 0 && <span className="ml-1 text-xs opacity-70">({stats["needs-more"]})</span>}
+                    {(stats?.["needs-more"] || 0) > 0 && <span className="ml-1 text-xs opacity-70">({stats["needs-more"]})</span>}
                 </Button>
             </div>
             {loading && <Loader2 className="animate-spin text-muted-foreground mt-2" size={16} />}
