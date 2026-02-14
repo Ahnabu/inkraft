@@ -29,6 +29,10 @@ import { TranslationLinker } from "@/components/TranslationLinker";
 import { TranslationFallback } from "@/components/TranslationFallback";
 import { PostMoreMenu } from "@/components/PostMoreMenu";
 
+// Force dynamic rendering to avoid SSR issues with client components
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface PageProps {
     params: Promise<{ slug: string }>;
 }
