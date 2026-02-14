@@ -1,10 +1,8 @@
 import { Metadata } from "next";
-import { getAllAuthors } from "@/lib/data/users";
-import { GlassCard } from "@/components/ui/GlassCard";
-import Link from "next/link";
-import { User, Users } from "lucide-react";
-import FollowButton from "@/components/FollowButton";
+import { getAllAuthors, getUserFollowing } from "@/lib/data/users";
+import { Users } from "lucide-react";
 import { auth } from "@/auth";
+import { AuthorList } from "@/components/AuthorList";
 
 export const metadata: Metadata = {
     title: "Discover Authors | Inkraft",
@@ -14,6 +12,11 @@ export const metadata: Metadata = {
 export default async function AuthorsPage() {
     const session = await auth();
     const authors = await getAllAuthors();
+
+    let followingIds: string[] = [];
+    if (session?.user?.id) {
+        followingIds = await getUserFollowing(session.user.id);
+    }
 
     // Sort authors: those with most followers first, then by name
     const sortedAuthors = [...authors].sort((a, b) => {
@@ -35,55 +38,11 @@ export default async function AuthorsPage() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {sortedAuthors.map((author) => (
-                        <GlassCard key={author.id} className="p-6 flex items-start justify-between gap-4">
-                            <div className="flex items-start gap-4">
-                                <Link href={`/profile/${author.id}`} className="shrink-0">
-                                    {author.image ? (
-                                        <img
-                                            src={author.image}
-                                            alt={author.name || "Author"}
-                                            className="w-16 h-16 rounded-full object-cover border-2 border-primary/10 hover:border-primary/50 transition-colors"
-                                        />
-                                    ) : (
-                                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                            <User size={32} />
-                                        </div>
-                                    )}
-                                </Link>
-                                <div>
-                                    <Link href={`/profile/${author.id}`} className="group">
-                                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                                            {author.name || "Anonymous"}
-                                        </h3>
-                                    </Link>
-                                    <p className="text-sm text-muted-foreground line-clamp-2 mt-1 mb-3">
-                                        {author.bio || "No bio available."}
-                                    </p>
-
-                                    {/* Reputation / Stats could go here */}
-                                    <div className="text-xs text-muted-foreground flex gap-3">
-                                        <span>Joined {new Date(author.createdAt || Date.now()).toLocaleDateString()}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="shrink-0">
-                                <FollowButton
-                                    targetUserId={author.id}
-                                    isFollowing={false} // We need to fetch this status ideally, or client-side it
-                                />
-                            </div>
-                        </GlassCard>
-                    ))}
-
-                    {sortedAuthors.length === 0 && (
-                        <div className="col-span-full text-center py-12 text-muted-foreground">
-                            No authors found.
-                        </div>
-                    )}
-                </div>
+                <AuthorList
+                    initialAuthors={sortedAuthors}
+                    currentUserId={session?.user?.id}
+                    followingIds={followingIds}
+                />
             </div>
         </main>
     );

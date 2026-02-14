@@ -41,7 +41,6 @@ export function Navbar() {
     const navItems = [
         { name: "Home", href: "/" },
         { name: "Explore", href: "/explore" },
-        { name: "Authors", href: "/authors" },
         { name: "About", href: "/about" },
     ];
 

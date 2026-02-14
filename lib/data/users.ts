@@ -40,3 +40,15 @@ export async function getUserById(id: string) {
         return null;
     }
 }
+
+export async function getUserFollowing(userId: string): Promise<string[]> {
+    try {
+        await dbConnect();
+        const user = await User.findById(userId).select("following").lean();
+        if (!user || !user.following) return [];
+        return user.following.map((id: any) => id.toString());
+    } catch (error) {
+        console.error("Error fetching user following:", error);
+        return [];
+    }
+}
