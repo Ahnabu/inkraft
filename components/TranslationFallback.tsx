@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { AlertCircle } from 'lucide-react';
-import { useLocale } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 interface TranslationFallbackProps {
     postLocale: string;
@@ -10,7 +10,17 @@ interface TranslationFallbackProps {
 }
 
 export function TranslationFallback({ postLocale, alternates }: TranslationFallbackProps) {
-    const currentLocale = useLocale();
+    const [currentLocale, setCurrentLocale] = useState<string>('en');
+
+    useEffect(() => {
+        // Get locale from document or cookie
+        if (typeof document !== 'undefined') {
+            const locale = document.documentElement.lang || 
+                          document.cookie.split('; ').find(row => row.startsWith('NEXT_LOCALE='))?.split('=')[1] || 
+                          'en';
+            setCurrentLocale(locale);
+        }
+    }, []);
 
     if (currentLocale === postLocale) return null;
 

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Globe, Check } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useLanguage } from "@/context/LanguageContext";
 
 const languages = [
@@ -12,7 +11,6 @@ const languages = [
 
 export function LanguageSwitcher() {
     const [isOpen, setIsOpen] = useState(false);
-    const t = useTranslations("LanguageSwitcher");
     const { alternateLinks } = useLanguage();
 
     const currentLocale = typeof document !== "undefined"
@@ -39,7 +37,7 @@ export function LanguageSwitcher() {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-2 px-3 py-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-all duration-200 border border-primary/20 shadow-sm group"
-                title={t("switchLanguage")}
+                title="Switch Language"
             >
                 <Globe size={18} className="text-primary group-hover:rotate-12 transition-transform duration-300" />
                 <span className="text-sm font-semibold text-primary hidden sm:inline">
@@ -63,7 +61,7 @@ export function LanguageSwitcher() {
                         <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-3 border-b border-border/50">
                             <div className="text-xs font-semibold text-foreground flex items-center gap-2">
                                 <Globe size={14} className="text-primary" />
-                                {t("switchLanguage")}
+                                Switch Language
                             </div>
                         </div>
                         <div className="p-2">
