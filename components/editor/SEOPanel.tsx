@@ -40,7 +40,7 @@ export function SEOPanel({ initialData, onChange }: SEOPanelProps) {
     }, [title, description, keywords, canonical, ogImage]);
 
     return (
-        <div className="space-y-6 p-4">
+        <div className="space-y-6 p-4 w-full max-w-full overflow-x-hidden">
             <div className="flex items-center gap-2 text-primary mb-2">
                 <Search size={20} />
                 <h3 className="font-semibold text-lg">SEO Settings</h3>
@@ -137,7 +137,7 @@ export function SEOPanel({ initialData, onChange }: SEOPanelProps) {
                     value={ogImage}
                     onChange={(e) => setOgImage(e.target.value)}
                     placeholder="https://..."
-                    className="w-full p-2 rounded-md border border-input bg-background/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
+                    className="w-full max-w-full p-2 rounded-md border border-input bg-background/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
                 />
                 <p className="text-xs text-muted-foreground">
                     Custom image for social media sharing. Defaults to cover image.

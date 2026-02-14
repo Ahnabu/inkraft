@@ -59,16 +59,29 @@
 - **Bangla Typography**: Full support for বাংলা text with Noto Sans Bengali font family.
 
 ### Phase 5.1: Comprehensive i18n 🌐 (v0.2.1)
-- **UI Translation**: Complete interface in English and বাংলা (Bangla) - switch with one click.
-- **Multi-language Posts**: Write each post in multiple languages with dedicated translation fields.
-- **Language Switcher**: Beautiful globe icon in navbar for instant language switching.
-- **SEO Optimized**: Proper `hreflang` tags, language-specific metadata, and separate URLs per language.
-- **Smart Fallback**: Posts without translation gracefully show in original language with notice.
+- [x] **UI Translation**: Complete interface in English and বাংলা (Bangla) - switch with one click.
+- [x] **Multi-language Posts**: Write each post in multiple languages with dedicated translation fields.
+- [x] **Language Switcher**: Beautiful globe icon in navbar for instant language switching.
+- [x] **SEO Optimized**: Proper `hreflang` tags, language-specific metadata, and separate URLs per language.
+- [x] **Smart Fallback**: Posts without translation gracefully show in original language with notice.
 
-### Phase 6: Upcoming 🔮
-- **PWA Support**: Install Inkraft as a native app on mobile and desktop.
-- **Podcast Support**: Audio player for blog posts (Text-to-Speech).
-- **Monetization**: Creator tipping and premium subscriptions.
+### Phase 6: UI Refinement & Extended Discovery
+- [x] **Mobile UI Fixes**
+  - [x] Fix Subscribe button overflow in Footer
+  - [x] Fix SEO Metadata panel overflow in Editor
+- [x] **Homepage i18n**
+  - [x] Extract hardcoded strings to translation files
+  - [x] Implement `useTranslations` in Homepage
+  - [x] Add **Explore** button to Hero section
+- [x] **Discovery Features**
+  - [x] Create `/authors` page (Discover Authors)
+  - [x] Add "Authors" link to Navbar
+  - [x] Verify "All Posts" view in Explore
+- [x] **UI Translation**
+  - [x] Translate Navbar (Links, Buttons, Mobile Menu)
+  - [x] Translate Footer (Sections, Links, Copyright)
+- [x] **Fix 404s**
+  - [x] Ensure all links (especially `/authors`) work correctly
 
 ---
 

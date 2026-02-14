@@ -4,9 +4,12 @@ import Link from "next/link";
 import { Github, Twitter, Linkedin, Facebook, Instagram } from "lucide-react";
 import { useFocusMode } from "@/lib/context/FocusModeContext";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { useTranslations } from "next-intl";
 
 export function Footer() {
     const { isFocusMode } = useFocusMode();
+    const t = useTranslations("Footer");
+    const tNav = useTranslations("Navigation");
 
     if (isFocusMode) return null;
 
@@ -26,7 +29,7 @@ export function Footer() {
                             Inkraft
                         </span>
                         <p className="mt-3 text-sm text-muted-foreground">
-                            A content-first editorial platform for deep thinking and serious writing.
+                            {t('tagline')}
                         </p>
                     </div>
 
@@ -34,26 +37,27 @@ export function Footer() {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
                         {/* Platform Links */}
                         <div className="flex flex-col">
-                            <h3 className="font-semibold mb-3 text-sm md:text-base text-foreground">Platform</h3>
+                            <h3 className="font-semibold mb-3 text-sm md:text-base text-foreground">{t('platform')}</h3>
                             <ul className="flex flex-col space-y-2 text-sm text-muted-foreground">
-                                <li><Link href="/explore" className="hover:text-primary transition-colors inline-block">Explore</Link></li>
-                                <li><Link href="/new" className="hover:text-primary transition-colors inline-block">Write a Post</Link></li>
+                                <li><Link href="/explore" className="hover:text-primary transition-colors inline-block">{t('explore')}</Link></li>
+                                <li><Link href="/new" className="hover:text-primary transition-colors inline-block">{t('writePost')}</Link></li>
                             </ul>
                         </div>
 
                         {/* Company Links */}
                         <div className="flex flex-col">
-                            <h3 className="font-semibold mb-3 text-sm md:text-base text-foreground">Company</h3>
+                            <h3 className="font-semibold mb-3 text-sm md:text-base text-foreground">{t('company')}</h3>
                             <ul className="flex flex-col space-y-2 text-sm text-muted-foreground">
-                                <li><Link href="/about" className="hover:text-primary transition-colors inline-block">About Us</Link></li>
-                                <li><Link href="/contact" className="hover:text-primary transition-colors inline-block">Contact</Link></li>
+                                <li><Link href="/about" className="hover:text-primary transition-colors inline-block">{t('about')}</Link></li>
+                                <li><Link href="/contact" className="hover:text-primary transition-colors inline-block">{t('contact')}</Link></li>
                             </ul>
                         </div>
 
                         {/* Connect */}
                         <div className="flex flex-col">
-                            <h3 className="font-semibold mb-3 text-sm md:text-base text-foreground">Connect</h3>
+                            <h3 className="font-semibold mb-3 text-sm md:text-base text-foreground">{t('connect')}</h3>
                             <div className="flex items-center gap-3">
+                                {/* Social links remain same */}
                                 <a
                                     href="https://facebook.com"
                                     target="_blank"
@@ -118,11 +122,11 @@ export function Footer() {
                 {/* Bottom Section */}
                 <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-border/40">
                     <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs md:text-sm text-muted-foreground">
-                        <p className="text-center sm:text-left">© {new Date().getFullYear()} Inkraft. All rights reserved.</p>
+                        <p className="text-center sm:text-left">{t('rights', { year: new Date().getFullYear() })}</p>
                         <div className="flex items-center gap-4 md:gap-6">
-                            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+                            <Link href="/privacy" className="hover:text-primary transition-colors">{t('privacy')}</Link>
                             <span className="text-border">•</span>
-                            <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+                            <Link href="/terms" className="hover:text-primary transition-colors">{t('terms')}</Link>
                         </div>
                     </div>
                 </div>

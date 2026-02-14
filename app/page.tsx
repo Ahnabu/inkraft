@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 900; // Revalidate page every 15 minutes
 
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 // ... imports
 
@@ -71,6 +71,7 @@ async function getTopPosts(locale: string) {
 export default async function HomePage(props: { searchParams?: Promise<{ feed?: string }> }) {
   const session = await auth();
   const locale = await getLocale();
+  const t = await getTranslations("Homepage");
 
   const [featuredPost, trendingPosts, latestPosts, topPosts] = await Promise.all([
     getFeaturedPost(locale),
@@ -100,7 +101,7 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
         <section className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
           <div className="flex items-center gap-2 mb-3 sm:mb-4">
             <Award size={20} className="text-primary sm:w-6 sm:h-6" />
-            <h2 className="text-xl sm:text-2xl font-bold">Featured</h2>
+            <h2 className="text-xl sm:text-2xl font-bold">{t('heroTitle')}</h2>
           </div>
           <ArticleCard post={featuredPost} variant="featured" />
         </section>
@@ -112,13 +113,13 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
           <div className="flex items-center justify-between mb-4 sm:mb-6">
             <div className="flex items-center gap-2">
               <TrendingUp size={20} className="text-primary sm:w-6 sm:h-6" />
-              <h2 className="text-xl sm:text-2xl font-bold">Trending Now</h2>
+              <h2 className="text-xl sm:text-2xl font-bold">{t('trendingTitle')}</h2>
             </div>
             <Link
               href="/trending"
               className="text-primary hover:underline flex items-center gap-1 text-sm sm:text-base"
             >
-              <span className="hidden sm:inline">View all</span>
+              <span className="hidden sm:inline">{t('viewAll')}</span>
               <span className="sm:hidden">All</span>
               <ArrowRight size={14} className="sm:w-4 sm:h-4" />
             </Link>
@@ -138,7 +139,7 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
                 href="/latest"
                 className="text-primary hover:underline flex items-center gap-1 text-sm sm:text-base hidden sm:flex"
               >
-                <span className="hidden sm:inline">View all</span>
+                <span className="hidden sm:inline">{t('viewAll')}</span>
                 <span className="sm:hidden">All</span>
                 <ArrowRight size={14} className="sm:w-4 sm:h-4" />
               </Link>
@@ -150,14 +151,14 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
               <div className="py-12 text-center border rounded-xl bg-card">
                 <p className="text-muted-foreground mb-4">
                   {feedType === 'following'
-                    ? "You aren't following anyone yet, or they haven't posted recently."
+                    ? t('noFollowing')
                     : feedType === 'foryou'
-                      ? "Follow some authors or categories to get personalized recommendations!"
-                      : "No posts yet"}
+                      ? t('noForYou')
+                      : t('noPosts')}
                 </p>
                 {(feedType === 'following' || feedType === 'foryou') && (
                   <Link href="/authors" className="text-primary hover:underline">
-                    Discover Authors
+                    {t('discoverAuthors')}
                   </Link>
                 )}
               </div>
@@ -168,7 +169,7 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
           <div>
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <Award size={20} className="text-primary sm:w-6 sm:h-6" />
-              <h2 className="text-xl sm:text-2xl font-bold">Top Posts</h2>
+              <h2 className="text-xl sm:text-2xl font-bold">{t('topPostsTitle')}</h2>
             </div>
             {topPosts.length > 0 ? (
               <PostFeed posts={topPosts} layout="list" variant="compact" />
@@ -187,25 +188,30 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl -z-10"></div>
 
           <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-            Start Your Writing Journey
+            {t('ctaTitle')}
           </h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-base md:text-lg">
-            Join Inkraft and share your stories with a global audience. Build your
-            reputation through quality content and community engagement.
+            {t('ctaDescription')}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/new"
               className="px-8 py-3.5 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/30 hover:scale-105 active:scale-100"
             >
-              Write a Post
+              {t('writePost')}
+            </Link>
+            <Link
+              href="/explore"
+              className="px-8 py-3.5 bg-background/50 backdrop-blur-sm border border-border rounded-xl font-semibold hover:bg-muted/80 transition-all text-foreground"
+            >
+              {t('explore')}
             </Link>
             {!session && (
               <Link
                 href="/auth/signin"
                 className="px-8 py-3.5 bg-background/50 backdrop-blur-sm border border-border rounded-xl font-semibold hover:bg-muted/80 transition-all"
               >
-                Sign In
+                {t('signIn')}
               </Link>
             )}
           </div>

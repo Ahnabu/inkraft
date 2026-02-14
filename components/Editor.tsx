@@ -493,7 +493,7 @@ export function Editor({
                             <Settings size={18} />
                         </button>
                     </SheetTrigger>
-                    <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+                    <SheetContent className="w-full sm:w-[540px] overflow-y-auto p-0 sm:p-6">
                         <SheetHeader>
                             <SheetTitle>Post Settings</SheetTitle>
                         </SheetHeader>

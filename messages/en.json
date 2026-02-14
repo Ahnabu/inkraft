@@ -2,13 +2,29 @@
   "Navigation": {
     "home": "Home",
     "explore": "Explore",
+    "authors": "Authors",
     "about": "About",
     "signIn": "Sign In",
     "getStarted": "Get Started",
     "profile": "Profile",
     "dashboard": "Dashboard",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "Footer": {
+    "platform": "Platform",
+    "company": "Company",
+    "connect": "Connect",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "about": "About Us",
+    "contact": "Contact",
+    "writePost": "Write a Post",
+    "explore": "Explore",
+    "tagline": "A content-first editorial platform for deep thinking and serious writing.",
+    "rights": "© {year} Inkraft. All rights reserved."
   },
   "Common": {
     "save": "Save",
@@ -206,5 +222,20 @@
     "backToDigests": "Back to Digests",
     "noDigests": "No digests published yet. Check back soon!",
     "moreStories": "+ {count} more stories"
+  },
+  "Homepage": {
+    "heroTitle": "Featured",
+    "trendingTitle": "Trending Now",
+    "viewAll": "View all",
+    "topPostsTitle": "Top Posts",
+    "noPosts": "No posts yet",
+    "noFollowing": "You aren't following anyone yet, or they haven't posted recently.",
+    "noForYou": "Follow some authors or categories to get personalized recommendations!",
+    "discoverAuthors": "Discover Authors",
+    "ctaTitle": "Start Your Writing Journey",
+    "ctaDescription": "Join Inkraft and share your stories with a global audience. Build your reputation through quality content and community engagement.",
+    "writePost": "Write a Post",
+    "explore": "Explore",
+    "signIn": "Sign In"
   }
 }

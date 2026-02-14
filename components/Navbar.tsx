@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { PenTool, Menu, X, Sun, Moon } from "lucide-react";
@@ -17,6 +18,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 export function Navbar() {
     const pathname = usePathname();
     const { data: session } = useSession();
+    const t = useTranslations("Navigation");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { setTheme, theme } = useTheme();
     const { isFocusMode, toggleFocusMode, fontSize, setFontSize } = useFocusMode();
@@ -39,6 +41,7 @@ export function Navbar() {
     const navItems = [
         { name: "Home", href: "/" },
         { name: "Explore", href: "/explore" },
+        { name: "Authors", href: "/authors" },
         { name: "About", href: "/about" },
     ];
 
@@ -124,7 +127,7 @@ export function Navbar() {
                                     : "text-muted-foreground"
                             )}
                         >
-                            {item.name}
+                            {t(item.name.toLowerCase())}
                             {pathname === item.href && (
                                 <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
                             )}
@@ -165,12 +168,12 @@ export function Navbar() {
                         <div className="flex items-center gap-2">
                             <Link href="/api/auth/signin">
                                 <Button variant="ghost" size="sm" className="hidden sm:inline-flex rounded-full">
-                                    Sign In
+                                    {t('signIn')}
                                 </Button>
                             </Link>
                             <Link href="/api/auth/signin?type=register">
                                 <Button size="sm" className="rounded-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity text-white shadow-md">
-                                    Get Started
+                                    {t('getStarted')}
                                 </Button>
                             </Link>
                         </div>
@@ -193,7 +196,7 @@ export function Navbar() {
                                             : "text-muted-foreground"
                                     )}
                                 >
-                                    {item.name}
+                                    {t(item.name.toLowerCase())}
                                 </Link>
                             ))}
                         </div>
@@ -202,22 +205,22 @@ export function Navbar() {
                             <div className="flex flex-col gap-2 pt-2 border-t border-border">
                                 <Link href="/api/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
                                     <Button variant="ghost" className="w-full justify-start rounded-lg">
-                                        Sign In
+                                        {t('signIn')}
                                     </Button>
                                 </Link>
                                 <Link href="/api/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
                                     <Button className="w-full rounded-lg bg-gradient-to-r from-primary to-secondary text-white">
-                                        Get Started
+                                        {t('getStarted')}
                                     </Button>
                                 </Link>
                             </div>
                         )}
                         <div className="flex items-center justify-between px-4 py-2 border-t border-border mt-2">
-                            <span className="text-sm font-medium text-muted-foreground">Language</span>
+                            <span className="text-sm font-medium text-muted-foreground">{t('language')}</span>
                             <LanguageSwitcher />
                         </div>
                         <div className="flex items-center justify-between px-4 py-2 border-t border-border mt-2">
-                            <span className="text-sm font-medium text-muted-foreground">Theme</span>
+                            <span className="text-sm font-medium text-muted-foreground">{t('theme')}</span>
                             <button
                                 onClick={() => theme === "dark" ? setTheme("light") : setTheme("dark")}
                                 className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground flex items-center gap-2"
