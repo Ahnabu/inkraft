@@ -8,6 +8,7 @@ import { SyntaxHighlighting } from "@/components/SyntaxHighlighting";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { KeyboardShortcutsModal } from "@/components/ui/KeyboardShortcutsModal";
 
 const dmSans = DM_Sans({
@@ -29,6 +30,15 @@ export const metadata: Metadata = {
     template: "%s | Inkraft Blog"
   },
   description: "Inkraft is a premium blogging platform for high-quality tech content. Discover expert articles on AI, Programming, Cybersecurity, Web Development, and more. Join Inkraft - where quality writing meets engaged readers.",
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+    other: {
+      rel: 'apple-touch-icon-precomposed',
+      url: '/favicon.ico',
+    },
+  },
   keywords: [
     "inkraft",
     "inkraft blog",
@@ -129,9 +139,9 @@ const jsonLd = {
     url: 'https://inkraftblog.vercel.app',
     logo: {
       '@type': 'ImageObject',
-      url: 'https://inkraftblog.vercel.app/icon-512.png',
-      width: 512,
-      height: 512
+      url: 'https://inkraftblog.vercel.app/favicon.ico',
+      width: 192,
+      height: 192
     },
     sameAs: [
       'https://twitter.com/inkraft',
@@ -161,14 +171,6 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* Favicons for all browsers */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/favicon.ico" />
-        <meta name="theme-color" content="#6366f1" />
-        {/* Force browsers to update favicon */}
-        <link rel="icon" href="/favicon.ico?v=2" />
       </head>
       <body
         className={`${dmSans.variable} ${notoSansBengali.variable} antialiased bg-background text-text font-body min-h-screen flex flex-col overflow-x-hidden`}
@@ -185,7 +187,8 @@ export default async function RootLayout({
               </main>
               <Footer />
             </div>
-            <Analytics />
+            <Analytics mode="production" debug={false} />
+            <SpeedInsights />
           </Providers>
         </NextIntlClientProvider>
       </body>
