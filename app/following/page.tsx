@@ -64,7 +64,7 @@ export default async function FollowingPage() {
                     </p>
                 </div>
 
-                <Link href="/explore">
+                <Link href="/authors">
                     <button className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors font-medium">
                         <UserPlus size={18} />
                         Find writers

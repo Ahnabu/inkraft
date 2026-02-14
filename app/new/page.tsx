@@ -61,19 +61,30 @@ function NewPostContent() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [userPublications, setUserPublications] = useState<any[]>([]);
 
+    const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+
     useEffect(() => {
-        const fetchPublications = async () => {
+        const fetchResources = async () => {
             try {
-                const res = await fetch("/api/publications");
-                if (res.ok) {
-                    const data = await res.json();
+                const [pubRes, catRes] = await Promise.all([
+                    fetch("/api/publications"),
+                    fetch("/api/categories")
+                ]);
+
+                if (pubRes.ok) {
+                    const data = await pubRes.json();
                     setUserPublications(data.publications || []);
                 }
+
+                if (catRes.ok) {
+                    const data = await catRes.json();
+                    setCategories(data);
+                }
             } catch (error) {
-                console.error("Failed to fetch publications", error);
+                console.error("Failed to fetch resources", error);
             }
         };
-        fetchPublications();
+        fetchResources();
     }, []);
 
     // Draft Restoration
@@ -270,7 +281,7 @@ function NewPostContent() {
                                 className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             >
                                 <option value="">{t("selectCategory")}</option>
-                                {DEFAULT_CATEGORIES.map((cat) => (
+                                {categories.map((cat) => (
                                     <option key={cat.slug} value={cat.slug}>
                                         {cat.name}
                                     </option>

@@ -21,6 +21,10 @@ export default function FollowButton({ targetUserId, isFollowing: initialIsFollo
     const { data: session } = useSession();
     const router = useRouter();
 
+    if (session?.user?.id === targetUserId) {
+        return null; // Do not render button for self-profile
+    }
+
     const handleFollowToggle = () => {
         if (!session) {
             toast.error(t("loginRequired"));

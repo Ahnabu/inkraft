@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import { PenTool, Menu, X, Sun, Moon } from "lucide-react";
+import { PenTool, Menu, X, Sun, Moon, Feather } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { UserNav } from "@/components/UserNav";
 import { NotificationBell } from "@/components/NotificationBell";

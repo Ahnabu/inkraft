@@ -19,6 +19,7 @@ import {
     BarChart3,
     StickyNote
 } from "lucide-react";
+import { CategoryManager } from "@/components/CategoryManager";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -148,7 +149,7 @@ export default async function DashboardPage() {
                             <span className="text-muted-foreground text-sm">Total Upvotes</span>
                             <ArrowUp size={20} className="text-green-500" />
                         </div>
-                        <p className="text-3xl font-bold">{stats.totalUpvotes}</p>
+                        <p className="text-3xl font-bold">{Math.round(stats.totalUpvotes)}</p>
                         <p className="text-xs text-muted-foreground mt-1">
                             Across all posts
                         </p>
@@ -437,6 +438,11 @@ export default async function DashboardPage() {
                                 Explore Articles
                             </Link>
                         </div>
+                    )}
+
+                    {/* Category Manager (Admin Only) */}
+                    {user.role === 'admin' && (
+                        <CategoryManager />
                     )}
                 </div>
             </div>

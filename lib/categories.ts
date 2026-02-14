@@ -65,6 +65,13 @@ export const DEFAULT_CATEGORIES: CategoryConfig[] = [
         color: "#9333EA", // Purple
         order: 8,
     },
+    {
+        name: "Personal",
+        slug: "personal",
+        description: "Personal stories, life lessons, and reflections on the journey of growth and discovery.",
+        color: "#EC4899", // Pink
+        order: 9,
+    },
 ];
 
 // Helper to get category by slug

@@ -48,6 +48,19 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [relatedTranslations, setRelatedTranslations] = useState<any[]>([]);
 
+    // Categories
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [categories, setCategories] = useState<any[]>(DEFAULT_CATEGORIES);
+
+    useEffect(() => {
+        fetch("/api/categories")
+            .then(res => res.ok ? res.json() : [])
+            .then(data => {
+                if (data.length > 0) setCategories(data);
+            })
+            .catch(err => console.error("Failed to fetch categories", err));
+    }, []);
+
     // Load existing post data
     useEffect(() => {
         async function loadPost() {
@@ -344,7 +357,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                                 className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             >
                                 <option value="">Select a category</option>
-                                {DEFAULT_CATEGORIES.map((cat) => (
+                                {categories.map((cat) => (
                                     <option key={cat.slug} value={cat.slug}>
                                         {cat.name}
                                     </option>
@@ -395,7 +408,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                                 className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                             >
                                 <option value="">Select a category</option>
-                                {DEFAULT_CATEGORIES.map((cat) => (
+                                {categories.map((cat) => (
                                     <option key={cat.slug} value={cat.slug}>
                                         {cat.name}
                                     </option>

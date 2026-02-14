@@ -32,6 +32,9 @@ async function dbConnect() {
     if (!cached!.promise) {
         const opts = {
             bufferCommands: true,
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
         };
 
         cached!.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
