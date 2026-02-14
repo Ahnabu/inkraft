@@ -78,7 +78,7 @@ export function SilentFeedback({ postId, className }: SilentFeedbackProps) {
             <div className="flex flex-wrap justify-center gap-4">
                 <Button
                     variant={submitted === "helpful" ? "primary" : "outline"}
-                    className={cn("gap-2 min-w-[120px]", submitted === "helpful" && "bg-green-600 hover:bg-green-700 text-white")}
+                    className={cn("gap-2 min-w-30", submitted === "helpful" && "bg-green-600 hover:bg-green-700 text-white")}
                     onClick={() => handleFeedback("helpful")}
                     disabled={!!submitted || isLoading}
                 >
@@ -88,7 +88,7 @@ export function SilentFeedback({ postId, className }: SilentFeedbackProps) {
 
                 <Button
                     variant={submitted === "clear" ? "primary" : "outline"}
-                    className={cn("gap-2 min-w-[120px]", submitted === "clear" && "bg-blue-600 hover:bg-blue-700 text-white")}
+                    className={cn("gap-2 min-w-30", submitted === "clear" && "bg-blue-600 hover:bg-blue-700 text-white")}
                     onClick={() => handleFeedback("clear")}
                     disabled={!!submitted || isLoading}
                 >
@@ -98,7 +98,7 @@ export function SilentFeedback({ postId, className }: SilentFeedbackProps) {
 
                 <Button
                     variant={submitted === "more_detail" ? "primary" : "outline"}
-                    className={cn("gap-2 min-w-[120px]", submitted === "more_detail" && "bg-amber-600 hover:bg-amber-700 text-white")}
+                    className={cn("gap-2 min-w-30", submitted === "more_detail" && "bg-amber-600 hover:bg-amber-700 text-white")}
                     onClick={() => handleFeedback("more_detail")}
                     disabled={!!submitted || isLoading}
                 >

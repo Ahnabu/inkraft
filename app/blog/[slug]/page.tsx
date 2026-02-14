@@ -15,7 +15,7 @@ import { auth } from "@/auth";
 import UserModel from "@/models/User"; // Renamed to avoid conflict with lucide-react User
 import FollowButton from "@/components/FollowButton";
 import { SaveButton } from "@/components/SaveButton";
-import { TableOfContents } from "@/components/TableOfContents";
+import { TOCWrapper } from "@/components/TOCWrapper";
 import { getBaseUrl } from "@/lib/utils";
 import { ViewTracker } from "@/components/ViewTracker";
 import { BlogPostClient } from "@/components/BlogPostClient";
@@ -24,7 +24,6 @@ import { FeedbackWidget } from "@/components/reader/FeedbackWidget";
 import { SeriesNavigation } from "@/components/series/SeriesNavigation";
 import { BlogPostExporter } from "@/components/BlogPostExporter";
 import { ReputationBadge } from "@/components/ReputationBadge";
-import { MobileTOC } from "@/components/MobileTOC";
 import { SilentFeedback } from "@/components/SilentFeedback";
 import { TranslationLinker } from "@/components/TranslationLinker";
 import { TranslationFallback } from "@/components/TranslationFallback";
@@ -400,18 +399,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                     {/* Main Layout with Left TOC Sidebar */}
                     <div className="container mx-auto px-3 sm:px-4 lg:px-8 -mt-24 sm:-mt-32 relative z-10">
                         <div className="flex gap-6 sm:gap-8 lg:gap-12">
-                            {/* Left Sidebar - Table of Contents (Desktop Only) */}
-                            <aside className="hidden xl:block w-64 shrink-0 hide-in-focus-mode">
-                                <div className="p-8 md:p-12 mb-8">
-                                    <div className="space-y-6">
-
-                                    </div>
-                                </div>
-                                <div className="sticky top-24">
-                                    <TableOfContents />
-                                </div>
-                            </aside>
-                            <MobileTOC />
+                            <TOCWrapper />
 
                             {/* Main Content Area */}
                             <div className="flex-1 max-w-4xl mx-auto xl:mx-0 center-in-focus-mode">
@@ -528,12 +516,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                                     </div>
                                 </GlassCard>
 
-                                {/* Mobile TOC */}
-                                <div className="xl:hidden mb-8">
-                                    <GlassCard className="p-6">
-                                        <TableOfContents />
-                                    </GlassCard>
-                                </div>
+                                {/* Mobile TOC - Moved to TOCWrapper */}
 
                                 {/* Main Article Content */}
                                 <article>
