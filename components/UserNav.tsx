@@ -77,9 +77,10 @@ export function UserNav() {
 
             {/* Dropdown Menu */}
             {isOpen && (
-                <div className="absolute right-0 top-12 z-50 min-w-[14rem] overflow-hidden rounded-xl border border-border bg-card dark:bg-zinc-900/95 backdrop-blur-md text-popover-foreground shadow-lg animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
+
+                <div className="absolute right-0 top-12 z-50 min-w-[14rem] overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 backdrop-blur-md text-zinc-900 dark:text-zinc-100 shadow-lg animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
                     {/* User Header */}
-                    <div className="flex flex-col space-y-1 p-4 border-b border-border bg-muted/30">
+                    <div className="flex flex-col space-y-1 p-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30">
                         <p className="text-sm font-medium leading-none max-w-[12rem] truncate">
                             {user.name}
                         </p>

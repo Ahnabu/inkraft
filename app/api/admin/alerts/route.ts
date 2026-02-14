@@ -4,7 +4,9 @@ import dbConnect from "@/lib/mongodb";
 import AdminAlert from "@/models/AdminAlert";
 import User from "@/models/User";
 import Post from "@/models/Post";
-import { nullifyVotes, freezeUserTrust } from "@/lib/alertTriggers";
+import { nullifyVotes, freezeUserTrust, applyTrustPenalty } from "@/lib/alertTriggers";
+import Category from "@/models/Category";
+import { slugify } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
 
@@ -83,6 +85,35 @@ export async function PATCH(req: Request) {
             if (alert.targetPost) {
                 await nullifyVotes(alert.targetPost.toString(), session.user.id, reason || "Admin action from alert");
                 alert.action = "votes_nullified";
+            }
+        } else if (action === "trust_penalty") {
+            if (alert.targetUser) {
+                // Default penalty 0.2 for reports
+                await applyTrustPenalty(alert.targetUser.toString(), session.user.id, 0.2, reason || "Admin action from report");
+                alert.action = "trust_adjusted";
+            }
+        } else if (action === "category_created") {
+            if (alert.type === "category_request" && alert.metadata) {
+                const name = alert.metadata.requestedCategoryName as string;
+                const description = alert.metadata.requestedCategoryDescription as string;
+
+                if (name && description) {
+                    const slug = slugify(name);
+
+                    // Check if exists/create
+                    await Category.findOneAndUpdate(
+                        { slug },
+                        {
+                            name,
+                            slug,
+                            description,
+                            color: "#4F46E5", // Default color
+                            // Logic for order: find max + 1
+                        },
+                        { upsert: true, new: true }
+                    );
+                    alert.action = "category_created";
+                }
             }
         }
 

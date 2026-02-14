@@ -186,9 +186,9 @@ export function NotificationBell() {
             </button>
 
             {isOpen && (
-                <div className="fixed left-4 right-4 top-20 md:absolute md:left-auto md:right-0 md:top-12 z-50 md:w-80 max-h-[calc(100vh-6rem)] md:max-h-[400px] overflow-hidden rounded-xl border border-border bg-card dark:bg-zinc-900/95 backdrop-blur-md shadow-lg animate-in fade-in-0 zoom-in-95">
+                <div className="fixed left-4 right-4 top-20 md:absolute md:left-auto md:right-0 md:top-12 z-50 md:w-80 max-h-[calc(100vh-6rem)] md:max-h-[400px] overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 backdrop-blur-md shadow-lg animate-in fade-in-0 zoom-in-95 text-zinc-900 dark:text-zinc-100">
                     {/* Header */}
-                    <div className="flex items-center justify-between p-3 border-b border-border">
+                    <div className="flex items-center justify-between p-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30">
                         <h3 className="font-semibold">Notifications</h3>
                         <div className="flex items-center gap-2">
                             <button

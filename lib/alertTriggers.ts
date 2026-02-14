@@ -254,3 +254,32 @@ export async function nullifyVotes(postId: string, adminId: string, reason: stri
 
     return nullifiedCount;
 }
+
+/**
+ * Apply a trust score penalty (admin action)
+ */
+export async function applyTrustPenalty(userId: string, adminId: string, amount: number, reason: string): Promise<void> {
+    await dbConnect();
+
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
+
+    const oldScore = user.trustScore || 1.0;
+    const newScore = Math.max(0, oldScore - amount);
+
+    user.trustScore = newScore;
+    await user.save();
+
+    await AdminAlert.create({
+        type: "suspicious_activity",
+        severity: "medium",
+        targetUser: userId,
+        title: `Trust score penalty applied`,
+        description: `Admin reduced trust score by ${amount} for user "${user.name}". Reason: ${reason}. Score: ${oldScore.toFixed(2)} -> ${newScore.toFixed(2)}`,
+        resolved: true,
+        resolvedBy: adminId,
+        resolvedAt: new Date(),
+        action: "trust_adjusted",
+        metadata: { oldScore, newScore, penalty: amount, reason }
+    });
+}

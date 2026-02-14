@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IAdminAlert extends Document {
-    type: "vote_spike" | "spam_velocity" | "low_trust_engagement" | "repeated_reports" | "suspicious_activity";
+    type: "vote_spike" | "spam_velocity" | "low_trust_engagement" | "repeated_reports" | "suspicious_activity" | "user_report" | "category_request";
     severity: "low" | "medium" | "high" | "critical";
     targetUser?: mongoose.Types.ObjectId;
     targetPost?: mongoose.Types.ObjectId;
@@ -11,7 +11,7 @@ export interface IAdminAlert extends Document {
     resolved: boolean;
     resolvedBy?: mongoose.Types.ObjectId;
     resolvedAt?: Date;
-    action?: "dismissed" | "trust_frozen" | "post_hidden" | "user_banned" | "votes_nullified" | "content_shadow_limited" | "trust_adjusted" | "comment_locked";
+    action?: "dismissed" | "trust_frozen" | "post_hidden" | "user_banned" | "votes_nullified" | "content_shadow_limited" | "trust_adjusted" | "comment_locked" | "category_created";
     createdAt: Date;
     updatedAt: Date;
 }
@@ -20,7 +20,7 @@ const AdminAlertSchema: Schema<IAdminAlert> = new Schema(
     {
         type: {
             type: String,
-            enum: ["vote_spike", "spam_velocity", "low_trust_engagement", "repeated_reports", "suspicious_activity"],
+            enum: ["vote_spike", "spam_velocity", "low_trust_engagement", "repeated_reports", "suspicious_activity", "user_report", "category_request"],
             required: true,
         },
         severity: {
@@ -63,7 +63,7 @@ const AdminAlertSchema: Schema<IAdminAlert> = new Schema(
         },
         action: {
             type: String,
-            enum: ["dismissed", "trust_frozen", "post_hidden", "user_banned", "votes_nullified", "content_shadow_limited", "trust_adjusted", "comment_locked"],
+            enum: ["dismissed", "trust_frozen", "post_hidden", "user_banned", "votes_nullified", "content_shadow_limited", "trust_adjusted", "comment_locked", "category_created"],
         },
     },
     { timestamps: true }

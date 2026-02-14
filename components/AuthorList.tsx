@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, User } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import FollowButton from "@/components/FollowButton";
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/input";
 
 interface Author {
     id: string;

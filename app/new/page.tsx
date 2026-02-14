@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Editor } from "@/components/Editor";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
+import { CategoryRequestDialog } from "@/components/CategoryRequestDialog";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
 import { calculateReadingTime } from "@/lib/readingTime";
@@ -287,6 +288,7 @@ function NewPostContent() {
                                     </option>
                                 ))}
                             </select>
+                            <CategoryRequestDialog />
                         </div>
 
                         {/* Tags */}

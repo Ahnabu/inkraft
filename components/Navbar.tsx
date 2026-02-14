@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import { PenTool, Menu, X, Sun, Moon, Feather } from "lucide-react";
+import { PenTool, Menu, X, Sun, Moon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { UserNav } from "@/components/UserNav";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -91,9 +91,9 @@ export function Navbar() {
                 {/* Top Bar: Logo + Mobile Toggle + Auth (Mobile) */}
                 <div className="flex items-center justify-between w-full md:w-auto">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 z-50">
-                        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
-                            <Feather size={18} fill="currentColor" />
+                     <Link href="/" className="flex items-center gap-2 group">
+                        <div className="bg-primary text-white p-1.5 rounded-lg group-hover: transition-transform">
+                            <PenTool size={20} />
                         </div>
                         <span className="font-bold text-xl tracking-tight hidden sm:block">
                             Inkraft

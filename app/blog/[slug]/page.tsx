@@ -28,6 +28,7 @@ import { MobileTOC } from "@/components/MobileTOC";
 import { SilentFeedback } from "@/components/SilentFeedback";
 import { TranslationLinker } from "@/components/TranslationLinker";
 import { TranslationFallback } from "@/components/TranslationFallback";
+import { PostMoreMenu } from "@/components/PostMoreMenu";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -521,6 +522,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                                                     postSlug={slug}
                                                     initialSaved={isSaved}
                                                 />
+                                                <PostMoreMenu postId={post._id.toString()} contentType="Post" />
                                             </div>
                                         </div>
                                     </div>

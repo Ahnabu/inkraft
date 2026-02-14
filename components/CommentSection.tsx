@@ -7,6 +7,7 @@ import { CommentForm } from "./CommentForm";
 import { renderMarkdown } from "@/lib/markdown";
 import Image from "next/image";
 import { toast } from "sonner";
+import { PostMoreMenu } from "./PostMoreMenu";
 
 interface Comment {
     _id: string;
@@ -237,6 +238,10 @@ export function CommentSection({
                                         Delete
                                     </button>
                                 </>
+                            )}
+
+                            {!isAuthor && (
+                                <PostMoreMenu postId={comment._id} contentType="Comment" />
                             )}
                         </div>
                     )}

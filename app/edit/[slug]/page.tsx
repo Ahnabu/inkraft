@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Editor } from "@/components/Editor";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
+import { CategoryRequestDialog } from "@/components/CategoryRequestDialog";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
 import { calculateReadingTime } from "@/lib/readingTime";
 import { Loader2, Save, ArrowLeft } from "lucide-react";
@@ -363,6 +364,7 @@ export default function EditPostPage({ params: paramsPromise }: EditPostPageProp
                                     </option>
                                 ))}
                             </select>
+                            <CategoryRequestDialog />
                         </div>
 
                         {/* Tags */}
