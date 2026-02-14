@@ -38,11 +38,11 @@ export function LanguageSwitcher() {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-primary/10 via-primary/5 to-transparent hover:from-primary/20 hover:via-primary/10 transition-all duration-200 text-foreground border border-primary/20 shadow-sm"
+                className="flex items-center gap-2 px-3 py-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-all duration-200 border border-primary/20 shadow-sm group"
                 title={t("switchLanguage")}
             >
-                <Globe size={18} className="text-primary" />
-                <span className="text-sm font-medium hidden sm:inline">
+                <Globe size={18} className="text-primary group-hover:rotate-12 transition-transform duration-300" />
+                <span className="text-sm font-semibold text-primary hidden sm:inline">
                     {currentLanguage.nativeName}
                 </span>
                 <span className="text-base sm:hidden">
