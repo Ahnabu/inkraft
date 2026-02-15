@@ -26,10 +26,10 @@ const notoSansBengali = Noto_Sans_Bengali({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://inkraftblog.vercel.app'),
   title: {
-    default: "Inkraft | Premium Blog Platform for Tech, AI & Programming",
+    default: "Inkraft | Modern Editorial Blogging Platform for Writers",
     template: "%s | Inkraft Blog"
   },
-  description: "Inkraft is a premium blogging platform for high-quality tech content. Discover expert articles on AI, Programming, Cybersecurity, Web Development, and more. Join Inkraft - where quality writing meets engaged readers.",
+  description: "Inkraft is a modern editorial blogging platform for high-quality content. A SEO-optimized platform for writers, developers, and startups to publish expert articles.",
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',
@@ -40,67 +40,30 @@ export const metadata: Metadata = {
     },
   },
   keywords: [
-    "inkraft",
-    "inkraft blog",
-    "inkraft platform",
-    "blog",
-    "blogging",
-    "tech blog platform",
-    "programming blog",
-    "AI blog",
-    "technology articles",
-    "web development blog",
-    "cybersecurity blog",
-    "coding tutorials",
-    "software engineering blog",
-    "machine learning articles",
-    "data science blog",
-    "developer community",
-    "tech writing platform",
-    "quality tech content",
-    "editorial platform",
-    "long-form technical writing",
-    "inkraft articles",
-    "inkraft community",
-    "innovation",
-    "startup",
-    "coding",
-    "software",
-    "engineering",
-    "tech news",
-    "latest tech trends",
-    "career advice"
+    // Primary Brand
+    "Inkraft blog",
+    "Inkraft blogging platform",
+    "Inkraft editorial platform",
+    // Core Platform
+    "editorial blogging platform",
+    "modern blogging platform",
+    "seo optimized blogging platform",
+    "multi author blogging platform",
+    // Audience
+    "developer blogging platform",
+    "writing platform for creators",
+    "startup blog platform",
+    // Tech Specs
+    "nextjs blog",
+    "react blog platform",
+    "markdown blog editor"
   ],
-  authors: [{ name: "Inkraft", url: "https://inkraft.vercel.app" }],
+  authors: [{ name: "Inkraft", url: "https://inkraftblog.vercel.app" }],
   creator: "Inkraft",
   publisher: "Inkraft",
   applicationName: "Inkraft Blog",
   alternates: {
     canonical: '/',
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "/",
-    title: "Inkraft | Premium Tech Blog Platform",
-    description: "Discover high-quality articles on AI, Programming, Cybersecurity, and Web Development. Inkraft - Premium blogging platform for tech enthusiasts.",
-    siteName: "Inkraft",
-    images: [
-      {
-        url: "/api/og",
-        width: 1200,
-        height: 630,
-        alt: "Inkraft - Premium Tech Blog Platform"
-      }
-    ]
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Inkraft | Premium Tech Blog Platform",
-    description: "Discover expert content on AI, Programming, and Technology. Join Inkraft's community of quality writers.",
-    images: ["/api/og"],
-    creator: "@inkraft",
-    site: "@inkraft"
   },
   robots: {
     index: true,
@@ -110,11 +73,36 @@ export const metadata: Metadata = {
       index: true,
       follow: true,
       noimageindex: false,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1
-    }
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    title: "Inkraft | Modern Editorial Blogging Platform",
+    description: "The SEO-optimized blogging platform for professional writers and tech teams. Publish high-quality articles with our rich text editor and built-in analytics.",
+    siteName: "Inkraft",
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "Inkraft - Modern Blogging Platform"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Inkraft | Modern Editorial Blogging Platform",
+    description: "Join Inkraft, the modern blogging platform for developers and writers. Share expert content on a SEO-optimized platform.",
+    images: ["/api/og"],
+    creator: "@inkraft",
+    site: "@inkraft"
+  },
+
   category: 'technology',
 };
 
@@ -153,6 +141,8 @@ const jsonLd = {
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -180,6 +170,7 @@ export default async function RootLayout({
             <SyntaxHighlighting />
             <Toaster position="top-right" richColors />
             <KeyboardShortcutsModal />
+            <OnboardingModal />
             <div className="flex-1 flex flex-col relative z-0">
               <Navbar />
               <main className="flex-1 pt-24 pb-12 px-4 container mx-auto relative z-10">

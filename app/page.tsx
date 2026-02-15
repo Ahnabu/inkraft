@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArticleCard } from "@/components/ArticleCard";
 import { PostFeed } from "@/components/PostFeed";
-import { TrendingUp, Clock, Award, ArrowRight, Sparkles } from "lucide-react";
+import { TrendingUp, Award, ArrowRight } from "lucide-react";
 import { FeedTabs } from "@/components/feed/FeedTabs";
 import { auth } from "@/auth";
 import { Metadata } from "next";
@@ -26,8 +26,6 @@ export const metadata: Metadata = {
 export const revalidate = 900; // Revalidate page every 15 minutes
 
 import { getLocale, getTranslations } from "next-intl/server";
-
-// ... imports
 
 async function getFeaturedPost(locale: string) {
   try {
@@ -217,6 +215,6 @@ export default async function HomePage(props: { searchParams?: Promise<{ feed?: 
           </div>
         </div>
       </section>
-    </div>
+    </div >
   );
 }

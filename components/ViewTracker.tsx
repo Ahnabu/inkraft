@@ -58,6 +58,26 @@ export function ViewTracker({ postSlug, postId }: ViewTrackerProps) {
             }
         };
 
+        // Immediate history sync (post onboarding)
+        const syncHistoryImmediately = () => {
+            if (session?.user?.id && !viewTrackedRef.current) {
+                const historyData = JSON.stringify({
+                    postId,
+                    progress: 0,
+                    completed: false
+                });
+
+                fetch("/api/user/history", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: historyData
+                }).catch(err => console.error("Error syncing initial history:", err));
+            }
+        };
+
+        // Call immediate sync
+        syncHistoryImmediately();
+
         // Track scroll depth
         const trackScroll = () => {
             const windowHeight = window.innerHeight;

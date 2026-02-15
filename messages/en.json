@@ -21,9 +21,9 @@
     "terms": "Terms of Service",
     "about": "About Us",
     "contact": "Contact",
-    "writePost": "Write a Post",
-    "explore": "Explore",
-    "tagline": "A content-first editorial platform for deep thinking and serious writing.",
+    "writePost": "Write on Inkraft",
+    "explore": "Explore Content",
+    "tagline": "The modern editorial platform for writers, developers, and startups. Share your expertise on a SEO-optimized blogging platform.",
     "rights": "© {year} Inkraft. All rights reserved."
   },
   "Common": {
@@ -224,18 +224,59 @@
     "moreStories": "+ {count} more stories"
   },
   "Homepage": {
-    "heroTitle": "Featured",
-    "trendingTitle": "Trending Now",
+    "heroTitle": "Featured Editorial Content",
+    "trendingTitle": "Trending on Inkraft",
     "viewAll": "View all",
-    "topPostsTitle": "Top Posts",
+    "topPostsTitle": "Top Editorial Picks",
     "noPosts": "No posts yet",
     "noFollowing": "You aren't following anyone yet, or they haven't posted recently.",
     "noForYou": "Follow some authors or categories to get personalized recommendations!",
     "discoverAuthors": "Discover Authors",
     "ctaTitle": "Start Your Writing Journey",
-    "ctaDescription": "Join Inkraft and share your stories with a global audience. Build your reputation through quality content and community engagement.",
-    "writePost": "Write a Post",
-    "explore": "Explore",
+    "ctaDescription": "Join Inkraft, the modern blogging platform for developers and writers. Share your expertise with a global audience on a SEO-optimized platform.",
+    "writePost": "Start Writing",
+    "explore": "Explore Content",
     "signIn": "Sign In"
+  },
+  "Onboarding": {
+    "welcome": {
+      "title": "Welcome to Inkraft",
+      "description": "A sanctuary for readers and writers. No ads, no clutter."
+    },
+    "values": {
+      "title": "Read Without Distractions",
+      "description": "Immerse yourself in deep content with our refined Focus Mode."
+    },
+    "community": {
+      "title": "Trust-Driven Community",
+      "description": "Follow verified authors and engage in meaningful, high-quality discussions."
+    },
+    "getStarted": {
+      "title": "Your Journey Begins",
+      "button": "Explore Now",
+      "dontShow": "Don't show this again"
+    },
+    "quickStart": {
+      "title": "Quick Start",
+      "subtitle": "Everything you need to get the most out of Inkraft.",
+      "explore": {
+        "title": "Explore Content",
+        "description": "Discover trending stories and new perspectives."
+      },
+      "write": {
+        "title": "Start Writing",
+        "description": "Share your knowledge with a global audience."
+      },
+      "authors": {
+        "title": "Find Authors",
+        "description": "Connect with top writers and experts."
+      },
+      "digest": {
+        "title": "Weekly Digest",
+        "description": "Catch up on the best stories of the week."
+      }
+    },
+    "next": "Next",
+    "skip": "Skip"
   }
 }

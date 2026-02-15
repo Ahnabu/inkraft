@@ -4,6 +4,7 @@ import Post from "@/models/Post";
 import { NextResponse } from "next/server";
 import { checkBotId } from "botid/server";
 import { calculateReadingTime } from "@/lib/readingTime";
+import { submitToIndexNow } from "@/lib/indexnow";
 
 export const dynamic = 'force-dynamic';
 
@@ -77,6 +78,18 @@ export async function POST(req: Request) {
             locale: body.locale || 'en',
             translationId: body.translationId || crypto.randomUUID(),
         });
+
+        // Submit to IndexNow if published
+        if (published) {
+            try {
+                const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://inkraftblog.vercel.app';
+                const postUrl = `${baseUrl}/blog/${slug}`;
+                // Fire and forget - or await if you want to be sure
+                await submitToIndexNow([postUrl]);
+            } catch (e) {
+                console.error("IndexNow submission error:", e);
+            }
+        }
 
         return NextResponse.json(post);
     } catch (error) {

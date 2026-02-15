@@ -97,6 +97,28 @@
 - [x] **Comment Polish**: Improved threading, editing history, and layout.
 - [x] **Related Content**: Smarter continuation flow at end of articles.
 
+### Phase 8: User Retention & Onboarding (New)
+- [x] **Onboarding Modal**: Glassmorphism-styled welcome flow for new visitors.
+- [x] **Instant History**: Articles added to reading history immediately on view.
+- [x] **Internationalized Onboarding**: Full English/Bangla support for welcome screens.
+- [x] **Value Proposition**: "Why Inkraft" section highlighting core values (Trust, Privacy, Focus).
+- [x] **Explore Page Enhancements**:
+  - [x] **Server-Side Search**: Robust search for titles, content, tags, and authors.
+  - [x] **Advanced Filtering**: Filter by Category, Tags, and Sort order.
+  - [x] **Staff Picks**: Dedicated toggle for editor-curated content.
+  - [x] **URL Sync**: Shareable search results with URL-state synchronization.
+
+### Phase 9: SEO & Brand Strategy (New)
+- [x] **Global SEO Overhaul**:
+  - [x] **Smart Metadata**: Dynamic title/desc generation for all pages.
+  - [x] **Keywords Strategy**: Targeted keywords for developers, writers, and startups.
+  - [x] **Social Cards**: Optimized OpenGraph and Twitter cards for better sharing.
+- [x] **Content Optimization**:
+  - [x] **About Page**: Dedicated page targeting key user personas.
+  - [x] **Authors Page**: SEO-rich author discovery and listing.
+  - [x] **Profile SEO**: Dynamic metadata for user profiles based on bio/name.
+- [x] **Brand Consistency**: Unified messaging across Homepage, Onboarding, and Footer.
+
 ---
 
 

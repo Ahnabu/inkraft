@@ -311,3 +311,113 @@ export async function fetchPersonalizedFeed(userId: string, limit = 20, page = 1
     const skip = (page - 1) * limit;
     return sortedPosts.slice(skip, skip + limit);
 }
+
+export interface SearchParams {
+    q?: string;
+    category?: string;
+    tag?: string;
+    sort?: "latest" | "trending" | "top";
+    editorsPick?: boolean;
+    page?: number;
+    limit?: number;
+    locale?: string;
+}
+
+export async function searchPosts(params: SearchParams) {
+    await dbConnect();
+    const {
+        q,
+        category,
+        tag,
+        sort = "latest",
+        editorsPick,
+        page = 1,
+        limit = 12,
+        locale
+    } = params;
+
+    const query: any = { published: true };
+
+    if (locale) {
+        query.locale = locale;
+    }
+
+    // Text Search
+    if (q) {
+        const regex = new RegExp(q, "i");
+        query.$or = [
+            { title: regex },
+            { excerpt: regex },
+            { tags: regex }, // Search within tags array too
+            { "author.name": regex } // Note: This might not work with referencing, handled below if needed
+        ];
+    }
+
+    // Filters
+    if (category && category !== "all") {
+        query.category = category;
+    }
+
+    if (tag) {
+        query.tags = tag;
+    }
+
+    if (editorsPick) {
+        query.editorsPick = true;
+    }
+
+    // Sorting
+    let sortOptions: any = {};
+    switch (sort) {
+        case "trending":
+            sortOptions = { trendScore: -1, publishedAt: -1 };
+            break;
+        case "top":
+            sortOptions = { engagementScore: -1, upvotes: -1 };
+            break;
+        case "latest":
+        default:
+            sortOptions = { publishedAt: -1 };
+            break;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [posts, total] = await Promise.all([
+        Post.find(query)
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(limit)
+            .populate("author", "name image")
+            .lean(),
+        Post.countDocuments(query)
+    ]);
+
+    const formattedPosts = posts.map((post) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const postObj = post as any;
+        return {
+            ...post,
+            _id: post._id.toString(),
+            author: {
+                _id: postObj.author._id.toString(),
+                name: postObj.author.name,
+                image: postObj.author.image,
+            },
+            excerpt: post.excerpt || "",
+            publishedAt: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
+            createdAt: post.createdAt.toISOString(),
+            updatedAt: post.updatedAt.toISOString(),
+        };
+    });
+
+    return {
+        posts: formattedPosts,
+        pagination: {
+            total,
+            pages: Math.ceil(total / limit),
+            page,
+            limit
+        }
+    };
+}

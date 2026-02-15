@@ -5,8 +5,20 @@ import { auth } from "@/auth";
 import { AuthorList } from "@/components/AuthorList";
 
 export const metadata: Metadata = {
-    title: "Discover Authors | Inkraft",
-    description: "Find and follow the best writers on Inkraft.",
+    title: "Discover Expert Authors | Inkraft",
+    description: "Find and follow the best writers, developers, and tech experts on Inkraft. Connect with trusted blog authors and expert content creators.",
+    keywords: [
+        "trusted blog author",
+        "expert content creator",
+        "tech writers",
+        "developer blogs",
+        "connect with authors"
+    ],
+    openGraph: {
+        title: "Discover Expert Authors - Impressive Writing on Inkraft",
+        description: "Connect with the top voices in tech, AI, and programming.",
+        url: "/authors",
+    }
 };
 
 export default async function AuthorsPage() {

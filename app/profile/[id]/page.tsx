@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import dbConnect from "@/lib/mongodb";
@@ -78,6 +79,43 @@ async function getUserProfile(userId: string, tab: string = "published", current
         isFollowing,
         followerCount,
         followingCount
+    };
+}
+
+export async function generateMetadata(
+    { params }: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+    const { id } = await params;
+    const profileData = await getUserProfile(id);
+
+    if (!profileData || !profileData.user) {
+        return {
+            title: "User Not Found | Inkraft",
+            description: "The requested user profile could not be found via Inkraft.",
+        };
+    }
+
+    const { user } = profileData;
+    const displayName = user.name || "Inkraft Author";
+    const bio = user.bio || `Read articles by ${displayName} on Inkraft, the modern editorial platform.`;
+
+    return {
+        title: `${displayName} - Author Profile | Inkraft`,
+        description: bio.substring(0, 160),
+        keywords: [
+            "author profile blog",
+            "expert content creator",
+            "trusted blog author",
+            `${displayName} blog`,
+            "Inkraft author",
+            "tech writer"
+        ],
+        openGraph: {
+            title: `${displayName} - Author Profile on Inkraft`,
+            description: bio.substring(0, 160),
+            type: "profile",
+            images: user.image ? [{ url: user.image }] : [],
+        }
     };
 }
 

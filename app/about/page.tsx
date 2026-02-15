@@ -4,12 +4,19 @@ import { Sparkles, Users, Target, Zap, TrendingUp, Shield } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "About Inkraft | Premium Tech Blog Platform",
-    description: "Learn about Inkraft - a premium blogging platform for tech writers. Discover our mission to provide quality content on AI, Programming, Cybersecurity, and Web Development with strong SEO and community engagement.",
-    keywords: ["about inkraft", "inkraft platform", "tech blog platform", "blogging community", "quality tech writing"],
+    title: "About Inkraft | The Modern Blogging Platform for Developers & Writers",
+    description: "Inkraft is the premier editorial blogging platform for developers, tech writers, and startups. A SEO-optimized content platform with markdown support and built-in analytics.",
+    keywords: [
+        "developer blogging platform",
+        "tech blogging platform",
+        "writing platform for creators",
+        "startup blog platform",
+        "editorial platform",
+        "markdown blog editor"
+    ],
     openGraph: {
-        title: "About Inkraft - Premium Tech Blog Platform",
-        description: "Quality tech writing platform for AI, Programming & Web Development",
+        title: "About Inkraft - The Modern Blogging Platform",
+        description: "The professional publishing platform for developers, startups, and expert writers.",
         type: "website",
         url: "/about",
     },
@@ -29,11 +36,10 @@ export default function AboutPage() {
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-4xl mx-auto text-center">
                         <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                            Welcome to <span className="text-primary">Inkraft</span>
+                            The Modern <span className="text-primary">Publishing Platform</span> for Tech & Creativity
                         </h1>
                         <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-                            A premium editorial platform where quality writing meets engaged readers.
-                            Built for authors who care about their craft and readers who value substance.
+                            Inkraft is the editorial blogging platform for developers, writers, and startups who value quality, SEO, and ownership.
                         </p>
                     </div>
                 </div>
@@ -42,17 +48,17 @@ export default function AboutPage() {
             {/* Mission Section */}
             <section className="container mx-auto px-4 py-16">
                 <div className="max-w-3xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Our Mission</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Built for Content Creators</h2>
                     <GlassCard className="p-8">
                         <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-                            Inkraft is designed for authors who take their writing seriously and readers who
-                            appreciate thoughtful, well-crafted content. We believe that quality long-form
-                            writing deserves a platform that respects both the creator and the audience.
+                            We built Inkraft to be the best **blogging platform for writers** and **developers** alike.
+                            Unlike generic CMSs, Inkraft is a dedicated **editorial platform** focused on long-form content,
+                            clean typography, and technical excellence.
                         </p>
                         <p className="text-lg text-muted-foreground leading-relaxed">
-                            Our platform combines powerful writing tools, strong SEO optimization, and
-                            meaningful community engagement—all while ensuring authors maintain full ownership
-                            and control of their work.
+                            Whether you're a startup building a **company blog**, a developer sharing code tutorials,
+                            or an expert writer publishing deep-dive analysis, our **SEO-optimized platform** ensures your
+                            voice reaches the right audience.
                         </p>
                     </GlassCard>
                 </div>
@@ -60,16 +66,15 @@ export default function AboutPage() {
 
             {/* Core Values */}
             <section className="container mx-auto px-4 py-16 bg-muted/30">
-                <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">What We Stand For</h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Why Inkraft?</h2>
                 <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     <GlassCard className="p-6 text-center">
                         <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Sparkles className="text-primary" size={24} />
                         </div>
-                        <h3 className="text-xl font-bold mb-3">Quality First</h3>
+                        <h3 className="text-xl font-bold mb-3">SEO Optimized</h3>
                         <p className="text-muted-foreground">
-                            We prioritize depth and substance over viral clicks. Every feature is designed
-                            to support thoughtful, well-researched content.
+                            A fully **SEO-friendly blogging platform** out of the box. Structured data, sitemaps, and performance tuning help you rank higher.
                         </p>
                     </GlassCard>
 
@@ -77,10 +82,9 @@ export default function AboutPage() {
                         <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Shield className="text-primary" size={24} />
                         </div>
-                        <h3 className="text-xl font-bold mb-3">Author Ownership</h3>
+                        <h3 className="text-xl font-bold mb-3">Developer Friendly</h3>
                         <p className="text-muted-foreground">
-                            Your content is yours. Period. Authors have full control to create, edit,
-                            and delete their posts at any time.
+                            The ideal **developer blogging platform**. Write in Markdown, paste code snippets with syntax highlighting, and enjoy a clean writing experience.
                         </p>
                     </GlassCard>
 
@@ -88,10 +92,9 @@ export default function AboutPage() {
                         <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Users className="text-primary" size={24} />
                         </div>
-                        <h3 className="text-xl font-bold mb-3">Community Driven</h3>
+                        <h3 className="text-xl font-bold mb-3">Community & Growth</h3>
                         <p className="text-muted-foreground">
-                            Thoughtful engagement systems that reward quality contributions and foster
-                            meaningful discussions.
+                            More than just a tool, Inkraft is a **multi-author blogging platform** where you can connect with other expert writers and grow your audience.
                         </p>
                     </GlassCard>
                 </div>
@@ -99,41 +102,37 @@ export default function AboutPage() {
 
             {/* Platform Features */}
             <section className="container mx-auto px-4 py-16">
-                <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Platform Highlights</h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Platform Features</h2>
                 <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                     <GlassCard className="p-6">
                         <Target className="text-primary mb-3" size={28} />
-                        <h3 className="text-xl font-bold mb-2">SEO-First Architecture</h3>
+                        <h3 className="text-xl font-bold mb-2">Technical SEO Built-In</h3>
                         <p className="text-muted-foreground">
-                            Built-in SEO optimization for every post. Custom meta tags, structured data,
-                            and clean URLs ensure your content gets discovered.
+                            Automated meta tags, canonical URLs, and OpenGraph support make us a top choice for a **technical SEO blogging platform**.
                         </p>
                     </GlassCard>
 
                     <GlassCard className="p-6">
                         <Zap className="text-primary mb-3" size={28} />
-                        <h3 className="text-xl font-bold mb-2">Powerful Editor</h3>
+                        <h3 className="text-xl font-bold mb-2">Markdown Editor</h3>
                         <p className="text-muted-foreground">
-                            Rich text editing with paste preservation, code blocks, tables, callouts,
-                            and distraction-free writing mode.
+                            A powerful **blog editor with markdown support** designed for efficiency. Focus on writing while we handle the formatting.
                         </p>
                     </GlassCard>
 
                     <GlassCard className="p-6">
                         <TrendingUp className="text-primary mb-3" size={28} />
-                        <h3 className="text-xl font-bold mb-2">Smart Discovery</h3>
+                        <h3 className="text-xl font-bold mb-2">Advanced Analytics</h3>
                         <p className="text-muted-foreground">
-                            Algorithmic ranking balances quality, engagement, and recency to surface
-                            the best content to the right readers.
+                            Track your performance with our **blog analytics platform**. Understand reader engagement and optimize your content strategy.
                         </p>
                     </GlassCard>
 
                     <GlassCard className="p-6">
                         <Users className="text-primary mb-3" size={28} />
-                        <h3 className="text-xl font-bold mb-2">Author Dashboard</h3>
+                        <h3 className="text-xl font-bold mb-2">Author Portfolio</h3>
                         <p className="text-muted-foreground">
-                            Comprehensive analytics, post management, and profile customization—all
-                            in one clean interface.
+                            Build your personal brand with a beautiful **author profile blog**. Showcase your best work and establish authority in your niche.
                         </p>
                     </GlassCard>
                 </div>
