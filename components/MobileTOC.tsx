@@ -19,12 +19,12 @@ export function MobileTOC() {
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger asChild>
                 <Button
-                    variant="outline"
+                    variant="primary" // Corrected variant
                     size="icon"
-                    className="fixed bottom-20 right-4 z-40 rounded-full w-12 h-12 shadow-lg xl:hidden bg-background/80 backdrop-blur-sm border-primary/20"
+                    className="fixed bottom-6 right-6 z-50 rounded-full w-12 h-12 shadow-xl xl:hidden hover:scale-105 transition-transform"
                     aria-label="Table of Contents"
                 >
-                    <List className="w-5 h-5" />
+                    <List className="w-6 h-6" />
                     <span className="sr-only">Table of Contents</span>
                 </Button>
             </Dialog.Trigger>

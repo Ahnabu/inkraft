@@ -20,7 +20,7 @@ import { getBaseUrl } from "@/lib/utils";
 import { ViewTracker } from "@/components/ViewTracker";
 import { BlogPostClient } from "@/components/BlogPostClient";
 import { BlogContent } from "@/components/BlogContent";
-import { FeedbackWidget } from "@/components/reader/FeedbackWidget";
+
 import { SeriesNavigation } from "@/components/series/SeriesNavigation";
 import { BlogPostExporter } from "@/components/BlogPostExporter";
 import { ReputationBadge } from "@/components/ReputationBadge";
@@ -506,15 +506,18 @@ export default async function BlogPostPage({ params }: PageProps) {
                                         </div>
 
                                         {/* Share and Save Actions */}
-                                        <div className="pt-4 flex items-center justify-between border-t border-border mt-6">
+                                        {/* Share and Save Actions */}
+                                        <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between border-t border-border mt-6 gap-4 sm:gap-0">
                                             <ShareButtons title={post.title} url={articleUrl} />
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-2">
                                                 <BlogPostExporter post={post} />
-                                                <SaveButton
-                                                    postSlug={slug}
-                                                    initialSaved={isSaved}
-                                                />
-                                                <PostMoreMenu postId={post._id.toString()} contentType="Post" />
+                                                <div className="flex items-center gap-2">
+                                                    <SaveButton
+                                                        postSlug={slug}
+                                                        initialSaved={isSaved}
+                                                    />
+                                                    <PostMoreMenu postId={post._id.toString()} contentType="Post" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -538,9 +541,8 @@ export default async function BlogPostPage({ params }: PageProps) {
                                             </div>
                                         )}
 
-                                        <hr className="my-8 border-border/50" />
 
-                                        <FeedbackWidget postId={post._id.toString()} />
+
 
                                         {/* Tags */}
                                         {post.tags && post.tags.length > 0 && (

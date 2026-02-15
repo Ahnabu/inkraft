@@ -349,7 +349,7 @@ export async function searchPosts(params: SearchParams) {
             { title: regex },
             { excerpt: regex },
             { tags: regex }, // Search within tags array too
-            { "author.name": regex } // Note: This might not work with referencing, handled below if needed
+            { category: regex } // Search within category
         ];
     }
 

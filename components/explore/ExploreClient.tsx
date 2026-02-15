@@ -172,7 +172,7 @@ export function ExploreClient() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                         <input
                             type="text"
-                            placeholder="Search by title, content, tag, or author..."
+                            placeholder="Search by title, content, category, or tag..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-4 py-3 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
@@ -192,47 +192,81 @@ export function ExploreClient() {
             {/* Filters */}
             <div className="mb-8 space-y-6">
                 {/* Categories & Sort Row */}
-                <div className="flex flex-col md:flex-row gap-6 justify-between">
-                    {/* Categories */}
-                    <div className="flex-1 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-                        <div className="flex gap-2">
-                            {categories.map((category) => (
-                                <button
-                                    key={category.slug}
-                                    onClick={() => setSelectedCategory(category.slug)}
-                                    className={cn(
-                                        "px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border",
-                                        selectedCategory === category.slug
-                                            ? "bg-primary text-primary-foreground border-primary"
-                                            : "bg-muted/30 border-transparent hover:bg-muted text-muted-foreground hover:text-foreground"
-                                    )}
-                                >
-                                    {category.name}
-                                </button>
-                            ))}
-                        </div>
+                <div className="flex flex-col gap-6">
+                    {/* Categories - Wrapped List */}
+                    <div className="flex flex-wrap gap-2">
+                        {categories.map((category) => (
+                            <button
+                                key={category.slug}
+                                onClick={() => setSelectedCategory(category.slug)}
+                                className={cn(
+                                    "px-4 py-2 rounded-full text-sm font-medium transition-all border",
+                                    selectedCategory === category.slug
+                                        ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
+                                        : "bg-muted/30 border-transparent hover:bg-muted text-muted-foreground hover:text-foreground hover:border-border"
+                                )}
+                            >
+                                {category.name}
+                            </button>
+                        ))}
                     </div>
 
-                    {/* Sort Options */}
-                    <div className="flex gap-2 shrink-0">
-                        {sortOptions.map((option) => {
-                            const Icon = option.icon;
-                            return (
+                    {/* Sort & View Options - Separated row for cleaner layout */}
+                    <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-border/40">
+                        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1 sm:pb-0">
+                            <div className="flex p-1 bg-muted/30 rounded-lg border border-border/50">
                                 <button
-                                    key={option.value}
-                                    onClick={() => setSelectedSort(option.value)}
+                                    onClick={() => setSelectedSort("latest")}
                                     className={cn(
-                                        "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border",
-                                        selectedSort === option.value
-                                            ? "bg-primary/10 text-primary border-primary"
-                                            : "bg-card border-border hover:bg-muted text-muted-foreground hover:text-foreground"
+                                        "px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2",
+                                        selectedSort === "latest"
+                                            ? "bg-background text-foreground shadow-sm"
+                                            : "text-muted-foreground hover:text-foreground"
                                     )}
                                 >
-                                    <Icon size={16} />
-                                    <span className="hidden sm:inline">{option.name}</span>
+                                    <Clock size={14} />
+                                    Latest
                                 </button>
-                            );
-                        })}
+                                <button
+                                    onClick={() => setSelectedSort("trending")}
+                                    className={cn(
+                                        "px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2",
+                                        selectedSort === "trending"
+                                            ? "bg-background text-foreground shadow-sm"
+                                            : "text-muted-foreground hover:text-foreground"
+                                    )}
+                                >
+                                    <TrendingUp size={14} />
+                                    Trending
+                                </button>
+                                <button
+                                    onClick={() => setSelectedSort("top")}
+                                    className={cn(
+                                        "px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2",
+                                        selectedSort === "top"
+                                            ? "bg-background text-foreground shadow-sm"
+                                            : "text-muted-foreground hover:text-foreground"
+                                    )}
+                                >
+                                    <Star size={14} />
+                                    Top Rated
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Staff Picks Toggle - kept simplified */}
+                        <button
+                            onClick={() => setShowStaffPicks(!showStaffPicks)}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all border",
+                                showStaffPicks
+                                    ? "bg-purple-500/10 text-purple-600 border-purple-500/20 dark:text-purple-400"
+                                    : "bg-muted/30 border-transparent hover:bg-muted text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            <Award size={16} className={showStaffPicks ? "fill-current" : ""} />
+                            Staff Picks
+                        </button>
                     </div>
                 </div>
 

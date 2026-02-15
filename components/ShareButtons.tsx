@@ -38,12 +38,12 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
     };
 
     return (
-        <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+        <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-muted-foreground flex items-center gap-2 whitespace-nowrap">
                 <Share2 size={16} />
                 Share:
             </span>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
                 <a
                     href={shareLinks.facebook}
                     target="_blank"
@@ -65,18 +65,6 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
                     <Twitter size={18} />
                 </a>
                 <a
-                    href={shareLinks.threads}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 rounded-lg hover:bg-muted transition-colors"
-                    aria-label="Share on Threads"
-                    title="Share on Threads"
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12.186 3.094c-2.167 0-3.97.857-5.348 2.548l1.483 1.03c1.03-1.266 2.336-1.896 3.865-1.896 1.483 0 2.67.63 3.52 1.87.85 1.24 1.275 2.91 1.275 5.01 0 2.1-.425 3.77-1.275 5.01-.85 1.24-2.037 1.87-3.52 1.87-1.483 0-2.67-.63-3.52-1.87-.85-1.24-1.275-2.91-1.275-5.01 0-.425.03-.85.09-1.275l-1.8-.18c-.09.485-.135.97-.135 1.455 0 2.55.605 4.59 1.815 6.12 1.21 1.53 2.835 2.295 4.875 2.295 2.04 0 3.665-.765 4.875-2.295 1.21-1.53 1.815-3.57 1.815-6.12 0-2.55-.605-4.59-1.815-6.12-1.21-1.53-2.835-2.295-4.875-2.295z" />
-                    </svg>
-                </a>
-                <a
                     href={shareLinks.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -86,9 +74,21 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
                 >
                     <Linkedin size={18} />
                 </a>
+                <a
+                    href={shareLinks.threads}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden sm:inline-flex p-2 rounded-lg hover:bg-muted transition-colors"
+                    aria-label="Share on Threads"
+                    title="Share on Threads"
+                >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.186 3.094c-2.167 0-3.97.857-5.348 2.548l1.483 1.03c1.03-1.266 2.336-1.896 3.865-1.896 1.483 0 2.67.63 3.52 1.87.85 1.24 1.275 2.91 1.275 5.01 0 2.1-.425 3.77-1.275 5.01-.85 1.24-2.037 1.87-3.52 1.87-1.483 0-2.67-.63-3.52-1.87-.85-1.24-1.275-2.91-1.275-5.01 0-.425.03-.85.09-1.275l-1.8-.18c-.09.485-.135.97-.135 1.455 0 2.55.605 4.59 1.815 6.12 1.21 1.53 2.835 2.295 4.875 2.295 2.04 0 3.665-.765 4.875-2.295 1.21-1.53 1.815-3.57 1.815-6.12 0-2.55-.605-4.59-1.815-6.12-1.21-1.53-2.835-2.295-4.875-2.295z" />
+                    </svg>
+                </a>
                 <button
                     onClick={handleInstagramShare}
-                    className="p-2 rounded-lg hover:bg-muted transition-colors"
+                    className="hidden sm:inline-flex p-2 rounded-lg hover:bg-muted transition-colors"
                     aria-label="Share on Instagram"
                     title="Copy link for Instagram"
                 >

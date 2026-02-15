@@ -145,7 +145,7 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="px-2 py-0.5 bg-muted text-foreground text-xs font-medium rounded">
+                        <span className="px-2 py-0.5 bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 text-xs font-medium rounded">
                             {post.category}
                         </span>
                         {post.difficultyLevel && <DifficultyBadge level={post.difficultyLevel} size="sm" />}

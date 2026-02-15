@@ -200,3 +200,22 @@ body.focus-mode p {
   font-size: var(--focus-font-size, 18px) !important;
   line-height: 1.8 !important;
 }
+
+/* Utilities */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.mask-fade-right {
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+.shadow-glow {
+    box-shadow: 0 0 15px rgba(var(--primary), 0.5);
+}

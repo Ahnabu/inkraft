@@ -82,6 +82,11 @@ Inkraft is a modern, reading-first blogging platform built with Next.js 15, spec
 - **Display**: Multipage Modal using `framer-motion` for transitions.
 - **Action**: User dismissal updates `localStorage`.
 
+### 5. Mobile Interaction Layer (New)
+- **Sticky TOC**: Floating action button (FAB) implementation for mobile table of contents throughout long reads.
+- **Adaptive Sharing**: Context-aware share buttons that hide less common platforms on smaller screens to preserve whitespace.
+- **Touch Targets**: Enhanced tap areas for all interactive elements (buttons, links, tags) conforming to >44px standards.
+
 ## Deployment
 - **Platform**: Vercel
 - **Build**: `next build` (Static Generation + ISR)
