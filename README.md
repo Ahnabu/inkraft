@@ -83,6 +83,20 @@
 - [x] **Fix 404s**
   - [x] Ensure all links (especially `/authors`) work correctly
 
+### Phase 7: Engagement & Visual Polish (Post-Launch Refinements)
+- [x] **Visual Hierarchy**: homepage featuring Hero card, Top posts, and Trending section.
+- [x] **Reputation Badges**: Visual trust indicators for authors (Newcomer, Contributor, Expert).
+- [x] **Smart TOC**: Sticky table of contents with mobile floating button.
+- [x] **Resume Reading**: "Welcome back" banner to resume reading where you left off.
+- [x] **Silent Feedback**: Non-intrusive "Helpful / Clear / Needs Detail" feedback buttons.
+- [x] **Difficulty Badges**: Explicit content level (Beginner, Intermediate, Advanced).
+- [x] **Follow System**: Follow authors for personalized feed updates.
+- [x] **Weekly Digest**: Dedicated digest cards and weekly curated content view.
+- [x] **Focus Mode**: Refined distraction-free reading experience.
+- [x] **Analytics UX**: Enhanced charts and insights for authors.
+- [x] **Comment Polish**: Improved threading, editing history, and layout.
+- [x] **Related Content**: Smarter continuation flow at end of articles.
+
 ---
 
 
