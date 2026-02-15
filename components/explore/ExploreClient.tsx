@@ -389,7 +389,7 @@ export function ExploreClient() {
                                                                     <User size={14} className="text-primary" />
                                                                 </div>
                                                             )}
-                                                            <span className="font-medium text-foreground">{post.author?.name || "Anonymous"}</span>
+                                                            <span className="font-medium text-muted-foreground">{post.author?.name || "Anonymous"}</span>
                                                         </div>
                                                         <span className="text-muted-foreground/50 hidden sm:inline">•</span>
                                                         <span className="hidden sm:inline">{new Date(post.publishedAt || post.createdAt || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
