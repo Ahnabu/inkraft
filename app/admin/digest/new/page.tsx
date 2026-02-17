@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { Loader2, Plus, Search, X, Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
 
 interface Post {
@@ -152,29 +154,29 @@ export default function NewDigestPage() {
                     <form id="digest-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         <GlassCard className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium mb-1">Title</label>
-                                <input
+                                <label className="block text-sm font-medium mb-1 pl-1">Title</label>
+                                <Input
                                     {...register("title", { required: "Title is required" })}
-                                    className="w-full p-2 rounded-md border bg-background"
                                     placeholder="e.g., Weekly Digest #42: The Future of AI"
+                                    className="text-2xl font-bold bg-transparent border-none shadow-none focus-visible:ring-0 px-0 placeholder:text-muted-foreground placeholder:text-lg placeholder:font-normal h-auto py-3"
                                 />
                                 {errors.title && <span className="text-xs text-red-500">{errors.title.message}</span>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">Slug</label>
-                                <input
+                                <label className="block text-sm font-medium mb-1 pl-1">Slug</label>
+                                <Input
                                     {...register("slug", { required: "Slug is required" })}
-                                    className="w-full p-2 rounded-md border bg-muted text-muted-foreground"
                                     readOnly
+                                    className="bg-muted/50 border-none shadow-none text-muted-foreground"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">Description</label>
-                                <textarea
+                                <label className="block text-sm font-medium mb-1 pl-1">Description</label>
+                                <Textarea
                                     {...register("description")}
-                                    className="w-full p-2 rounded-md border bg-background min-h-[100px]"
+                                    className="min-h-[100px] bg-transparent border-none shadow-none focus-visible:ring-0 px-0 resize-none text-base text-muted-foreground py-3"
                                     placeholder="A brief intro to this week's highlights..."
                                 />
                             </div>
@@ -266,12 +268,12 @@ export default function NewDigestPage() {
                         <h2 className="text-lg font-semibold mb-4">Add Posts</h2>
                         <div className="relative mb-4">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <input
+                            <Input
                                 type="text"
                                 placeholder="Search by title..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2 rounded-md border bg-background"
+                                className="pl-9 bg-card border-border"
                             />
                         </div>
 
@@ -285,8 +287,8 @@ export default function NewDigestPage() {
                                         onClick={() => !isSelected && handleAddPost(post)}
                                         disabled={isSelected}
                                         className={`w-full text-left p-3 rounded-lg border transition-all ${isSelected
-                                                ? "opacity-50 cursor-not-allowed bg-muted"
-                                                : "hover:border-primary/50 hover:bg-muted/50 bg-card"
+                                            ? "opacity-50 cursor-not-allowed bg-muted"
+                                            : "hover:border-primary/50 hover:bg-muted/50 bg-card"
                                             }`}
                                     >
                                         <div className="flex items-start gap-3">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
-import { Plus, Edit, Eye, Trash2, FileText, CheckCircle, XCircle } from "lucide-react";
+import { Plus, CheckCircle, FileText } from "lucide-react";
+import { DigestActions } from "@/components/admin/DigestActions";
 import dbConnect from "@/lib/mongodb";
 import Digest from "@/models/Digest";
 import { Button } from "@/components/ui/Button";
@@ -86,19 +87,7 @@ export default async function AdminDigestPage() {
                                             {digest.publishedAt ? format(new Date(digest.publishedAt), "PP") : "-"}
                                         </td>
                                         <td className="p-4 align-middle text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <Link href={`/digest/${digest.slug}`} target="_blank">
-                                                    <Button variant="ghost" size="icon" title="View">
-                                                        <Eye className="h-4 w-4" />
-                                                    </Button>
-                                                </Link>
-                                                {/* Edit Link - To be implemented */}
-                                                {/* <Link href={`/admin/digest/${digest._id}/edit`}> */}
-                                                <Button variant="ghost" size="icon" title="Edit" disabled>
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                {/* </Link> */}
-                                            </div>
+                                            <DigestActions digest={digest} />
                                         </td>
                                     </tr>
                                 ))

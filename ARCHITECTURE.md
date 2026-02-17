@@ -36,6 +36,7 @@ Inkraft is a modern, reading-first blogging platform built with Next.js 15, spec
 
 ### 2. Branding & Themes
 - **Theming**: `next-themes` (Light/Dark/System/Sepia)
+- **Strategy**: Global CSS variables in `app/globals.css` map `@theme` colors to dynamic values (e.g., `--color-background: var(--background)`), ensuring compatibility between Tailwind v4 and runtime theme switching.
 - **Glassmorphism**: Extensive use of backdrop-blur and semi-transparent borders for premium feel.
 
 ### 3. Feature Flags & Preferences
