@@ -177,7 +177,7 @@ export function OnboardingModal() {
                                         {steps[step].title}
                                     </h2>
 
-                                    <p className="text-lg md:text-xl text-muted-foreground max-w-lg mb-10 leading-relaxed">
+                                    <p className="text-lg md:text-xl text-foreground/80 dark:text-zinc-300 max-w-lg mb-10 leading-relaxed">
                                         {steps[step].description}
                                     </p>
 
@@ -259,7 +259,7 @@ export function OnboardingModal() {
                                 {!steps[step].isFinal && (
                                     <button
                                         onClick={() => handleClose(true)}
-                                        className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
+                                        className="text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all px-6 py-2 rounded-full"
                                     >
                                         {t("skip")}
                                     </button>

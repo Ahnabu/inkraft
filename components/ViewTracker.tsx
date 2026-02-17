@@ -9,6 +9,19 @@ interface ViewTrackerProps {
 
 import { useSession } from "next-auth/react";
 
+
+// Simple UUID generator fallback for insecure contexts (like local network dev)
+function generateUUID() {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+    // Fallback for environments where crypto.randomUUID is not available
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 export function ViewTracker({ postSlug, postId }: ViewTrackerProps) {
     const { data: session } = useSession();
     const [sessionId] = useState(() => {
@@ -16,12 +29,12 @@ export function ViewTracker({ postSlug, postId }: ViewTrackerProps) {
         if (typeof window !== "undefined") {
             let sid = sessionStorage.getItem("session_id");
             if (!sid) {
-                sid = crypto.randomUUID();
+                sid = generateUUID();
                 sessionStorage.setItem("session_id", sid);
             }
             return sid;
         }
-        return crypto.randomUUID();
+        return generateUUID();
     });
 
     const startTimeRef = useRef(Date.now());

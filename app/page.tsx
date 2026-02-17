@@ -11,7 +11,20 @@ import { fetchLatestPosts, fetchTopPosts, fetchTrendingPosts, fetchPersonalizedF
 export const metadata: Metadata = {
   title: "Inkraft | Premium Tech Blog - AI, Programming & Web Development",
   description: "Discover expert articles on Artificial Intelligence, Programming, Cybersecurity, Web Development, and more. Join Inkraft's community of tech enthusiasts and quality writers.",
-  keywords: ["inkraft", "tech blog", "AI articles", "programming tutorials", "web development", "cybersecurity", "technology news"],
+  keywords: [
+    "inkraft",
+    "tech blog",
+    "AI articles",
+    "programming tutorials",
+    "web development",
+    "cybersecurity",
+    "technology news",
+    "software engineering",
+    "react tutorials",
+    "nextjs guides",
+    "machine learning",
+    "devops best practices"
+  ],
   openGraph: {
     title: "Inkraft - Premium Tech Blog Platform",
     description: "Expert content on AI, Programming, Cybersecurity & Web Development",

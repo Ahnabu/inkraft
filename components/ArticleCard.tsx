@@ -56,7 +56,7 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
 
                         {/* Category Badge */}
                         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex gap-2">
-                            <span className="px-3 py-1 sm:px-4 sm:py-1.5 bg-primary text-primary-foreground text-xs sm:text-sm font-semibold rounded-full">
+                            <span className="inline-flex items-center rounded-full font-medium border transition-colors bg-primary/20 text-primary border-primary/20 text-xs px-2 py-0.5 gap-1 min-h-[32px] sm:min-h-0 backdrop-blur-md bg-white/20 sm:bg-primary/20">
                                 {post.category}
                             </span>
                             {post.editorsPick && (
@@ -145,7 +145,7 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="px-2 py-0.5 bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 text-xs font-medium rounded">
+                        <span className="inline-flex items-center rounded-full font-medium border transition-colors bg-primary/20 text-primary border-primary/20 text-xs px-2 py-0.5 gap-1 min-h-[32px] sm:min-h-0">
                             {post.category}
                         </span>
                         {post.difficultyLevel && <DifficultyBadge level={post.difficultyLevel} size="sm" />}
@@ -208,7 +208,7 @@ export function ArticleCard({ post, variant = "standard" }: ArticleCardProps) {
                     />
                     {/* Category Badge */}
                     <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-wrap gap-2">
-                        <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
+                        <span className="inline-flex items-center rounded-full font-medium border transition-colors bg-primary/20 text-primary border-primary/20 text-xs px-2 py-0.5 gap-1 min-h-[32px] sm:min-h-0 backdrop-blur-md bg-white/20 sm:bg-primary/20">
                             {post.category}
                         </span>
                         {post.difficultyLevel && <DifficultyBadge level={post.difficultyLevel} size="sm" />}

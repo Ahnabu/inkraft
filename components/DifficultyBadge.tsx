@@ -23,17 +23,17 @@ export function DifficultyBadge({
 
     const config = {
         Beginner: {
-            color: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-500/30",
+            color: "bg-emerald-500/20 text-emerald-700 dark:bg-emerald-500/30 dark:text-emerald-400 border-emerald-500/30",
             icon: BookOpen,
             label: t("beginner"),
         },
         Intermediate: {
-            color: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border-amber-500/30",
+            color: "bg-amber-500/20 text-amber-700 dark:bg-amber-500/30 dark:text-amber-400 border-amber-500/30",
             icon: GraduationCap,
             label: t("intermediate"),
         },
         Advanced: {
-            color: "bg-rose-500/10 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400 border-rose-500/30",
+            color: "bg-rose-500/20 text-rose-700 dark:bg-rose-500/30 dark:text-rose-400 border-rose-500/30",
             icon: Flame,
             label: t("advanced"),
         },

@@ -11,6 +11,7 @@ import { VoteButton } from "@/components/VoteButton";
 import { Comments } from "@/components/Comments";
 import { Clock, Calendar, User, Tag, Eye } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { ArticleCard } from "@/components/ArticleCard";
 import { auth } from "@/auth";
 import UserModel from "@/models/User"; // Renamed to avoid conflict with lucide-react User
 import FollowButton from "@/components/FollowButton";
@@ -89,8 +90,8 @@ async function getRelatedPosts(category: string, currentSlug: string) {
         slug: { $ne: currentSlug },
         published: true,
     })
-        .limit(3)
-        .populate("author", "name")
+        .limit(4)
+        .populate("author", "name image transform")
         .lean();
 
     return JSON.parse(JSON.stringify(posts));
@@ -620,21 +621,14 @@ export default async function BlogPostPage({ params }: PageProps) {
                                     {relatedPosts.length > 0 && (
                                         <div className="mt-12 hide-in-focus-mode">
                                             <h2 className="text-2xl font-bold mb-6">Related Articles</h2>
-                                            <div className="grid md:grid-cols-3 gap-4">
-                                                {relatedPosts.map((related: { _id: string; slug: string; title: string; excerpt: string; readingTime: number }) => (
-                                                    <Link key={related._id} href={`/blog/${related.slug}`}>
-                                                        <GlassCard className="p-4 hover:shadow-lg transition-all h-full">
-                                                            <h3 className="font-semibold mb-2 line-clamp-2">
-                                                                {related.title}
-                                                            </h3>
-                                                            <p className="text-sm text-muted-foreground line-clamp-2">
-                                                                {related.excerpt}
-                                                            </p>
-                                                            <div className="mt-3 text-xs text-muted-foreground">
-                                                                {related.readingTime} min read
-                                                            </div>
-                                                        </GlassCard>
-                                                    </Link>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                {relatedPosts.map((related: any) => (
+                                                    <ArticleCard
+                                                        key={related._id}
+                                                        post={related}
+                                                        variant="compact"
+                                                    />
                                                 ))}
                                             </div>
                                         </div>

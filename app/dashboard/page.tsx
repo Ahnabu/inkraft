@@ -11,6 +11,13 @@ import { DashboardClient } from "@/components/dashboard/DashboardClient";
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Dashboard | Inkraft",
+    description: "Manage your comprehensive blogging dashboard. View analytics, manage posts, and track your writing progress.",
+};
+
 async function getDashboardData(userId: string) {
     await dbConnect();
 

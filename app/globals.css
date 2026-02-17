@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Inkraft Color Palette */
   --color-primary: #4F46E5;
@@ -203,19 +205,19 @@ body.focus-mode p {
 
 /* Utilities */
 .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .mask-fade-right {
-    mask-image: linear-gradient(to right, black 85%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
 
 .shadow-glow {
-    box-shadow: 0 0 15px rgba(var(--primary), 0.5);
+  box-shadow: 0 0 15px rgba(var(--primary), 0.5);
 }

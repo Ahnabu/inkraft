@@ -49,14 +49,23 @@ export const metadata: Metadata = {
     "modern blogging platform",
     "seo optimized blogging platform",
     "multi author blogging platform",
+    "developer blog platform",
+    // Features
+    "markdown editor",
+    "ai writing assistant",
+    "code highlighting",
+    "rich text editor",
+    "newsletter integration",
     // Audience
     "developer blogging platform",
     "writing platform for creators",
     "startup blog platform",
+    "tech writers community",
     // Tech Specs
     "nextjs blog",
     "react blog platform",
-    "markdown blog editor"
+    "markdown blog editor",
+    "headless cms blog"
   ],
   authors: [{ name: "Inkraft", url: "https://inkraftblog.vercel.app" }],
   creator: "Inkraft",
@@ -152,7 +161,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="jMiToSCrGKGdzXOOrfgEHRCQTDORKrsaT3xPjHBRHQw" />
         {/* Bing/Edge verification - submit at bing.com/webmasters */}
