@@ -55,7 +55,7 @@ const DigestSchema = new Schema<IDigest>(
 
 // Index for efficient querying
 DigestSchema.index({ published: 1, publishedAt: -1 });
-DigestSchema.index({ slug: 1 });
+
 
 const Digest: Model<IDigest> = mongoose.models.Digest || mongoose.model<IDigest>("Digest", DigestSchema);
 
